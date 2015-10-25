@@ -19,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         <title></title>
     </head>
     <body>
+        <A HREF="homeScreen.php">Home Screen</A>
         <form name="logon" action="index.php" method="POST" >
            Username: <input type="text" name="user">                                                                                                                                    
            Password  <input type="password" name="userpassword">
