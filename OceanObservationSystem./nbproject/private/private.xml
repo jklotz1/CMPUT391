@@ -4,10 +4,15 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+<<<<<<< HEAD
             <file>file:/compsci/webdocs/sjpartri/web_docs/cmput_project/OceanObservationSystem./homeScreen.php</file>
             <file>file:/compsci/webdocs/sjpartri/web_docs/cmput_project/OceanObservationSystem./Includes/db.php</file>
             <file>file:/compsci/webdocs/sjpartri/web_docs/cmput_project/OceanObservationSystem./index.php</file>
             <file>file:/compsci/webdocs/sjpartri/web_docs/cmput_project/OceanObservationSystem./createNewUser.php</file>
+=======
+            <file>file:/compsci/webdocs/jklotz/web_docs/cmput391project/OceanObservationSystem./createNewUser.php</file>
+            <file>file:/compsci/webdocs/jklotz/web_docs/cmput391project/OceanObservationSystem./loginScreen.php</file>
+>>>>>>> 8179c5c8444c4b640f6a42d85727d2c23d68b84c
         </group>
     </open-files>
 </project-private>
