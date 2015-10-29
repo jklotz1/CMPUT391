@@ -38,6 +38,25 @@ class OceanDB{
         }
     }
     
+    public function is_valid_login($user, $password){
+        $query = "SELECT * FROM SJPARTRI.USERS WHERE user_name = '$user' AND password = '$password'";
+        //Prepare sql using conn and returns the statement identifier
+        $stid = oci_parse($this->con, $query);
+        //Execute a statement returned from oci_parse()
+        oci_execute($stid);
+        
+        $count = 0;
+        while (($row = oci_fetch_array($stid, OCI_ASSOC)) != false) {
+            $count++;
+         }
+         
+         if ($count > 0) 
+             return true;
+         else
+             return false;
+             
+    }
+    
     public function get_person_id_by_name($name) {
         $query = "SELECT PERSON_ID FROM SJPARTRI.USERS WHERE USER_NAME = 'jsmith'";
         $stid = oci_parse($this->con, $query);
