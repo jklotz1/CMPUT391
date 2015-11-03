@@ -12,7 +12,6 @@ and open the template in the editor.
     </head>
     <body>
         <h1 align="center" style="font-size: 200%">Welcome to The Ocean Observation System</h1>
-        <!--<form name="logon" action="loginScreen.php" method="POST" >-->
         <form name="logon" method="post">
             <table width="300" border="1" align="center" cellpadding="25">  
                 <tr> 
@@ -43,7 +42,13 @@ and open the template in the editor.
                     if ($_POST["user"]!="" && $_POST["userpassword"]!=""){
                         $valid = OceanDB::getInstance()->is_valid_login($_POST["user"],$_POST["userpassword"]);
                         if($valid)
+                        {
+                            session_start();
+                            $_SESSION['user'] = $_POST["user"];
                             header('Location: homeScreen.php');
+                            
+                            exit();
+                        }
                         else
                             echo "<p style='color:red;'>Incorrect username and/or password<p>"; 
                     }
