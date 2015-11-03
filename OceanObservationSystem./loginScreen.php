@@ -1,53 +1,9 @@
-<?php
-$logonSuccess = false;
-$userIsEmpty = false;					
-$passwordIsEmpty = false;
-$user = '';
-$password = '';
-
-// verify user's credentials
-if ($_SERVER['REQUEST_METHOD'] == "POST") {
-    
-    /** Check whether the user has filled in text field "user" and "password" */
-    if ($_POST['user'] == "") {
-        $userIsEmpty = true;
-        echo 'Please enter a username </br>';
-    } else {
-        $user = $_POST['user'];
-    }
-   
-    if ($_POST['userpassword']==""){
-        $passwordIsEmpty = true;
-        echo 'Please enter a password </br>';
-    } else {
-        $password = $_POST['userpassword'];
-    }
-    if (!$userIsEmpty && !$passwordIsEmpty)
-    {
-        /** Create database connection */
-        $conn = oci_connect('sjpartri', 'letmein22');
-        if (!$conn) {
-            $m = oci_error();
-            exit('Connect Error' . $m['message']);
-        }
-
-        /** Create sql command */
-        $sql = "SELECT * FROM SJPARTRI.USERS WHERE user_name = '$user' AND password = '$password'";
-        //Prepare sql using conn and returns the statement identifier
-        $stid = oci_parse($conn, $sql);
-        //Execute a statement returned from oci_parse()
-        $res = oci_execute($stid);
-        
-        $count = 0;
-        while (($row = oci_fetch_array($stid, OCI_ASSOC)) != false) {
-            $count++;
-         }
-         
-         if ($count > 0) { $logonSuccess = true; }
-                  
-    }
-}
-?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
 
 <html>
     <head>
@@ -55,12 +11,47 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         <title></title>
     </head>
     <body>
-        <form name="logon" action="loginScreen.php" method="POST" >
-           Username: <input type="text" name="user">    
-           <br> <br>
-           Password: <input type="password" name="userpassword">
-           <br> <br>
-        <input type="submit" value="Log On">
+        <h1 align="center" style="font-size: 200%">Welcome to The Ocean Observation System</h1>
+        <!--<form name="logon" action="loginScreen.php" method="POST" >-->
+        <form name="logon" method="post">
+            <table width="300" border="1" align="center" cellpadding="25">  
+                <tr> 
+                <th>
+                    Username: <input type="text" name="user">    
+                <?php   
+                    if (isset($_REQUEST['pressed'])){
+                        if($_POST["user"] == "")
+                        {
+                            echo "<p style='color:red;'>Please enter a username<p>";
+                        } else { echo "<br> <br> <br>"; }
+                    } else { echo "<br> <br> <br>"; }
+                ?>
+                
+                Password: <input type="password" name="userpassword">
+                <?php   
+                    if (isset($_REQUEST['pressed'])){
+                        if($_POST["userpassword"] == "")
+                        {
+                            echo "<p style='color:red;'>Please enter a password<p>";
+                        } else { echo "<br> <br> <br>"; }
+                    } else { echo "<br> <br> <br>"; }
+                ?>               
+                <input type="submit" value="Log On" name="pressed">
+                <?php
+                require_once("Includes/db.php");
+                if (isset($_REQUEST['pressed'])){
+                    if ($_POST["user"]!="" && $_POST["userpassword"]!=""){
+                        $valid = OceanDB::getInstance()->is_valid_login($_POST["user"],$_POST["userpassword"]);
+                        if($valid)
+                            header('Location: homeScreen.php');
+                        else
+                            echo "<p style='color:red;'>Incorrect username and/or password<p>"; 
+                    }
+                }
+                ?>
+                </th>
+                </tr>
+            </table>            
         </form>
     </body>
 </html>
