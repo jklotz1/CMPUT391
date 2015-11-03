@@ -1,5 +1,6 @@
 <?php
 
+
 class OceanDB{
     
 // single instance of self shared among all instances
@@ -38,6 +39,7 @@ class OceanDB{
         }
     }
     
+    //checks whether the user and password exist in the database
     public function is_valid_login($user, $password){
         $query = "SELECT * FROM SJPARTRI.USERS WHERE user_name = '$user' AND password = '$password'";
         //Prepare sql using conn and returns the statement identifier
@@ -53,8 +55,7 @@ class OceanDB{
          if ($count > 0) 
              return true;
          else
-             return false;
-             
+             return false;            
     }
     
     public function get_person_id_by_name($name) {
@@ -73,11 +74,24 @@ class OceanDB{
     
     public function get_keyword_search_results($keyword){
         $query = "SELECT  * FROM SJPARTRI.SENSORS WHERE (SENSOR_ID LIKE '%".$_GET["txtKeyword"]."%'
-        or LOCATION LIKE '%".$_GET["txtKeyword"]."%' or SENSOR_TYPE LIKE '%".$_GET["txtKeyword"]."%' "
-        . "or DESCRIPTION LIKE '%".$_GET["txtKeyword"]."%')  ";
+        or lower(LOCATION) LIKE lower('%".$_GET["txtKeyword"]."%') or lower(SENSOR_TYPE) LIKE lower('%".$_GET["txtKeyword"]."%') "
+        . "or lower(DESCRIPTION) LIKE lower('%".$_GET["txtKeyword"]."%')) ";
         $objParse = oci_parse ($this->con, $query);
         oci_execute ($objParse);
         return $objParse;
+    }
+    
+    //gets the users role to allow the correct activity
+    public function get_user_role($user){
+        $query = "SELECT * FROM SJPARTRI.USERS WHERE user_name = '$user'";
+        //Prepare sql using conn and returns the statement identifier
+        $results = oci_parse($this->con, $query);
+        //Execute a statement returned from oci_parse()
+        oci_execute($results);
+        while (($row = oci_fetch_array($results, OCI_ASSOC)) != false) {
+            $role = $row["ROLE"];
+         }
+        return $role;          
     }
     
 }

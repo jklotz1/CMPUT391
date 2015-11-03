@@ -1,18 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-<<<<<<< HEAD
         <group>
             <file>file:/compsci/webdocs/sjpartri/web_docs/cmput_project/OceanObservationSystem./loginScreen.php</file>
             <file>file:/compsci/webdocs/sjpartri/web_docs/cmput_project/OceanObservationSystem./homeScreen.php</file>
             <file>file:/compsci/webdocs/sjpartri/web_docs/cmput_project/OceanObservationSystem./Includes/db.php</file>
             <file>file:/compsci/webdocs/sjpartri/web_docs/cmput_project/OceanObservationSystem./index.php</file>
-            <file>file:/compsci/webdocs/sjpartri/web_docs/cmput_project/OceanObservationSystem./createNewUser.php</file>
         </group>
-=======
-        <group/>
->>>>>>> 785d1b30edad21fedb9bd05c08fccbf48d6464fc
     </open-files>
 </project-private>
