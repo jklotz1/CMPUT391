@@ -10,7 +10,8 @@ and open the template in the editor.
         <title></title>
     </head>
     <body>
-        Hello User
+        <?php session_start(); $user = $_SESSION['user'] ?> 
+        Hello <?php echo $user; ?>
         <form name="OceanSearch" method="get" action="<?php echo $_SERVER['SCRIPT_NAME'];?>">
               <table width="599" border="1">  
                   <tr>  
@@ -47,7 +48,8 @@ and open the template in the editor.
                     </tr>
         
                 <?php
-                while($objResult = oci_fetch_array($objParse,OCI_BOTH)){
+                if ($objParse != null)
+                while($objResult = oci_fetch_array($objParse,OCI_BOTH) ){
                 ?>
                     
                 <tr>

@@ -74,8 +74,8 @@ class OceanDB{
     
     public function get_keyword_search_results($keyword){
         $query = "SELECT  * FROM SJPARTRI.SENSORS WHERE (SENSOR_ID LIKE '%".$_GET["txtKeyword"]."%'
-        or LOCATION LIKE '%".$_GET["txtKeyword"]."%' or SENSOR_TYPE LIKE '%".$_GET["txtKeyword"]."%' "
-        . "or DESCRIPTION LIKE '%".$_GET["txtKeyword"]."%')  ";
+        or lower(LOCATION) LIKE lower('%".$_GET["txtKeyword"]."%') or lower(SENSOR_TYPE) LIKE lower('%".$_GET["txtKeyword"]."%') "
+        . "or lower(DESCRIPTION) LIKE lower('%".$_GET["txtKeyword"]."%')) ";
         $objParse = oci_parse ($this->con, $query);
         oci_execute ($objParse);
         return $objParse;
