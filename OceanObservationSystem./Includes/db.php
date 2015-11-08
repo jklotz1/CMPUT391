@@ -64,7 +64,7 @@ class OceanDB{
         //oci_bind_by_name($stid, ':user_bv', $name);
         oci_execute($stid);
 
-//Because user is a unique value I only expect one row
+        //Because user is a unique value I only expect one row
         $row = oci_fetch_array($stid, OCI_ASSOC);
         if ($row)
             return $row['PERSON_ID'];
@@ -94,6 +94,46 @@ class OceanDB{
         return $role;          
     }
     
+    //get all sensors
+    public function get_sensors(){
+        $query = "SELECT  * FROM SJPARTRI.SENSORS ORDER BY SENSOR_ID";
+        $sensors = oci_parse ($this->con, $query);
+        oci_execute ($sensors);
+        return $sensors;
+    }
+    
+    //get sensor full name for character abbreviation
+    public function get_sensors_type($type){
+        if ($type == "a")
+            return "a (audio recorder)";
+        else if ($type == "i")
+            return "i (image recorder)";
+        else if($type == "s")
+            return "s (scalar value recorder)";
+    }
+    
+    //get users - personal info and user roles
+    public function get_user_info(){
+        $query = "SELECT * 
+            FROM SJPARTRI.PERSONS P
+            LEFT JOIN SJPARTRI.USERS U ON P.PERSON_ID = U.PERSON_ID";
+        $users = oci_parse ($this->con, $query);
+        oci_execute ($users);
+        return $users;
+    }
+    
+    //get sensor full name for character abbreviation
+    public function get_role($type){
+        if ($type == "a")
+            return "a (administrator)";
+        else if ($type == "d")
+            return "d (data curator)";
+        else if($type == "s")
+            return "s (scientist)";
+    }
+
+    
 }
+
 ?>
 

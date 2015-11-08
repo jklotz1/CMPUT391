@@ -45,8 +45,8 @@ and open the template in the editor.
                         {
                             session_start();
                             $_SESSION['user'] = $_POST["user"];
-                            header('Location: homeScreen.php');
-                            //header('Location: managementScreen.php');
+                            //header('Location: homeScreen.php');
+                            header('Location: managementScreen.php');
                             exit();
                         }
                         else
