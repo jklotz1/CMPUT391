@@ -131,6 +131,27 @@ class OceanDB{
         else if($type == "s")
             return "s (scientist)";
     }
+    
+    //when creating a new sensor get the next sensorID - autoincrement
+    public function get_next_sensorID()
+    {
+        $query = "SELECT MAX(SENSOR_ID) FROM SJPARTRI.SENSORS";
+        $sensorID = oci_parse ($this->con, $query);
+        oci_execute ($sensorID);
+        while (($row = oci_fetch_array($sensorID,OCI_BOTH)) != false) {
+            $id = $row["MAX(SENSOR_ID)"];
+         }
+        return $id+1; 
+    }
+    
+    //add new sensor to the database
+    public function add_new_sensor($sensorID, $location, $type, $desciption)
+    {
+        $query = "INSERT INTO SJPARTRI.SENSORS VALUES ($sensorID,$location,$type,$desciption)";
+        $sensor = oci_parse ($this->con, $query);
+        $success = oci_execute ($sensor);
+        return $success;
+    }
 
     
 }

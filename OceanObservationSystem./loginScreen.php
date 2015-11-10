@@ -16,14 +16,14 @@ and open the template in the editor.
             <table width="300" border="1" align="center" cellpadding="25">  
                 <tr> 
                 <th>
-                    Username: <input type="text" name="user">    
+                    Username: <input type="text" name="user" value="<?php echo isset($_POST['pressed']) ? $_POST['user'] : '' ?>">    
                 <?php   
                     if (isset($_REQUEST['pressed'])){
                         if($_POST["user"] == "")
                         {
                             echo "<p style='color:red;'>Please enter a username<p>";
                         } else { echo "<br> <br> <br>"; }
-                    } else { echo "<br> <br> <br>"; }
+                    } else { echo "<br> <br> <br>"; } 
                 ?>
                 
                 Password: <input type="password" name="userpassword">
@@ -45,8 +45,8 @@ and open the template in the editor.
                         {
                             session_start();
                             $_SESSION['user'] = $_POST["user"];
-                            //header('Location: homeScreen.php');
-                            header('Location: managementScreen.php');
+                            header('Location: homeScreen.php');
+                            //header('Location: managementScreen.php');
                             exit();
                         }
                         else

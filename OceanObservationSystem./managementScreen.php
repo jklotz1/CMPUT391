@@ -36,21 +36,28 @@ $allow = false;
          
         <?php if ($allow) { ?>
             <form name="management" method="post">
-            <input type="submit" value="Home" name="home">
-            <?php echo "<br><br>" ?>
-            <input type="submit" value="Edit Sensors" name="sensors">
-            <input type="submit" value="Edit Users" name="users">
-            <?php echo "<br><br>" ?>
+                <input type="submit" value="Home" style="font-size:100%; width:100px; margin:10 " name="home"> Return to Home Screen
+                <br><br>
+                <input type="submit" value="Sensors" style="font-size:100%; width:100px; margin:10 " name="sensorsEdit"> Create and Delete Sensors<br>
+                <input type="submit" value="Users" style="font-size:100%; width:100px; margin:10 " name="usersEdit"> Create, Edit and Delete Users
+                <br><br>
+
+                <!--return to home screen when "home" button is pressed-->
+                <?php if (isset($_POST['home'])) { header('Location: homeScreen.php'); }?> 
+
+                <?php if (isset($_POST['sensorsEdit'])) { header('Location: managementSensorScreen.php'); }?>  
+                <?php if (isset($_POST['usersEdit'])) { $userSection = true; $sensorSection = false; }?>  
             
-            <!--return to home screen when "home" button is pressed-->
-            <?php if (isset($_REQUEST['home'])) { header('Location: homeScreen.php'); }?>          
+            </form>
             
             <!--display sensor management screen when "Edit Sensors" button is selected-->
-            <div id="sensorManagement" style="display: <?php if (!isset($_REQUEST['sensors'])) { ?> none <?php } ?>">
+            <form method="post">
+            <div id="sensorManagement" style="display: <?php if (!$sensorSection) { ?> none <?php } ?>">
+                
                 <h1 align="left" style="font-size: 150%">Edit Sensors</h1>
-                <input type="submit" value="Create New Sensor" name="new">
-                <input type="submit" value="Manage Sensor" name="delete">
-                <?php echo "<br>Select sensor and press 'Manage Sensor' to view, update and delete sensor.<br><br>" ?>
+                <input type="submit" value="Create New Sensor" name="newSensor">
+                <input type="submit" value="Delete Sensor" name="deleteSensor">
+                <?php echo "<br><br>" ?>
                 <?php $objParse = OceanDB::getInstance()->get_sensors(); ?>
                 
                 <!--display current sensors in the system-->
@@ -72,14 +79,22 @@ $allow = false;
                         </tr>
                     <?php } ?>
                 </table>
-            </div>
+                <?php if (isset($_POST['newSensor'])) { ?>
+                    <?php "new" ?>
+                <?php } elseif (isset($_POST['deleteSensor'])) { ?>
+                    <?php $sen = $_POST['sensorSelected']; ?>
+                <?php } ?>
 
+            </div>
+            </form>
+                            
             <!--display user management screen when "Edit users" button is pressed-->
-            <div id="userManagement" style="display: <?php if (!isset($_REQUEST['users'])) { ?> none <?php } ?>">
+            <div id="userManagement" style="display: <?php if (!$userSection) { ?> none <?php } ?>">
                 <h1 align="left" style="font-size: 150%">Edit Users</h1>
-                <input type="submit" value="Create New User" name="new">
-                <input type="submit" value="Manage User" name="update">
-                <?php echo "<br>Select user and press 'Manage User' to view, update and delete user.<br><br>"  ?>
+                <input type="submit" value="Create New User" name="newUser">
+                <input type="submit" value="Edit User" name="editUser">
+                <input type="submit" value="Delete User" name="deleteUser">
+                <?php echo "<br><br>"  ?>
                 <?php $objParse = OceanDB::getInstance()->get_user_info(); ?>
                 
                 <!--display the current users in the system-->
@@ -103,9 +118,9 @@ $allow = false;
                         </tr>
                     <?php } ?>
                 </table>
-            </div>
+            </div>              
                             
-            </form>
         <?php } ?>
+                            
     </body>
 </html>
