@@ -73,10 +73,40 @@ class OceanDB{
     }
     
     public function get_keyword_search_results($keyword){
-        $query = "SELECT  * FROM SJPARTRI.SENSORS WHERE (SENSOR_ID LIKE '%".$_GET["txtKeyword"]."%'
+      
+        $keys = explode(" ",$_GET["txtKeyword"]);
+        $sql = "SELECT  * FROM SJPARTRI.SENSORS WHERE SENSOR_ID LIKE '%".$_GET["txtKeyword"]."%'
         or lower(LOCATION) LIKE lower('%".$_GET["txtKeyword"]."%') or lower(SENSOR_TYPE) LIKE lower('%".$_GET["txtKeyword"]."%') "
-        . "or lower(DESCRIPTION) LIKE lower('%".$_GET["txtKeyword"]."%')) ";
-        $objParse = oci_parse ($this->con, $query);
+        . "or lower(DESCRIPTION) LIKE lower('%".$_GET["txtKeyword"]."%') ";
+        foreach($keys as $k){
+            $sql.= "or lower(DESCRIPTION) LIKE lower('%$k%')";
+        }
+        $objParse = oci_parse ($this->con, $sql);
+        oci_execute ($objParse);
+        return $objParse;
+    }
+    
+    public function get_sensor_type_search_results($sensorType){
+
+        $keys = explode(" ",$_GET["txtSensorType"]);
+        $sql = "SELECT * FROM SJPARTRI.SENSORS WHERE lower(SENSOR_TYPE) LIKE lower('%".$_GET["txtSensorType"]."%')";
+        foreach($keys as $k){
+            $sql.= "or lower(SENSOR_TYPE) LIKE lower('%$k%')";
+        }
+        $objParse = oci_parse ($this->con, $sql);
+        oci_execute ($objParse);
+        return $objParse;
+        
+    }
+    
+    public function get_location_results($location){
+        
+        $keys = explode(" ",$_GET["txtlocation"]);
+        $sql = "SELECT * FROM SJPARTRI.SENSORS WHERE lower(LOCATION) LIKE lower('".$_GET["txtLocation"]."')";
+        foreach($keys as $k){
+            $sql.= "or lower(LOCATION) LIKE lower('$k')";
+        }
+        $objParse = oci_parse ($this->con, $sql);
         oci_execute ($objParse);
         return $objParse;
     }
