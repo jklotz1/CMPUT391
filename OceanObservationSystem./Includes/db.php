@@ -138,6 +138,7 @@ class OceanDB{
         $query = "SELECT MAX(SENSOR_ID) FROM SJPARTRI.SENSORS";
         $sensorID = oci_parse ($this->con, $query);
         oci_execute ($sensorID);
+        $id=0;
         while (($row = oci_fetch_array($sensorID,OCI_BOTH)) != false) {
             $id = $row["MAX(SENSOR_ID)"];
          }
@@ -147,10 +148,48 @@ class OceanDB{
     //add new sensor to the database
     public function add_new_sensor($sensorID, $location, $type, $desciption)
     {
-        $query = "INSERT INTO SJPARTRI.SENSORS VALUES ($sensorID,$location,$type,$desciption)";
+        $query = "INSERT INTO SJPARTRI.SENSORS VALUES ($sensorID,'$location','$type','$desciption')";
         $sensor = oci_parse ($this->con, $query);
-        $success = oci_execute ($sensor);
+        $success = oci_execute($sensor);
         return $success;
+    }
+    
+    public function delete_sensor($sensorID)
+    {
+        //must delete all associate data entries with sensor
+        //delete audio records
+        $query = "DELETE FROM SJPARTRI.AUDIO_RECORDINGS WHERE SENSOR_ID = $sensorID";
+        $sensor = oci_parse ($this->con, $query);
+        oci_execute($sensor);
+        
+        //delete image records
+        $query = "DELETE FROM SJPARTRI.IMAGES WHERE SENSOR_ID = $sensorID";
+        $sensor = oci_parse ($this->con, $query);
+        oci_execute($sensor);
+        
+        //delete scalar records
+        $query = "DELETE FROM SJPARTRI.SCALAR_DATA WHERE SENSOR_ID = $sensorID";
+        $sensor = oci_parse ($this->con, $query);
+        oci_execute($sensor);
+        
+        //delete subscription
+        $query = "DELETE FROM SJPARTRI.SUBSCRIPTIONS WHERE SENSOR_ID = $sensorID";
+        $sensor = oci_parse ($this->con, $query);
+        oci_execute($sensor);
+        
+        //now can delete sensor
+        $query = "DELETE FROM SJPARTRI.SENSORS WHERE SENSOR_ID = $sensorID";
+        $sensor = oci_parse ($this->con, $query);
+        oci_execute($sensor);
+    }
+    
+    //get users - personal info and user roles
+    public function get_persons(){
+        $query = "SELECT * 
+            FROM SJPARTRI.PERSONS P";
+        $persons = oci_parse ($this->con, $query);
+        oci_execute ($persons);
+        return $persons;
     }
 
     

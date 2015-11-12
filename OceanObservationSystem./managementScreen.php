@@ -46,7 +46,7 @@ $allow = false;
                 <?php if (isset($_POST['home'])) { header('Location: homeScreen.php'); }?> 
 
                 <?php if (isset($_POST['sensorsEdit'])) { header('Location: managementSensorScreen.php'); }?>  
-                <?php if (isset($_POST['usersEdit'])) { $userSection = true; $sensorSection = false; }?>  
+                <?php if (isset($_POST['usersEdit'])) { header('Location: managementUserScreen.php'); }?>  
             
             </form>
             

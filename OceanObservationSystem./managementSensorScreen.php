@@ -15,7 +15,7 @@ and open the template in the editor.
         <!--check the role of the user - only administrators are allowed to access this section-->
         <?php require_once 'Includes/db.php'; ?>
         
-        <h1 align="left" style="font-size: 175%">Sensor and User Management Center</h1>        
+        <h1 align="left" style="font-size: 175%">Sensor and User Management Center</h1> 
         <form name="sensorManagement" method="post">
             <input type="submit" value="Back" name="back">
             <br><br>
@@ -54,13 +54,11 @@ and open the template in the editor.
             </table>
            
             
-            <?php if (isset($_POST['newSensor'])) { ?>
-                <?php header('Location: createNewSensor.php'); ?>
-            <?php } elseif (isset($_POST['deleteSensor'])) { ?>
-                <?php $sen = $_POST['sensorSelected']; ?>
-            <?php } ?>
+            <?php if (isset($_POST['newSensor'])) { header('Location: createNewSensor.php'); } ?>
 
-        </form>                                    
+            <?php if (isset($_POST['deleteSensor'])) { OceanDB::getInstance()->delete_sensor($_POST['sensorSelected']);header('Location: managementSensorScreen.php'); } ?>
+            
+        </form> 
     </body>
 </html>
 
