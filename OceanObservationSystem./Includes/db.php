@@ -59,25 +59,31 @@ class OceanDB{
     }
     
     public function get_person_id_by_name($name) {
-        $query = "SELECT PERSON_ID FROM SJPARTRI.USERS WHERE USER_NAME = 'jsmith'";
-        $stid = oci_parse($this->con, $query);
-        //oci_bind_by_name($stid, ':user_bv', $name);
-        oci_execute($stid);
 
-        //Because user is a unique value I only expect one row
-        $row = oci_fetch_array($stid, OCI_ASSOC);
-        if ($row)
-            return $row['PERSON_ID'];
-        else
-            return null;
+        $query = "SELECT PERSON_ID FROM SJPARTRI.USERS WHERE USER_NAME = '$name'";
+        $stid = oci_parse($this->con, $query);
+        oci_execute($stid);
+        return $stid;
+
     }
+    
+    public function sensor_table_results($user){
+        $person_id = OceanDB::getInstance()->get_person_id_by_name($user);
+        $person_id_parse = oci_fetch_array($person_id, OCI_BOTH);
+        $person_id = $person_id_parse["PERSON_ID"];
+        $query = "SELECT SB.SENSOR_ID FROM SJPARTRI.SUBSCRIPTIONS SB WHERE SB.PERSON_ID = '$person_id'";
+        $stid = oci_parse($this->con, $query);
+        oci_execute($stid);
+        return $stid;
+    }
+    
+    
     
     public function get_keyword_search_results($keyword){
       
-        $keys = explode(" ",$_GET["txtKeyword"]);
-        $sql = "SELECT  * FROM SJPARTRI.SENSORS WHERE SENSOR_ID LIKE '%".$_GET["txtKeyword"]."%'
-        or lower(LOCATION) LIKE lower('%".$_GET["txtKeyword"]."%') or lower(SENSOR_TYPE) LIKE lower('%".$_GET["txtKeyword"]."%') "
-        . "or lower(DESCRIPTION) LIKE lower('%".$_GET["txtKeyword"]."%') ";
+        $keys = explode(" ",$_POST["txtKeyword"]);
+        $sql = "SELECT  * FROM SJPARTRI.SENSORS WHERE lower(DESCRIPTION) LIKE lower('%".$_POST["txtKeyword"]."%') ";
+        
         foreach($keys as $k){
             $sql.= "or lower(DESCRIPTION) LIKE lower('%$k%')";
         }
@@ -86,10 +92,42 @@ class OceanDB{
         return $objParse;
     }
     
+    public function full_search_results($sensorID,$keyword, $sensorType, $location, $startDate, $endDate){
+        
+        $keyword_keys = explode(" ",$keyword);
+        $sensorType_keys = explode(" ",$sensorType);
+        $location_keys = explode(" ",$location);
+        
+        $sql = "Select S.SENSOR_ID,S.LOCATION,S.DESCRIPTION,S.SENSOR_TYPE, S1.VALUE,AR.RECORDED_DATA,I.THUMBNAIL
+                From sjpartri.SENSORS S, sjpartri.SCALAR_DATA S1, sjpartri.AUDIO_RECORDINGS AR, sjpartri.IMAGES I, sjpartri.SUBSCRIPTIONS SB
+                WHERE S.SENSOR_ID=S1.SENSOR_ID
+                AND S.SENSOR_ID=AR.SENSOR_ID
+                AND S.SENSOR_ID=I.SENSOR_ID
+                AND S.SENSOR_ID = $sensorID
+                AND lower(S.DESCRIPTION) LIKE lower('%$keyword%')
+                AND lower(S.SENSOR_TYPE) LIKE lower('%$sensorType%')
+                AND lower(S.LOCATION) LIKE lower('$location')";
+        
+        foreach($keyword_keys as $k){
+            $sql.= "or lower(S.DESCRIPTION) LIKE lower('%$k%')";
+        }
+        foreach($sensorType_keys as $k){
+            $sql.= "or lower(S.SENSOR_TYPE) LIKE lower('%$k%')";
+        }
+        foreach($location_keys as $k){
+            $sql.= "or lower(S.LOCATION) LIKE lower('$k')";
+        }
+        
+        $objParse = oci_parse ($this->con, $sql);
+        oci_execute ($objParse);
+        return $objParse;
+           
+    }
+    
     public function get_sensor_type_search_results($sensorType){
 
-        $keys = explode(" ",$_GET["txtSensorType"]);
-        $sql = "SELECT * FROM SJPARTRI.SENSORS WHERE lower(SENSOR_TYPE) LIKE lower('%".$_GET["txtSensorType"]."%')";
+        $keys = explode(" ",$_POST["txtSensorType"]);
+        $sql = "SELECT * FROM SJPARTRI.SENSORS WHERE lower(SENSOR_TYPE) LIKE lower('%".$_POST["txtSensorType"]."%')";
         foreach($keys as $k){
             $sql.= "or lower(SENSOR_TYPE) LIKE lower('%$k%')";
         }
@@ -101,8 +139,8 @@ class OceanDB{
     
     public function get_location_results($location){
         
-        $keys = explode(" ",$_GET["txtlocation"]);
-        $sql = "SELECT * FROM SJPARTRI.SENSORS WHERE lower(LOCATION) LIKE lower('".$_GET["txtLocation"]."')";
+        $keys = explode(" ",$_POST["txtLocation"]);
+        $sql = "SELECT * FROM SJPARTRI.SENSORS WHERE lower(LOCATION) LIKE lower('".$_POST["txtLocation"]."')";
         foreach($keys as $k){
             $sql.= "or lower(LOCATION) LIKE lower('$k')";
         }
