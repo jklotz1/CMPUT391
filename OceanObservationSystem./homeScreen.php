@@ -56,6 +56,7 @@ and open the template in the editor.
 
             </table>
         </form>
+ 
     <?php } ?>
 
     <!-- Error Checking for Search Criteria -->
@@ -113,7 +114,8 @@ and open the template in the editor.
     }
     }
     ?>
-
+    
+     
 
     <!-- Search Criteria Form -->
     <form name="OceanSearch"  method="post" action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" >
@@ -187,9 +189,11 @@ and open the template in the editor.
 
                 <th width="97"> <div align="center">Description </div></th>
 
-                <th width="97"> <div align="center">Media Data </div></th>
+                <th width="97"> <div align="center">Thumb Nails </div></th>
 
-                <th width="97"> <div align="center">Scalar Data </div></th>
+                <th width="97"> <div align="center">Audio Files </div></th>
+                
+                <th width="97"> <div align="center">Scalar Data Value </div></th>
 
             </tr>
         <?php } ?>
@@ -208,7 +212,20 @@ and open the template in the editor.
                     <td><?php echo $objResult["SENSOR_TYPE"]; ?></td>
 
                     <td><div align="center"><?php echo $objResult["DESCRIPTION"]; ?></div></td>
-
+                    
+                   <td>
+                         <?php $sensorID = 123;
+                               $thumbnails = OceanDB::getInstance()->get_thumbnail($sensorID);
+                    
+                    
+                          while ($thumbResult = oci_fetch_array($thumbnails, OCI_BOTH)){
+                              $result = $thumbResult['THUMBNAIL']->load();
+                            ?>
+                                <p><img src="data:image/jpeg;base64,<?php echo base64_encode($result); ?>" />
+                                    <input type="button" value="Download" name="Download" />
+                                </p>
+                          <?php } ?>
+                    </td>
                 </tr>
         <?php
     }

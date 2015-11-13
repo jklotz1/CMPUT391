@@ -92,6 +92,17 @@ class OceanDB{
         return $objParse;
     }
     
+    public function get_thumbnail($sensorId){
+        
+       $query = "SELECT THUMBNAIL FROM IMAGES WHERE SENSOR_ID = '$sensorId'";
+
+       $stmt = oci_parse ($this->con, $query);
+       
+       oci_execute($stmt, OCI_DEFAULT);
+    
+       return $stmt;
+    }
+    
     public function full_search_results($sensorID,$keyword, $sensorType, $location, $startDate, $endDate){
         
         $keyword_keys = explode(" ",$keyword);
