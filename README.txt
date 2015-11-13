@@ -4,9 +4,7 @@ Jessica
 
 Sean
 -Search screen
--Home setup
--Index page
+-Subscribe screen
 
 Brennan
--Upload screen
-Test
+-Downloading Images/Audio
