@@ -79,10 +79,16 @@ class OceanDB{
     
     
     
-    public function get_keyword_search_results($keyword){
+    public function get_keyword_search_results($keyword, $sensorId, $startDate, $endDate){
       
         $keys = explode(" ",$_POST["txtKeyword"]);
-        $sql = "SELECT  * FROM SJPARTRI.SENSORS WHERE lower(DESCRIPTION) LIKE lower('%".$_POST["txtKeyword"]."%') ";
+        $sql = "SELECT distinct S.SENSOR_ID,S.LOCATION,S.DESCRIPTION,S.SENSOR_TYPE, S1.VALUE, S1.DATE_CREATED "
+                . "FROM sjpartri.SENSORS S, sjpartri.SCALAR_DATA S1  "
+                . "WHERE lower(S.DESCRIPTION) LIKE lower('%$keyword%') "
+                ."AND S.SENSOR_ID = '$sensorId' "
+                . "AND S1.DATE_CREATED >= to_date($startDate, 'dd-MM-yyyy hh24:mi:ss')"
+                . "AND S1.DATE_CREATED <= to_date($endDate, 'dd-MM-yyyy hh24:mi:ss')";
+                
         
         foreach($keys as $k){
             $sql.= "or lower(DESCRIPTION) LIKE lower('%$k%')";
@@ -103,13 +109,24 @@ class OceanDB{
        return $stmt;
     }
     
+    public function get_audioDate($sensorId){
+        $query = "SELECT DATE_CREATED FROM AUDIO_RECORDINGS WHERE SENSOR_ID='$sensorId'";
+        
+        $objParse = oci_parse ($this->con, $query);
+        
+        oci_execute($objParse, OCI_DEFAULT);
+        
+        return $objParse;
+        
+    }
+    
     public function full_search_results($sensorID,$keyword, $sensorType, $location, $startDate, $endDate){
         
         $keyword_keys = explode(" ",$keyword);
-        $sensorType_keys = explode(" ",$sensorType);
+      $sensorType_keys = explode(" ",$sensorType);
         $location_keys = explode(" ",$location);
         
-        $sql = "Select S.SENSOR_ID,S.LOCATION,S.DESCRIPTION,S.SENSOR_TYPE, S1.VALUE,AR.RECORDED_DATA,I.THUMBNAIL
+        $sql = "Select distinct S.SENSOR_ID,S.LOCATION,S.DESCRIPTION,S.SENSOR_TYPE, S1.VALUE, S1.DATE_CREATED
                 From sjpartri.SENSORS S, sjpartri.SCALAR_DATA S1, sjpartri.AUDIO_RECORDINGS AR, sjpartri.IMAGES I, sjpartri.SUBSCRIPTIONS SB
                 WHERE S.SENSOR_ID=S1.SENSOR_ID
                 AND S.SENSOR_ID=AR.SENSOR_ID
@@ -119,18 +136,18 @@ class OceanDB{
                 AND lower(S.SENSOR_TYPE) LIKE lower('%$sensorType%')
                 AND lower(S.LOCATION) LIKE lower('$location')";
         
-        foreach($keyword_keys as $k){
-            $sql.= "or lower(S.DESCRIPTION) LIKE lower('%$k%')";
-        }
-        foreach($sensorType_keys as $k){
-            $sql.= "or lower(S.SENSOR_TYPE) LIKE lower('%$k%')";
-        }
-        foreach($location_keys as $k){
-            $sql.= "or lower(S.LOCATION) LIKE lower('$k')";
-        }
+       foreach($keyword_keys as $k1){
+          $sql.= "or lower(S.DESCRIPTION) LIKE lower('%$k1%')";
+       }
+       foreach($sensorType_keys as $k2){
+        $sql.= "or lower(S.SENSOR_TYPE) LIKE lower('%$k2%')";
+      }
+        foreach($location_keys as $k3){
+           $sql.= "and lower(S.LOCATION) LIKE lower('$k3')";
+       }
         
         $objParse = oci_parse ($this->con, $sql);
-        oci_execute ($objParse);
+        oci_execute ($objParse, OCI_DEFAULT);
         return $objParse;
            
     }

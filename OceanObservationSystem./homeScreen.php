@@ -88,16 +88,18 @@ and open the template in the editor.
         if($startDate != "" && $endDate != "" &&  $endDate > $startDate ){
             
             $sensorTable = OceanDB::getInstance()->sensor_table_results($user);
-            
-             while ($objResult = oci_fetch_array($sensorTable, OCI_BOTH)) {
-                echo $objResult["SENSOR_ID"];
+          
+           
+            while ($objResult = oci_fetch_array($sensorTable, OCI_BOTH)) {
+                   $here = 'hereABD ';
                 $sensorID = $objResult["SENSOR_ID"];
              
           
             if ($_POST["txtKeyword"] != "" && $_POST["txtSensorType"] != "" && $_POST["txtLocation"] != "") {
-                
-                $objParse = OceanDB::getInstance()->full_search_results($sensorID,$_POST['txtKeyword'],$_POST['txtSensorType'], $_POST['txtLocation'],$startDate, $endDate);
-                
+              
+                $objParse1 = OceanDB::getInstance()->full_search_results($sensorID,$_POST['txtKeyword'],$_POST['txtSensorType'], $_POST['txtLocation'],$startDate, $endDate);
+             
+               }
             }
         }
 
@@ -112,7 +114,7 @@ and open the template in the editor.
          //   $objParse = OceanDB::getInstance()->get_location_results($_POST['txtLocation']);
        // }
     }
-    }
+    
     ?>
     
      
@@ -199,22 +201,57 @@ and open the template in the editor.
         <?php } ?>
 
         <?php
-        if ($objParse != null)
-            while ($objResult = oci_fetch_array($objParse, OCI_BOTH)) {
+        if (isset($_POST['searchSubmit'])) {
+           if($startDate != "" && $endDate != "" &&  $endDate > $startDate ){
+            
+            $sensorTable = OceanDB::getInstance()->sensor_table_results($user);
+        
+            
+            $keyword = $_POST["txtKeyword"];
+            echo $keyword;
+            
+            $sensor = $_POST["txtSensorType"];
+            echo $sensor;
+            
+            $line222 = $_POST["txtLocation"];
+            echo $line222;
+          
+           
+            while ($objResult = oci_fetch_array($sensorTable, OCI_BOTH)) {
+                   $here = 'hereABD ';
+                $sensorID = $objResult["SENSOR_ID"];
+            
+            if($_POST["txtKeyword"] != ""){
+                
+                $objParse1 = OceanDB::getInstance()->get_keyword_search_results($_POST["txtKeyword"], $sensorID, $startDate, $endDate);
+            }
+             
+          
+            if ($_POST["txtKeyword"] != "" && $_POST["txtSensorType"] != "" && $_POST["txtLocation"] != "") {
+              
+                $objParse1 = OceanDB::getInstance()->full_search_results($sensorID,$_POST['txtKeyword'],$_POST['txtSensorType'], $_POST['txtLocation'],$startDate, $endDate);
+             
+               }
+            }
+        }
+        
+        if ($objParse1 != null)
+            while ($objResult = oci_fetch_array($objParse1, OCI_BOTH)) {
+           
                 ?>
 
                 <tr>
-
+                 
                     <td><div align="center"><?php echo $objResult["SENSOR_ID"]; ?></div></td>
 
-                    <td><?php echo $objResult["LOCATION"]; ?></td>
+                    <td><div align="center"><?php echo $objResult["LOCATION"]; ?></td>
 
-                    <td><?php echo $objResult["SENSOR_TYPE"]; ?></td>
+                    <td><div align="center"><?php echo $objResult["SENSOR_TYPE"]; ?></td>
 
                     <td><div align="center"><?php echo $objResult["DESCRIPTION"]; ?></div></td>
                     
-                   <td>
-                         <?php $sensorID = 123;
+                   <td><div align="center">
+                         <?php $sensorID = $objResult["SENSOR_ID"];
                                $thumbnails = OceanDB::getInstance()->get_thumbnail($sensorID);
                     
                     
@@ -226,9 +263,30 @@ and open the template in the editor.
                                 </p>
                           <?php } ?>
                     </td>
+                    <td><div align="center">
+                         <?php $sensorID = $objResult["SENSOR_ID"];
+                               $audioDates = OceanDB::getInstance()->get_audioDate($sensorID);
+                    
+                    
+                          while ($audioDate = oci_fetch_array($audioDates, OCI_BOTH)){
+                              
+                            ?>
+                                <p> <?php echo $audioDate["DATE_CREATED"]; ?>
+                                    <input type="button" value="Download" name="Download" />
+                                </p>
+                          <?php } ?>
+                        
+                    </td>
+                    <td>
+                        <p> <?php echo $objResult["DATE_CREATED"]; ?>
+                            - VALUE:
+                            <?php echo $objResult["VALUE"]; ?>
+                        </p>
+                    </td>
                 </tr>
         <?php
     }
+        }
 ?>
     </table>
 
