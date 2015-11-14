@@ -34,6 +34,9 @@ and open the template in the editor.
         if (isset($_POST['managementModule'])) {
             header('Location: managementScreen.php');
         }
+        if (isset($_POST['subscribeModule'])){
+            header('Location: mainSubscriptionScreen.php');
+        }
         ?> 
 
 

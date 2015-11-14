@@ -77,6 +77,79 @@ class OceanDB{
         return $stid;
     }
     
+    public function get_subscription_details($sensorID){
+        $sql = "SELECT SENSOR_ID, SENSOR_TYPE, LOCATION, DESCRIPTION "
+             . "FROM sjpartri.SENSORS "
+             . "WHERE SENSOR_ID = '$sensorID'";
+        
+        $objParse = oci_parse($this->con, $sql);
+        oci_execute($objParse);
+        return $objParse;
+    }
+    
+    public function get_non_subcribed_sensor_table_results($sensorTable, $count){
+        
+        $sensorID = $sensorTable["SENSOR_ID"][0];
+       
+        
+        if($sensorID == NULL){
+              $sql = "SELECT SENSOR_ID, SENSOR_TYPE, LOCATION, DESCRIPTION "
+             . "FROM sjpartri.SENSORS ";
+             
+        $objParse = oci_parse($this->con, $sql);
+        oci_execute($objParse);
+        return $objParse;
+        
+        }else{
+       
+        $sql = "SELECT SENSOR_ID, SENSOR_TYPE, LOCATION, DESCRIPTION "
+             . "FROM sjpartri.SENSORS "
+             . "WHERE SENSOR_ID != '$sensorID'";
+        
+        
+       for($i = 1; $i< $count; $i++){
+              $sensorID = $sensorTable['SENSOR_ID'][$i];
+           
+              $sql.= "AND SENSOR_ID != '$sensorID'";
+              
+        }
+        
+       $objParse = oci_parse($this->con, $sql);
+        oci_execute($objParse);
+        return $objParse;
+        }
+    }
+    
+    public function add_subscription($sensorID, $user){
+   
+        $person_id = OceanDB::getInstance()->get_person_id_by_name($user);
+        $person_id_parse = oci_fetch_array($person_id, OCI_BOTH);
+        $person_id = $person_id_parse["PERSON_ID"];
+       
+        
+        $sql = "INSERT INTO sjpartri.SUBSCRIPTIONS VALUES($sensorID,$person_id)";
+        
+        $objParse = oci_parse($this->con, $sql);
+        oci_execute($objParse);
+        return $objParse;
+        
+    }
+    
+    public function delete_subscription($sensorID, $user){
+        $person_id = OceanDB::getInstance()->get_person_id_by_name($user);
+        $person_id_parse = oci_fetch_array($person_id, OCI_BOTH);
+        $person_id = $person_id_parse["PERSON_ID"];
+       
+        
+        
+        $sql =    "DELETE FROM sjpartri.SUBSCRIPTIONS WHERE "
+                . "SENSOR_ID = $sensorID "
+                . "AND PERSON_ID = $person_id ";
+        
+        $objParse = oci_parse($this->con, $sql);
+        oci_execute($objParse);
+        return $objParse;
+    }
     
     
     public function get_keyword_search_results($keyword, $sensorId, $startDate, $endDate){
