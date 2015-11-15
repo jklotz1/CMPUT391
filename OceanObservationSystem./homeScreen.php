@@ -88,23 +88,23 @@ and open the template in the editor.
             $invalidDateError = "";
         }
         
-        if($startDate != "" && $endDate != "" &&  $endDate > $startDate ){
+       // if($startDate != "" && $endDate != "" &&  $endDate > $startDate ){
             
-            $sensorTable = OceanDB::getInstance()->sensor_table_results($user);
+            //$sensorTable = OceanDB::getInstance()->sensor_table_results($user);
           
            
-            while ($objResult = oci_fetch_array($sensorTable, OCI_BOTH)) {
-                   $here = 'hereABD ';
-                $sensorID = $objResult["SENSOR_ID"];
+           // while ($objResult = oci_fetch_array($sensorTable, OCI_BOTH)) {
+             //      $here = 'hereABD ';
+             //   $sensorID = $objResult["SENSOR_ID"];
              
           
-            if ($_POST["txtKeyword"] != "" && $_POST["txtSensorType"] != "" && $_POST["txtLocation"] != "") {
+           // if ($_POST["txtKeyword"] != "" && $_POST["txtSensorType"] != "" && $_POST["txtLocation"] != "") {
               
-                $objParse1 = OceanDB::getInstance()->full_search_results($sensorID,$_POST['txtKeyword'],$_POST['txtSensorType'], $_POST['txtLocation'],$startDate, $endDate);
+           //     $objParse1 = OceanDB::getInstance()->full_search_results($sensorID,$_POST['txtKeyword'],$_POST['txtSensorType'], $_POST['txtLocation'],$startDate, $endDate);
              
-               }
-            }
-        }
+            //   }
+           // }
+     //   }
 
        // if ($_POST["txtSensorType"] != "") {
 
@@ -116,6 +116,7 @@ and open the template in the editor.
 
          //   $objParse = OceanDB::getInstance()->get_location_results($_POST['txtLocation']);
        // }
+   // }
     }
     
     ?>
@@ -281,9 +282,11 @@ and open the template in the editor.
                         
                     </td>
                     <td>
-                        <p> <?php echo $objResult["DATE_CREATED"]; ?>
+                        <p> <?php $scalarData = OceanDB::getInstance()->get_scalar_data_values($sensorId, $startDate, $endDate);
+                               while($sensorResult = oci_fetch_array($objParse1, OCI_BOTH)) { 
+                                   $sensorResult["DATE_CREATED"]?>
                             - VALUE:
-                            <?php echo $objResult["VALUE"]; ?>
+                               <?php echo $sensorResult["VALUE"]; }?>
                         </p>
                     </td>
                 </tr>

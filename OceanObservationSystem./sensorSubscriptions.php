@@ -16,8 +16,31 @@ and open the template in the editor.
     </head>
     <body>
         <form name="SubscriptionSensorList" method="post">     
-            <input type="submit" value="Back" style="font-size:100%; width:200px; margin:10 " name="back"> 
-            <?php if (isset($_POST['back'])) { header('Location: mainSubscriptionScreen.php'); }?> 
+            <input type="submit" value="Back" style="font-size:100%; width:100px; margin:10 " name="back"> 
+            <br>
+            <input type="submit" value="Home" style="font-size:100%; width:100px; margin:10 " name="home">
+            <?php if (isset($_POST['back'])) { header('Location: mainSubscriptionScreen.php');}
+              if (isset($_POST['home'])) { header('Location: homeScreen.php'); } 
+            
+            
+              $data = array();
+              $sensorTable = OceanDB::getInstance()->sensor_table_results($user);
+              while ($res= oci_fetch_array( $sensorTable, OCI_BOTH)) {
+                            $data[] = $res;
+                  }
+                   $cnt = 0;
+              
+                   $num = count($data);
+                   
+                   $nonSubscription_Results = OceanDB::getInstance()->get_non_subcribed_sensor_table_results($output, $objResult);
+                   
+                
+                
+                   
+                    //$sensorInfo = OceanDB::getInstance()->get_non_subcribed_sensor_table_results($sensorResultTable);
+                        if($num > 0){
+            ?> 
+            
             
                 <table  align="center" width="1000" border="1">
                         <tr>
@@ -37,7 +60,7 @@ and open the template in the editor.
                 while ($objResult = oci_fetch_array($sensorTable, OCI_BOTH)) {
                     $sensorInfo = OceanDB::getInstance()->get_subscription_details($objResult["SENSOR_ID"]);
              
-                if ($sensorInfo != null){
+                
         
                     while ($objResult1 = oci_fetch_array($sensorInfo, OCI_BOTH)) {
            
@@ -65,12 +88,12 @@ and open the template in the editor.
               
             <?php
                 }
-                
-                }else{
-                    echo "<p style='color:red;'>CURRENTLY NOT SUBSCRIBED TO ANY SENSORS!<p>";
-                }
+
                    
                 }
+                        }else{
+                                echo "<p style='color:red;'>CURENTLY NOT SUBSCRIBED TO ANY SENSOR<p>"; 
+                        }
             ?>
                </table>
                </form>

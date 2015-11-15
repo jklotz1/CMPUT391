@@ -151,20 +151,34 @@ class OceanDB{
         return $objParse;
     }
     
+    public function get_scalar_data_values($sensorId, $startDate, $endDate){
+        $result = $startDate ->format('Y-m-d H:i:s');
+        echo $result;
+        $sql = "SELECT S1.VALUE, S1.DATE_CREATED "
+                . "FROM sjpartri.SCALAR_DATA S1  "
+                . "WHERE S1.SENSOR_ID LIKE '$sensorId' "
+                . "AND S1.DATE_CREATED >= '$startDate' ";
+                //. "AND S1.DATE_CREATED <= '$endDate' ";
+        
+        $objParse = oci_parse ($this->con, $sql);
+        oci_execute ($objParse);
+        return $objParse;
+    }
+    
     
     public function get_keyword_search_results($keyword, $sensorId, $startDate, $endDate){
       
         $keys = explode(" ",$_POST["txtKeyword"]);
         $sql = "SELECT distinct S.SENSOR_ID,S.LOCATION,S.DESCRIPTION,S.SENSOR_TYPE, S1.VALUE, S1.DATE_CREATED "
                 . "FROM sjpartri.SENSORS S, sjpartri.SCALAR_DATA S1  "
-                . "WHERE lower(S.DESCRIPTION) LIKE lower('%$keyword%') "
-                ."AND S.SENSOR_ID = '$sensorId' "
-                . "AND S1.DATE_CREATED >= to_date($startDate, 'dd-MM-yyyy hh24:mi:ss')"
-                . "AND S1.DATE_CREATED <= to_date($endDate, 'dd-MM-yyyy hh24:mi:ss')";
+                . "WHERE S.SENSOR_ID LIKE '$sensorId'";
+               // . "AND S1.DATE_CREATED >= to_date($startDate, 'dd-MM-yyyy hh24:mi:ss')"
+               // . "AND S1.DATE_CREATED <= to_date($endDate, 'dd-MM-yyyy hh24:mi:ss')";
                 
         
         foreach($keys as $k){
-            $sql.= "or lower(DESCRIPTION) LIKE lower('%$k%')";
+            echo $k;
+            $sql.= "AND lower(DESCRIPTION) LIKE lower('%$k%')";
         }
         $objParse = oci_parse ($this->con, $sql);
         oci_execute ($objParse);
