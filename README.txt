@@ -3,7 +3,8 @@ Jessica
 -Management screen
 
 Sean
--Search screen
+-Search screen (TRY BREAKING IT)
+-Data Analysis
 
 Brennan
 -Downloading Images/Audio
