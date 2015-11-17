@@ -152,13 +152,14 @@ class OceanDB{
     }
     
     public function get_scalar_data_values($sensorId, $startDate, $endDate){
-        $result = $startDate ->format('Y-m-d H:i:s');
-        echo $result;
+
+      
         $sql = "SELECT S1.VALUE, S1.DATE_CREATED "
                 . "FROM sjpartri.SCALAR_DATA S1  "
-                . "WHERE S1.SENSOR_ID LIKE '$sensorId' "
-                . "AND S1.DATE_CREATED >= '$startDate' ";
-                //. "AND S1.DATE_CREATED <= '$endDate' ";
+               . "WHERE S1.SENSOR_ID LIKE '$sensorId' "
+               . "AND S1.DATE_CREATED "
+                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss')";
+                
         
         $objParse = oci_parse ($this->con, $sql);
         oci_execute ($objParse);
@@ -170,24 +171,130 @@ class OceanDB{
       
         $keys = explode(" ",$_POST["txtKeyword"]);
         $sql = "SELECT distinct S.SENSOR_ID,S.LOCATION,S.DESCRIPTION,S.SENSOR_TYPE, S1.VALUE, S1.DATE_CREATED "
-                . "FROM sjpartri.SENSORS S, sjpartri.SCALAR_DATA S1  "
-                . "WHERE S.SENSOR_ID LIKE '$sensorId'";
-               // . "AND S1.DATE_CREATED >= to_date($startDate, 'dd-MM-yyyy hh24:mi:ss')"
-               // . "AND S1.DATE_CREATED <= to_date($endDate, 'dd-MM-yyyy hh24:mi:ss')";
+                . "FROM sjpartri.SENSORS S, sjpartri.SCALAR_DATA S1, sjpartri.IMAGES I, sjpartri.AUDIO_RECORDINGS AR "
+                . "WHERE S.SENSOR_ID LIKE '$sensorId' "
+                . "AND( S1.DATE_CREATED "
+                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss') "
+                . "OR I.DATE_CREATED "
+                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss') "
+                . "OR AR.DATE_CREATED "
+                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss'))";
+            
                 
         
         foreach($keys as $k){
-            echo $k;
-            $sql.= "AND lower(DESCRIPTION) LIKE lower('%$k%')";
+        
+            $sql.= "AND lower(S.DESCRIPTION) LIKE lower('%$k%')";
         }
         $objParse = oci_parse ($this->con, $sql);
         oci_execute ($objParse);
         return $objParse;
     }
     
-    public function get_thumbnail($sensorId){
+    public function get_location_search_results($location, $sensorId, $startDate, $endDate){
         
-       $query = "SELECT THUMBNAIL FROM IMAGES WHERE SENSOR_ID = '$sensorId'";
+        $keys = explode(" ",$location);
+        $sql = "SELECT distinct S.SENSOR_ID,S.LOCATION,S.DESCRIPTION,S.SENSOR_TYPE, S1.VALUE, S1.DATE_CREATED "
+                ."FROM sjpartri.SENSORS S, sjpartri.SCALAR_DATA S1, sjpartri.IMAGES I, sjpartri.AUDIO_RECORDINGS AR " 
+                . "WHERE S.SENSOR_ID LIKE '$sensorId' "
+                . "AND( S1.DATE_CREATED "
+                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss') "
+                . "OR I.DATE_CREATED "
+                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss') "
+                . "OR AR.DATE_CREATED "
+                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss'))";
+        
+        
+        foreach($keys as $k){
+            $sql.= "AND lower(S.LOCATION) LIKE lower('$k')";
+        }
+        $objParse = oci_parse ($this->con, $sql);
+        oci_execute ($objParse);
+        return $objParse;
+    }
+    
+      public function get_sensor_type_search_results($sensorType, $sensorId, $startDate, $endDate){
+
+        $keys = explode(" ",$sensorType);
+        $sql = "SELECT distinct S.SENSOR_ID,S.LOCATION,S.DESCRIPTION,S.SENSOR_TYPE, S1.VALUE, S1.DATE_CREATED "
+                ."FROM sjpartri.SENSORS S, sjpartri.SCALAR_DATA S1, sjpartri.IMAGES I, sjpartri.AUDIO_RECORDINGS AR " 
+                . "WHERE S.SENSOR_ID LIKE '$sensorId' "
+                . "AND( S1.DATE_CREATED "
+                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss') "
+                . "OR I.DATE_CREATED "
+                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss') "
+                . "OR AR.DATE_CREATED "
+                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss'))";
+        
+        
+        foreach($keys as $k){
+            $sql.= "AND lower(SENSOR_TYPE) LIKE lower('%$k%')";
+        }
+        $objParse = oci_parse ($this->con, $sql);
+        oci_execute ($objParse);
+        return $objParse;
+        
+    }
+    
+    
+    
+    public function get_search_results($keyword,$location, $sensorType, $sensorId, $startDate, $endDate){
+  
+     
+        
+        $sql = "SELECT distinct S.SENSOR_ID,S.LOCATION,S.DESCRIPTION,S.SENSOR_TYPE, S1.VALUE, S1.DATE_CREATED "
+                ."FROM sjpartri.SENSORS S, sjpartri.SCALAR_DATA S1, sjpartri.IMAGES I, sjpartri.AUDIO_RECORDINGS AR " 
+                . "WHERE S.SENSOR_ID LIKE '$sensorId' "
+                . "AND (S1.SENSOR_ID LIKE '$sensorId' "
+                . "OR I.SENSOR_ID  LIKE '$sensorId' "
+                . "OR AR.SENSOR_ID = '$sensorId' )"
+                . "AND( S1.DATE_CREATED "
+                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss') "
+                . "OR I.DATE_CREATED "
+                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss') "
+                . "OR AR.DATE_CREATED "
+                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss')) ";
+        
+       
+        
+        if($keyword != ""){
+       $keyword_keys = explode(" ",$keyword);
+        foreach($keyword_keys as $k1){
+        
+            $sql.= "AND lower(S.DESCRIPTION) LIKE lower('%$k1%')";
+        }
+        
+        }
+        
+        if($location != ""){
+         
+        $location_keys = explode(" ",$location);
+        foreach($location_keys as $k){
+            $sql.= "AND lower(S.LOCATION) LIKE lower('$k')";
+        }
+        }
+        
+        if($sensorType != ""){
+             $sensor_keys = explode(" ",$location);
+        foreach($sensor_keys as $k2){
+             $sql.= "AND lower(S.SENSOR_TYPE) LIKE lower('%$k2%')";
+        }
+       }
+        
+        
+        
+        $objParse = oci_parse ($this->con, $sql);
+        oci_execute ($objParse);
+        return $objParse;
+        
+    }
+    
+    public function get_thumbnail($sensorId,$startDate,$endDate){
+        
+       $query = "SELECT THUMBNAIL, DATE_CREATED "
+               . "FROM IMAGES WHERE SENSOR_ID = '$sensorId' "
+               . "AND DATE_CREATED "
+               . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss')";
 
        $stmt = oci_parse ($this->con, $query);
        
@@ -196,8 +303,11 @@ class OceanDB{
        return $stmt;
     }
     
-    public function get_audioDate($sensorId){
-        $query = "SELECT DATE_CREATED FROM AUDIO_RECORDINGS WHERE SENSOR_ID='$sensorId'";
+    public function get_audioInfo($sensorId,$startDate, $endDate){
+        $query = "SELECT DATE_CREATED "
+                . "FROM AUDIO_RECORDINGS WHERE SENSOR_ID='$sensorId'"
+                . "AND DATE_CREATED "
+                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss')";
         
         $objParse = oci_parse ($this->con, $query);
         
@@ -239,30 +349,7 @@ class OceanDB{
            
     }
     
-    public function get_sensor_type_search_results($sensorType){
-
-        $keys = explode(" ",$_POST["txtSensorType"]);
-        $sql = "SELECT * FROM SJPARTRI.SENSORS WHERE lower(SENSOR_TYPE) LIKE lower('%".$_POST["txtSensorType"]."%')";
-        foreach($keys as $k){
-            $sql.= "or lower(SENSOR_TYPE) LIKE lower('%$k%')";
-        }
-        $objParse = oci_parse ($this->con, $sql);
-        oci_execute ($objParse);
-        return $objParse;
-        
-    }
     
-    public function get_location_results($location){
-        
-        $keys = explode(" ",$_POST["txtLocation"]);
-        $sql = "SELECT * FROM SJPARTRI.SENSORS WHERE lower(LOCATION) LIKE lower('".$_POST["txtLocation"]."')";
-        foreach($keys as $k){
-            $sql.= "or lower(LOCATION) LIKE lower('$k')";
-        }
-        $objParse = oci_parse ($this->con, $sql);
-        oci_execute ($objParse);
-        return $objParse;
-    }
     
     //gets the users role to allow the correct activity
     public function get_user_role($user){

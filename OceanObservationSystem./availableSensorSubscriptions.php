@@ -18,9 +18,9 @@ and open the template in the editor.
 
         
         <form name="NonSubscriptionSensorList" method="post">      
-              <input type="submit" value="Back" style="font-size:100%; width:100px; margin:10 " name="back"> 
+              <input type="submit" class="logoutbutton" value="Back" style="font-size:100%; width:100px; margin:10 " name="back"> 
               <br>
-              <input type="submit" value="Home" style="font-size:100%; width:100px; margin:10 " name="home">
+              <input type="submit" class="logoutbutton" value="Home" style="font-size:100%; width:100px; margin:10 " name="home">
         <?php if (isset($_POST['back'])) { header('Location: mainSubscriptionScreen.php'); }
               if (isset($_POST['home'])) { header('Location: homeScreen.php'); } ?>
 
@@ -46,16 +46,16 @@ and open the template in the editor.
                     //$sensorInfo = OceanDB::getInstance()->get_non_subcribed_sensor_table_results($sensorResultTable);
                         if($num > 0){
                        ?>
-              <table  align="center" width="1000" border="1">
+              <table  class="searchResult">
                     <tr>
 
-                        <th width="63"> <div align="center">Sensor Type </div></th>
+                        <td> <div align="center">Sensor Type </div></td>
                 
-                        <th width="63"> <div align="center">Location </div></th>
+                        <td> <div align="center">Location </div></td>
 
-                        <th width="63"> <div align="center">Description </div></th>
+                        <td> <div align="center">Description </div></td>
                 
-                        <th width="63"> <div align="center">Subscription </div></th>
+                        <td> <div align="center">Subscription </div></td>
 
                     </tr> 
                       
@@ -73,7 +73,7 @@ and open the template in the editor.
                     <td><div align="center"><?php echo $objResult1["DESCRIPTION"]; ?></div></td>
                     
                    <?php
-                   echo "<td><div align='center'><input type='submit' name='Subscribe$cnt' value='Subscribe' style='horizontal-align: middle;'/></div></td>";
+                   echo "<td><div align='center'><input type='submit' class='downloadbutton' name='Subscribe$cnt' value='Subscribe' style='horizontal-align: middle;'/></div></td>";
                      
                             if (isset($_POST["Subscribe$cnt"])) {
                              
@@ -101,4 +101,5 @@ and open the template in the editor.
                 </table>
 </form>
     </body>
+      <?php   require_once("Includes/css.php");  ?>
 </html>

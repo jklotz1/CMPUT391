@@ -16,9 +16,9 @@ and open the template in the editor.
     </head>
     <body>
         <form name="SubscriptionSensorList" method="post">     
-            <input type="submit" value="Back" style="font-size:100%; width:100px; margin:10 " name="back"> 
+            <input class="logoutbutton" type="submit" value="Back" style="font-size:100%; width:100px; margin:10 " name="back"> 
             <br>
-            <input type="submit" value="Home" style="font-size:100%; width:100px; margin:10 " name="home">
+            <input class="logoutbutton" type="submit" value="Home" style="font-size:100%; width:100px; margin:10 " name="home">
             <?php if (isset($_POST['back'])) { header('Location: mainSubscriptionScreen.php');}
               if (isset($_POST['home'])) { header('Location: homeScreen.php'); } 
             
@@ -42,16 +42,16 @@ and open the template in the editor.
             ?> 
             
             
-                <table  align="center" width="1000" border="1">
+                <table  class="searchResult">
                         <tr>
 
-                            <th width="63"> <div align="center">Sensor Type </div></th>
+                            <td> <div align="center">Sensor Type </div></td>
                 
-                            <th width="63"> <div align="center">Location </div></th>
+                            <td> <div align="center">Location </div></td>
 
-                            <th width="63"> <div align="center">Description </div></th>
+                            <td> <div align="center">Description </div></td>
                 
-                            <th width="63"> <div align="center">Subscription </div></th>
+                            <td> <div align="center">Subscription </div></td>
 
                         </tr> 
             <?php
@@ -74,7 +74,7 @@ and open the template in the editor.
                     <td><div align="center"><?php echo $objResult1["DESCRIPTION"]; ?></div></td>
                    
                     <?php
-                    echo "<td><div align='center'><input type='submit' name='UnSubscribe$cnt' value='UnSubscribe' style='horizontal-align: middle;'/></div></td>";
+                    echo "<td><div align='center'><input class='downloadbutton' type='submit' name='UnSubscribe$cnt' value='UnSubscribe' style='horizontal-align: middle;'/></div></td>";
                      if (isset($_POST["UnSubscribe$cnt"])) {
                             
                                 OceanDB::getInstance()->delete_subscription($objResult1["SENSOR_ID"], $user);
@@ -97,4 +97,5 @@ and open the template in the editor.
             ?>
                </table>
                </form>
+         <?php   require_once("Includes/css.php");  ?>
 </html>

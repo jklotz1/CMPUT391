@@ -12,11 +12,13 @@ and open the template in the editor.
     </head>
     <body>
         <h1 align="center" style="font-size: 200%">Welcome to The Ocean Observation System</h1>
+        <br><br><br>
         <form name="logon" method="post">
-            <table width="300" border="1" align="center" cellpadding="25">  
+            <table class="searchTable">  
                 <tr> 
                 <th>
-                    Username: <input type="text" name="user" value="<?php echo isset($_POST['pressed']) ? $_POST['user'] : '' ?>">    
+                    <br>
+                    <span style='color:crimson;'>Username: </span><input type="text" name="user" value="<?php echo isset($_POST['pressed']) ? $_POST['user'] : '' ?>">    
                 <?php   
                     if (isset($_REQUEST['pressed'])){
                         if($_POST["user"] == "")
@@ -27,7 +29,7 @@ and open the template in the editor.
                     } else { echo "<br> <br> <br>"; } 
                 ?>
                 
-                Password: <input type="password" name="userpassword">
+                <span style='color:crimson;'>Password: </span><input type="password" name="userpassword">
                 <?php   
                     if (isset($_REQUEST['pressed'])){
                         if($_POST["userpassword"] == "")
@@ -36,7 +38,7 @@ and open the template in the editor.
                         } else { echo "<br> <br> <br>"; }
                     } else { echo "<br> <br> <br>"; }
                 ?>                
-                <input type="submit" value="Log On" name="pressed">
+                <input class="logoutButton" type="submit" value="Log On" name="pressed">
                 <?php
                 require_once("Includes/db.php");
                 if (isset($_REQUEST['pressed'])){
@@ -60,4 +62,5 @@ and open the template in the editor.
             </table>            
         </form>
     </body>
+    <?php   require_once("Includes/css.php");  ?>
 </html>

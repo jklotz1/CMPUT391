@@ -13,10 +13,10 @@ and open the template in the editor.
         <!-- Navigation ToolBar -->
     <form name="subscriptionNavigation" method="post">
    
-               <input type="submit" value="Home" style="font-size:100%; width:200px; margin:10 " name="home"> Return to Home Screen
+               <input class="logoutButton" type="submit" value="Home" style="font-size:100%; width:200px; margin:10 " name="home"> Return to Home Screen
                 <br><br>
-                <input type="submit" value="Subscriptions(s)" style="font-size:100%; width:200px; margin:10 " name="subscriptions"> See Current Subscriptions<br>
-                <input type="submit" value="Available Subscription(s)" style="font-size:100%; width:200px; margin:10 " name="list"> See All Avaiable Subscriptions
+                <input class="logoutButton" type="submit" value="Subscriptions(s)" style="font-size:100%; width:200px; margin:10 " name="subscriptions"> See Current Subscriptions<br>
+                <input class="logoutButton" type="submit" value="Available Subscription(s)" style="font-size:100%; width:200px; margin:10 " name="list"> See All Avaiable Subscriptions
                 <br><br>
 
                 <!--return to home screen when "home" button is pressed-->
@@ -28,4 +28,5 @@ and open the template in the editor.
 
     </form>
     </body>
+    <?php   require_once("Includes/css.php");  ?>
 </html>
