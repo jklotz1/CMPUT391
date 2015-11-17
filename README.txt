@@ -4,7 +4,6 @@ Jessica
 
 Sean
 -Search screen
--Subscribe screen
 
 Brennan
 -Downloading Images/Audio
