@@ -51,7 +51,7 @@ and open the template in the editor.
                         <td><div align="center"><?php echo $objResult["FIRST_NAME"];?></td>
                         <td><div align="center"><?php echo $objResult["LAST_NAME"];?></td>
                         <td><div align="center"><?php echo $objResult["USER_NAME"];?></td>
-                        <td><div align="center"><?php echo OceanDB::getInstance()->get_role($objResult["ROLE"])?></div></td>
+                        <td><div align="center"><?php echo OceanDB::getInstance()->get_role($objResult["ROLE"]);?></div></td>
                         </tr>
                     <?php } ?>
                 </table>

@@ -28,6 +28,7 @@ and open the template in the editor.
             <h1 align="left" style="font-size: 150%">Sensors</h1>
             <input type="submit" value="Create New Sensor" name="newSensor">
             <input type="submit" value="Delete Sensor" name="deleteSensor">
+            <p style="color:red;display:<?php if(isset($_POST['deleteSensor'])&&$_POST['sensorSelected']==''){?>inline <?php } else { ?> none <?php } ?>"><br>Please select a sensor to delete</p>
             <br><br>
             
             <!-- get the current sensors -->
@@ -56,7 +57,7 @@ and open the template in the editor.
             
             <?php if (isset($_POST['newSensor'])) { header('Location: createNewSensor.php'); } ?>
 
-            <?php if (isset($_POST['deleteSensor'])) { OceanDB::getInstance()->delete_sensor($_POST['sensorSelected']);header('Location: managementSensorScreen.php'); } ?>
+            <?php if (isset($_POST['deleteSensor'])&&$_POST['sensorSelected']!='') { OceanDB::getInstance()->delete_sensor($_POST['sensorSelected']);header('Location: managementSensorScreen.php'); } ?>
             
         </form> 
     </body>

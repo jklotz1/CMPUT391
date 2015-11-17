@@ -22,6 +22,7 @@ and open the template in the editor.
                         if($_POST["user"] == "")
                         {
                             echo "<p style='color:red;'>Please enter a username<p>";
+                           
                         } else { echo "<br> <br> <br>"; }
                     } else { echo "<br> <br> <br>"; } 
                 ?>
@@ -34,7 +35,7 @@ and open the template in the editor.
                             echo "<p style='color:red;'>Please enter a password<p>";
                         } else { echo "<br> <br> <br>"; }
                     } else { echo "<br> <br> <br>"; }
-                ?>               
+                ?>                
                 <input type="submit" value="Log On" name="pressed">
                 <?php
                 require_once("Includes/db.php");
@@ -45,8 +46,7 @@ and open the template in the editor.
                         {
                             session_start();
                             $_SESSION['user'] = $_POST["user"];
-                            //header('Location: homeScreen.php');
-                            header('Location: managementScreen.php');
+                            header('Location: homeScreen.php');
                             exit();
                         }
                         else
