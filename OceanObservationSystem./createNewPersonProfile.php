@@ -48,7 +48,7 @@ $screen = $_SESSION['screen'];
                 </tr>
                 <tr>
                     <td><div align="left">Phone Number:</div></td>
-                    <td><div align="left"><input type="text" name="phone" maxlength="10"  size="30" value="<?php if(isset($_REQUEST['save'])){ echo $_POST['phone']; } ?>"></div></td>                    
+                    <td><div align="left"><input type="text" name="phone" maxlength="20"  size="30" value="<?php if(isset($_REQUEST['save'])){ echo $_POST['phone']; } ?>"></div></td>                    
                     <td><div align="left" style="color:red; display:<?php if(isset($_POST['save'])&&$_POST['phone']==''){?>inline <?php } else { ?> none <?php } ?>" >*Required</div></td>
                 </tr>
 
@@ -60,7 +60,8 @@ $screen = $_SESSION['screen'];
             </div>
             
             <?php if(isset($_REQUEST['cancel'])) {
-               if($screen == "createUser") { header('Location: createNewUser.php'); } 
+               if($screen == "createUser") { header('Location: createNewUser.php'); }
+               if($screen == "editUser") { header('Location: editUserScreen.php'); }
                if($screen == "userManagement") { header('Location: managementUserScreen.php'); }
             }?>
             
@@ -73,9 +74,10 @@ $screen = $_SESSION['screen'];
             ?>
             
             <?php if(isset($_REQUEST['save']) && !$empty) {
-                $success = OceanDB::getInstance()->add_new_person($personID,$_POST['firstName'],$_POST['lastName'],$_POST['address'],$_POST['email'],$_POST['phone']);
+                $success = OceanDB::getInstance()->add_new_person($personID,$_POST['firstName'],$_POST['lastName'],$_POST['address'],$_POST['email'],str_replace("-", "",$_POST['phone']));
                 if ($success){
                     if($screen == "createUser") { header('Location: createNewUser.php'); }
+                    if($screen == "editUser") { header('Location: editUserScreen.php'); }
                     if($screen == "userManagement") { header('Location: managementUserScreen.php'); }
                 }
             }

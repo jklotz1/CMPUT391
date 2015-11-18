@@ -29,12 +29,12 @@ $_SESSION['screen'] = "createUser";
                 </tr>
                 <tr>
                     <td><div align="left">Password:</div></td>
-                    <td><div align="left"><input type="text" name="password" size="45" maxlength="64"></div></td>
+                    <td><div align="left"><input type="password" name="password" size="45" maxlength="64"></div></td>
                     <td><div align="left" style="color:red; display: <?php if(isset($_POST['saveNewUser'])&&$_POST['password']==''){?>inline <?php } else { ?> none <?php } ?>" >*Required</div></td>
                 </tr>
                 <tr>
                     <td><div align="left">Confirm Password:</div></td>
-                    <td><div align="left"><input type="text" name="password2" size="45" maxlength="64"></div></td>
+                    <td><div align="left"><input type="password" name="password2" size="45" maxlength="64"></div></td>
                     <td><div align="left" style="color:red; display: <?php if(isset($_POST['saveNewUser'])&&$_POST['password2']==''){?>inline <?php } else { ?> none <?php } ?>" >*Required</div></td>
                 </tr>
                 <tr>

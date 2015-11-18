@@ -7,9 +7,11 @@ and open the template in the editor.
 
 <!--get the username of the user in the system currently-->
 <?php
+ob_start();
 session_start();
 $userEdit = $_SESSION['userToEdit'];
 $previousScreen = $_SESSION['screen'];
+$user = $_SESSION['user'];
 ?>
 
 <html>
@@ -27,6 +29,7 @@ $previousScreen = $_SESSION['screen'];
         <!--display user management screen when "Edit users" button is pressed-->
         <form name="personalProfile" method="post">
             <?php $userInfo = OceanDB::getInstance()->get_user_info_only($userEdit); ?>
+            <?php $people = OceanDB::getInstance()->get_persons(); ?>
             <h1 align="left" style="font-size:150%; margin-bottom:50">Edit User: <?php echo $userEdit;?></h1>
             <table width="400" align="center">
                 <tr>
@@ -37,37 +40,43 @@ $previousScreen = $_SESSION['screen'];
                 </tr>
                 <tr>
                     <td><div align="left">Role:</div></td>
-                    <td><div align="left"><input type="radio" name="role" value="a" <?php if($userInfo['ROLE']=='a'){ ?>checked<?php } ?>>Administrator</div></td>
+                    <td><div align="left"><input type="radio" name="role" value="a" <?php if(isset($_POST['save'])&& $_POST['role']=='a'){?> checked <?php } else if($userInfo['ROLE']=='a'){ ?>checked<?php } ?>>Administrator</div></td>
                 </tr>
                 <tr>
                     <td><div align="left"></div></td>
-                    <td><div align="left"><input type="radio" name="role" value="d" <?php if($userInfo['ROLE']=='d'){ ?>checked<?php } ?>>Data Curator</div></td>
+                    <td><div align="left"><input type="radio" name="role" value="d" <?php if(isset($_POST['save'])&& $_POST['role']=='d'){?> checked <?php } else if($userInfo['ROLE']=='d'){ ?>checked<?php } ?>>Data Curator</div></td>
                 </tr>
                 <tr>
                     <td><div align="left"></div></td>
-                    <td><div align="left"><input type="radio" name="role" value="s" <?php if($userInfo['ROLE']=='s'){ ?>checked<?php } ?>>Scientist</div></td>
+                    <td><div align="left"><input type="radio" name="role" value="s" <?php if(isset($_POST['save'])&& $_POST['role']=='s'){?> checked <?php } else if($userInfo['ROLE']=='s'){ ?>checked<?php } ?>>Scientist</div></td>
                 </tr>
                 <tr >
                     <td><div align="left"></div></td>
                     <td><div align="left" style="color:red; display: <?php if(isset($_POST['save'])&&$_POST['role']==''){?>inline <?php } else { ?> none <?php } ?>">*Required - Select one</div></td>
                 </tr>
+                <td><div align="left">Person Profile:</div></td>
+                    <td><div align="left"><select name="personProfile"><option value=""></option> <?php while($person = oci_fetch_array($people,OCI_ASSOC)){?>
+                                                                                                    <option value="<?php echo $person['PERSON_ID']; ?>"<?php if($userInfo["PERSON_ID"]== $person["PERSON_ID"]){?>selected<?php }?>><?php 
+                                                                                                        echo "(".$person["PERSON_ID"].") ".$person["FIRST_NAME"]." ".$person["LAST_NAME"];?>
+                                                                                                    </option><?php }?></select></div></td>
+                    <td><div align="left" style="color:red; display: <?php if(isset($_POST['save'])&&$_POST['personProfile']==''){?>inline <?php } else { ?> none <?php } ?>" >*Required</div></td>
             </table>
             
             <h1 align="center" style="font-size: 110%"><br>Change password</h1>
             <table width="400" align="center">
                 <tr>
                     <td><div align="left">Old Password:</div></td>
-                    <td><div align="left"><input type="text" name="oldPassword" size="25" maxlength="32"></div></td>
+                    <td><div align="left"><input type="password" name="oldPassword" size="25" maxlength="32"></div></td>
                     <td><div align="left" style="color:red; display: <?php if(isset($_POST['save'])&&($_POST['newPassword']!='' or $_POST['newPassword']!='' or $_POST['oldPassword']!='')){?>inline <?php } else { ?> none <?php } ?>" >*Required</div></td>
                 </tr>
                 <tr>
                     <td><div align="left">New Password:</div></td>
-                    <td><div align="left"><input type="text" name="newPassword" size="25" maxlength="32"></div></td>
+                    <td><div align="left"><input type="password" name="newPassword" size="25" maxlength="32"></div></td>
                     <td><div align="left" style="color:red; display: <?php if(isset($_POST['save'])&&($_POST['newPassword']!='' or $_POST['newPassword']!='' or $_POST['oldPassword']!='')){?>inline <?php } else { ?> none <?php } ?>" >*Required</div></td>
                 </tr>
                 <tr>
                     <td><div align="left">Confirm New Password:</div></td>
-                    <td><div align="left"><input type="text" name="newPasswordConfirm" size="25" maxlength="32"></div></td>
+                    <td><div align="left"><input type="password" name="newPasswordConfirm" size="25" maxlength="32"></div></td>
                     <td><div align="left" style="color:red; display: <?php if(isset($_POST['save'])&&($_POST['newPassword']!='' or $_POST['newPassword']!='' or $_POST['oldPassword']!='')){?>inline <?php } else { ?> none <?php } ?>" >*Required</div></td>
                 </tr>
 
@@ -83,6 +92,8 @@ $previousScreen = $_SESSION['screen'];
                 if($previousScreen=='personalAccount'){ header('Location: personalAccount.php');}
                 if($previousScreen=='userManagement'){ header('Location: managementUserScreen.php');}
             }?>
+            
+            <?php if(isset($_POST['newProfile'])) { header('Location: createNewPersonProfile.php'); }?>
             
             <!--Check if password can be changed-->
             <?php
@@ -106,8 +117,8 @@ $previousScreen = $_SESSION['screen'];
                     if (OceanDB::getInstance()->password_match($userEdit,$_POST["oldPassword"])) {
                         if ($_POST["newPassword"] == $_POST["newPasswordConfirm"]) {
                             $changePassword = true;
-                        } else { echo "<br><div style='color:red;'>New passwords do not match.</div>"; }
-                    } else { echo "<br><div style='color:red;'>Incorrect password combination.</div>"; }
+                        } else { echo "<br><div align='center' style='color:red;'>New passwords do not match.</div>"; }
+                    } else { echo "<br><div align='center' style='color:red;'>Incorrect password combination.</div>"; }
                 }
             }
             ?>
@@ -116,7 +127,7 @@ $previousScreen = $_SESSION['screen'];
             <?php
             if (isset($_REQUEST['save'])){
                 $blank = true;
-                if ($_POST['role']=="" or $_POST['username']==""){
+                if ($_POST['role']=="" or $_POST['username']=="" or $_POST['personProfile']==""){
                     $blank = true;
                 } else {
                     $blank = false;
@@ -127,7 +138,7 @@ $previousScreen = $_SESSION['screen'];
                     if($userEdit!=$_POST['username']){
                         if (!(OceanDB::getInstance()->user_exist($_POST['username']))){
                             $saveInfo = true;
-                        } else { echo "<br><div style='color:red;'>Username '".$_POST['username']."' already exists.</div>"; }
+                        } else { echo "<br><div align='center' style='color:red;'>Username '".$_POST['username']."' already exists.</div>"; }
                     } else { $saveInfo = true; }
                 }
             }
@@ -136,17 +147,19 @@ $previousScreen = $_SESSION['screen'];
             <?php
             
             if ($changePassword && $saveInfo){
-                $success = OceanDB::getInstance()->update_user($userEdit, $_POST['role'], $_POST['username'], $_POST['newPassword']);
+                $success = OceanDB::getInstance()->update_user($userEdit, $_POST['role'], $_POST['username'], $_POST['newPassword'],$_POST['personProfile']);
                 if ($success) {
-                    $_SESSION['userToEdit'] = $_POST['username'];
+                    if($user == $userEdit){$_SESSION['user'] = $_POST['username'];}
+                    $_SESSION['userToEdit'] = $_POST['username']; 
                     if($previousScreen=='personalAccount'){ header('Location: personalAccount.php');}
                     if($previousScreen=='userManagement'){ header('Location: managementUserScreen.php');}
                 }
             }
             elseif ($keepPassword && $saveInfo){
-                $success = OceanDB::getInstance()->update_user($userEdit, $_POST['role'], $_POST['username'],$userInfo['PASSWORD']);
+                $success = OceanDB::getInstance()->update_user($userEdit, $_POST['role'], $_POST['username'],$userInfo['PASSWORD'],$_POST['personProfile']);
                 if ($success) {
-                    $_SESSION['userToEdit'] = $_POST['username'];
+                    if($user == $userEdit){$_SESSION['user'] = $_POST['username'];}
+                    $_SESSION['userToEdit'] = $_POST['username'];                   
                     if($previousScreen=='personalAccount'){ header('Location: personalAccount.php');}
                     if($previousScreen=='userManagement'){ header('Location: managementUserScreen.php');}
                 }    

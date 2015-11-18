@@ -386,7 +386,8 @@ class OceanDB{
     public function get_user_info(){
         $query = "SELECT * 
             FROM SJPARTRI.PERSONS P
-            RIGHT JOIN SJPARTRI.USERS U ON P.PERSON_ID = U.PERSON_ID";
+            RIGHT JOIN SJPARTRI.USERS U ON P.PERSON_ID = U.PERSON_ID
+            ORDER BY P.PERSON_ID, USER_NAME";
         $users = oci_parse ($this->con, $query);
         oci_execute ($users);
         return $users;
@@ -494,7 +495,8 @@ class OceanDB{
     //get users - personal info and user roles
     public function get_persons(){
         $query = "SELECT * 
-            FROM SJPARTRI.PERSONS P";
+            FROM SJPARTRI.PERSONS P
+            ORDER BY P.PERSON_ID";
         $persons = oci_parse ($this->con, $query);
         oci_execute ($persons);
         return $persons;
@@ -590,11 +592,12 @@ class OceanDB{
         return FALSE;
     }
     
-    public function update_user($username, $role, $newUser, $passwd){
+    public function update_user($username, $role, $newUser, $passwd,$personID){
         $query = "UPDATE SJPARTRI.USERS U 
                   SET U.ROLE='$role',
                     U.USER_NAME = '$newUser',
-                    U.PASSWORD  = '$passwd'
+                    U.PASSWORD  = '$passwd',
+                    U.PERSON_ID = $personID
                   WHERE U.USER_NAME= '$username'";
         $sensor = oci_parse ($this->con, $query);
         $success = oci_execute($sensor);
@@ -615,13 +618,13 @@ class OceanDB{
     }
     
     public function update_person($id, $fName, $lName, $address, $email, $phone){
-        $query = "UPDATE SJPARTRI.PERSONS P "
-                . "SET P.FIRST_NAME = '$fName', "
-                . "P.LAST_NAME = '$lName', "
-                . "P.ADDRESS = '$address', "
-                . "P.EMAIL = '$email', "
-                . "P.PHONE = '$phone' "
-                . "WHERE P.PERSON_ID = $id";
+        $query = "UPDATE SJPARTRI.PERSONS P
+                SET P.FIRST_NAME = '$fName',
+                P.LAST_NAME = '$lName',
+                P.ADDRESS = '$address',
+                P.EMAIL = '$email',
+                P.PHONE = '$phone' 
+                WHERE P.PERSON_ID = $id";
         $person = oci_parse ($this->con, $query);
         $success = oci_execute($person);
         return $success;
