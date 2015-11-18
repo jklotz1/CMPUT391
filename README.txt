@@ -3,10 +3,8 @@ Jessica
 -Management screen
 
 Sean
--Search screen
--Home setup
--Index page
+-Search screen (TRY BREAKING IT)
+-Data Analysis
 
 Brennan
--Upload screen
-Test
+-Downloading Images/Audio

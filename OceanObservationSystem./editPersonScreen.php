@@ -8,6 +8,8 @@ and open the template in the editor.
 ob_start();
 session_start();
 $screen = $_SESSION['screen'];
+$personEdit = $_SESSION['personToEdit'];
+
 ?>
 
 <html>
@@ -17,38 +19,38 @@ $screen = $_SESSION['screen'];
     </head>
     <body>
         <?php require_once 'Includes/db.php'; ?>
-        <?php $personID = OceanDB::getInstance()->get_next_personID();?>
+        <?php $person = OceanDB::getInstance()->get_person_by_id($personEdit);?>
         
-        <h1 align="center" style="font-size: 175%">Add New Personal Profile</h1>        
+        <h1 align="center" style="font-size: 175%">Edit Personal Profile: <?php echo $person['FIRST_NAME']." ".$person['LAST_NAME']?></h1>        
         <form name="userCreate" method="post">
             <table width="400" align="center">
                 <tr>
                     <td><div align="left">Person ID:</div></td>
-                    <td><div align="left"><input type="text" name="personID" size="30" value="<?php echo $personID;?>" readonly></div></td>                    
+                    <td><div align="left"><input type="text" name="personID" size="30" value="<?php echo $person["PERSON_ID"];?>" readonly></div></td>                    
                 </tr>
                 <tr>
                     <td><div align="left">First Name:</div></td>
-                    <td><div align="left"><input type="text" name="firstName" maxlength="24" size="30" value="<?php if(isset($_REQUEST['save'])){ echo $_POST['firstName']; }?>"></div></td>                    
+                    <td><div align="left"><input type="text" name="firstName" maxlength="24" size="30" value="<?php if(isset($_REQUEST['save'])){ echo $_POST['firstName']; } else { echo $person['FIRST_NAME']; }?>"></div></td>                    
                     <td><div align="left" style="color:red; display:<?php if(isset($_POST['save'])&&$_POST['firstName']==''){?>inline <?php } else { ?> none <?php } ?>" >*Required</div></td>
                 </tr>
                 <tr>
                     <td><div align="left">Last Name:</div></td>
-                    <td><div align="left"><input type="text" name="lastName" maxlength="24"  size="30" value="<?php if(isset($_REQUEST['save'])){ echo $_POST['lastName']; } ?>"></div></td>                    
+                    <td><div align="left"><input type="text" name="lastName" maxlength="24"  size="30" value="<?php if(isset($_REQUEST['save'])){ echo $_POST['lastName']; } else { echo $person['LAST_NAME']; }?>"></div></td>                    
                     <td><div align="left" style="color:red; display:<?php if(isset($_POST['save'])&&$_POST['lastName']==''){?>inline <?php } else { ?> none <?php } ?>" >*Required</div></td>                
                 </tr>
                 <tr>
                     <td><div align="left">Address:</div></td>
-                    <td><div align="left"><input type="text" name="address" maxlength="128" size="30" value="<?php if(isset($_REQUEST['save'])){ echo $_POST['address']; } ?>"></div></td>                    
+                    <td><div align="left"><input type="text" name="address" maxlength="128" size="30" value="<?php if(isset($_REQUEST['save'])){ echo $_POST['address']; } else { echo $person['ADRESS']; }?>con"></div></td>                    
                     <td><div align="left" style="color:red; display:<?php if(isset($_POST['save'])&&$_POST['address']==''){?>inline <?php } else { ?> none <?php } ?>" >*Required</div></td>
                 </tr>
                 <tr>
                     <td><div align="left">Email Address:</div></td>
-                    <td><div align="left"><input type="text" name="email" maxlength="128" size="30" value="<?php if(isset($_REQUEST['save'])){ echo $_POST['email']; } ?>"></div></td>                    
+                    <td><div align="left"><input type="text" name="email" maxlength="128" size="30" value="<?php if(isset($_REQUEST['save'])){ echo $_POST['email']; } else { echo $person['EMAIL']; }?>"></div></td>                    
                     <td><div align="left" style="color:red; display:<?php if(isset($_POST['save'])&&$_POST['email']==''){?>inline <?php } else { ?> none <?php } ?>" >*Required</div></td>                
                 </tr>
                 <tr>
                     <td><div align="left">Phone Number:</div></td>
-                    <td><div align="left"><input type="text" name="phone" maxlength="10"  size="30" value="<?php if(isset($_REQUEST['save'])){ echo $_POST['phone']; } ?>"></div></td>                    
+                    <td><div align="left"><input type="text" name="phone" maxlength="10"  size="30" value="<?php if(isset($_REQUEST['save'])){ echo $_POST['phone']; } else { echo $person['PHONE']; }?>"></div></td>                    
                     <td><div align="left" style="color:red; display:<?php if(isset($_POST['save'])&&$_POST['phone']==''){?>inline <?php } else { ?> none <?php } ?>" >*Required</div></td>
                 </tr>
 

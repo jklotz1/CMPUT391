@@ -52,8 +52,8 @@ $sensorID = '';
                 </tr>      
             </table>
             <p align="center">
-                <input type="submit" value="Save" name="save" align="center" style="width:75;margin:10">
-                <input type="submit" value="Cancel" name="cancel" align="center" style="width:75;margin:10">
+                <input class="logoutButton" type="submit" value="Save" name="save" align="center" style="font-size:100%; width:100px; margin:10 ">
+                <input class="logoutButton" type="submit" value="Cancel" name="cancel" align="center" style="font-size:100%; width:100px; margin:10 ">
             </p>
             <!-- check if all the fields have been filled in -->
 
@@ -77,5 +77,6 @@ $sensorID = '';
                         
         </form> 
     </body>
+    <?php   require_once("Includes/css.php");  ?>
 </html>
 

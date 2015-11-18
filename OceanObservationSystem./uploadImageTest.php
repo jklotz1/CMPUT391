@@ -5,14 +5,11 @@ $dbPassword="letmein22";
 
 if (!isset($_FILES['file'])) {
 ?>
-
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" 
    enctype="multipart/form-data">
 Image filename: <input type="file" name="file">
 <input type="submit" value="Upload">
 </form>
-
-
 <?php
 }
 else {
@@ -29,7 +26,7 @@ else {
    if ($ext == 'jpg') {
 
        
-    $myblobid = 5;
+    $myblobid = 3;
     $mysensorid = 123;
     $mydescription = 'desc';
     $mydate = '05/11/2015 00:00:00';
@@ -74,8 +71,8 @@ else {
     $arr = oci_fetch_assoc($stmt);
     $result = $arr['RECOREDED_DATA']->load();
     
-    $desired_width = 100;
-    $desired_height = 100;
+    $desired_width = 50;
+    $desired_height = 50;
     $im = imagecreatefromstring($result);
     $new = imagecreatetruecolor($desired_width, $desired_height);
     $x = imagesx($im);
@@ -107,17 +104,16 @@ else {
  
     // Now query the uploaded BLOB and display it
 
-    $query = 'SELECT THUMBNAIL FROM IMAGES WHERE IMAGE_ID = :MYBLOBID';
+    $query = 'SELECT THUMBNAIL FROM IMAGES WHERE SENSOR_ID = :MYBLOBID';
 
     $stmt = oci_parse ($conn, $query);
-    oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
+    oci_bind_by_name($stmt, ':MYBLOBID', $mysensorid);
     oci_execute($stmt, OCI_DEFAULT);
     $arr = oci_fetch_assoc($stmt);
     $result = $arr['THUMBNAIL']->load();
   
     header("Content-type: image/JPEG");
     echo $result;
-  
     oci_free_statement($stmt);
   
   
@@ -127,7 +123,7 @@ else {
    }
    elseif ($ext == 'wav') {
        
-    $myblobid = 4;
+    $myblobid = 1;
     $mysensorid = 123;
     $mydescription = 'desc';
     $mydate = '05/11/2015 00:00:00';
