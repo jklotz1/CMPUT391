@@ -630,8 +630,200 @@ class OceanDB{
         return $success;
     }
     
+    public function upload_image($_FILES, $description, $sensorId) {
+        $myblobid = 1;
+        $mysensorid = $sensorId;
+        $mydescription = $description;
+        $mydate = date('d/M/Y H:i:s');
+
+
+        $query = 'DELETE FROM IMAGES WHERE IMAGE_ID = :MYBLOBID';
+        $stmt = oci_parse ($this->con, $query);
+        oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
+        $e = oci_execute($stmt, OCI_COMMIT_ON_SUCCESS);
+        if (!$e) {
+            die;
+        }
+        oci_free_statement($stmt);
+  
+
+        // Insert the BLOB from PHP's tempory upload area
+        $lob = oci_new_descriptor($this->con, OCI_D_LOB);
+        $stmt = oci_parse($this->con, "INSERT INTO IMAGES (IMAGE_ID, SENSOR_ID, DATE_CREATED, DESCRIPTION, RECOREDED_DATA) "
+            ."VALUES(:MYBLOBID, :MYSENSORID, to_date(:MYDATE, 'dd/mm/yyyy hh24:mi:ss'), :MYDESCRIPTION, EMPTY_BLOB()) RETURNING RECOREDED_DATA INTO :RECOREDED_DATA");
+        oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
+        oci_bind_by_name($stmt, ':MYSENSORID', $mysensorid);
+        oci_bind_by_name($stmt, ":MYDATE", $mydate);
+        oci_bind_by_name($stmt, ':MYDESCRIPTION', $mydescription);
+        oci_bind_by_name($stmt, ':RECOREDED_DATA', $lob, -1, OCI_B_BLOB);
+        oci_execute($stmt, OCI_DEFAULT);
+
+        if ($lob->savefile($_FILES['file']['tmp_name'])) {
+            oci_commit($this->con);
+        }
+        else {
+            echo "Couldn't upload Blob\n";
+        }
+        $lob->free();
+        oci_free_statement($stmt);
+
+        $query = 'SELECT RECOREDED_DATA FROM IMAGES WHERE IMAGE_ID = :MYBLOBID';
+
+        $stmt = oci_parse ($this->con, $query);
+        oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
+        oci_execute($stmt, OCI_DEFAULT);
+        $arr = oci_fetch_assoc($stmt);
+        $result = $arr['RECOREDED_DATA']->load();
     
+        $desired_width = 50;
+        $desired_height = 50;
+        $im = imagecreatefromstring($result);
+        $new = imagecreatetruecolor($desired_width, $desired_height);
+        $x = imagesx($im);
+        $y = imagesy($im);
+        imagecopyresampled($new, $im, 0, 0, 0, 0, $desired_width, $desired_height, $x, $y);
+        imagedestroy($im);
+        oci_free_statement($stmt);
+
+        //header('Content-type: image/jpeg');
+        ob_start();
+        imagejpeg($new, null, 100);
+        $mythumbnail = ob_get_contents();
+        ob_clean();
     
+        $lob = oci_new_descriptor($this->con, OCI_D_LOB);
+        $stmt = oci_parse($this->con, "UPDATE IMAGES SET THUMBNAIL = EMPTY_BLOB() WHERE IMAGE_ID = :MYBLOBID RETURNING THUMBNAIL INTO :MYTHUMBNAIL");
+        oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
+        oci_bind_by_name($stmt, ':MYTHUMBNAIL', $lob, -1, OCI_B_BLOB);
+        oci_execute($stmt, OCI_DEFAULT);
+        if ($lob->save($mythumbnail)) {
+            oci_commit($this->con);
+        }
+        else {
+            echo "Couldn't upload Blob\n";
+        }
+        $lob->free();
+        oci_free_statement($stmt);
+
+        $query = 'SELECT RECOREDED_DATA FROM IMAGES WHERE IMAGE_ID = :MYBLOBID';
+
+        $stmt = oci_parse ($this->con, $query);
+        oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
+        oci_execute($stmt, OCI_DEFAULT);
+  
+        return $stmt;
+
+    }
+    
+    public function upload_audio($_FILES, $description, $sensorId) {
+        $myblobid = 18;
+        $mysensorid = $sensorId;
+        $mydescription = $description;
+        $mydate = date('d/M/Y H:i:s');
+
+        $filename = $_FILES['file']['tmp_name'];
+        $file = fopen($filename, "r");
+        
+        $size_in_bytes = filesize($filename);
+        fseek($file, 20);
+        $rawheader = fread($file, 16);
+        $header = unpack('vtype/vchannels/Vsamplerate/Vbytespersec/valignment/vbits', $rawheader);
+        $sec = ceil($size_in_bytes/$header['bytespersec']);
+
+        $query = 'DELETE FROM AUDIO_RECORDINGS WHERE RECORDING_ID = :MYBLOBID';
+        $stmt = oci_parse ($this->con, $query);
+        oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
+        $e = oci_execute($stmt, OCI_COMMIT_ON_SUCCESS);
+        if (!$e) {
+            die;
+        }
+        oci_free_statement($stmt);
+  
+
+        // Insert the BLOB from PHP's tempory upload area
+        $lob = oci_new_descriptor($this->con, OCI_D_LOB);
+        $stmt = oci_parse($this->con, "INSERT INTO AUDIO_RECORDINGS (RECORDING_ID, SENSOR_ID, DATE_CREATED, LENGTH, DESCRIPTION, RECORDED_DATA) "
+            ."VALUES(:MYBLOBID, :MYSENSORID, to_date(:MYDATE, 'dd/mm/yyyy hh24:mi:ss'), :MYLENGTH, :MYDESCRIPTION, EMPTY_BLOB()) RETURNING RECORDED_DATA INTO :RECORDED_DATA");
+        oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
+        oci_bind_by_name($stmt, ':MYSENSORID', $mysensorid);
+        oci_bind_by_name($stmt, ":MYDATE", $mydate);
+        oci_bind_by_name($stmt, ":MYLENGTH", $sec);
+        oci_bind_by_name($stmt, ':MYDESCRIPTION', $mydescription);
+        oci_bind_by_name($stmt, ':RECORDED_DATA', $lob, -1, OCI_B_BLOB);
+        oci_execute($stmt, OCI_DEFAULT);
+
+        if ($lob->savefile($_FILES['file']['tmp_name'])) {
+            oci_commit($this->con);
+        }
+        else {
+            echo "Couldn't upload Blob\n";
+        }
+        $lob->free();
+        oci_free_statement($stmt);
+        $query = 'SELECT RECORDED_DATA FROM AUDIO_RECORDINGS WHERE RECORDING_ID = :MYBLOBID';
+
+        $stmt = oci_parse ($this->con, $query);
+        oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
+        oci_execute($stmt, OCI_DEFAULT);
+  
+        return $stmt;
+        }
+        
+    public function upload_csv($_FILES) {
+        $filename = $_FILES['file']['tmp_name'];
+        $file = fopen($filename, "r");
+        
+        while(! feof($file)) {
+            $line = fgetcsv($file);
+            if ($line[0] !== null) {
+                $query = 'DELETE FROM SCALAR_DATA WHERE ID = :MYID';
+                $stmt = oci_parse ($this->con, $query);
+                oci_bind_by_name($stmt, ':MYID', $line[0]);
+                $e = oci_execute($stmt, OCI_COMMIT_ON_SUCCESS);
+                if (!$e) {
+                    die;
+                }
+                oci_free_statement($stmt);
+            }
+        }
+        fclose($file);
+        $filename = $_FILES['file']['tmp_name'];
+        $file = fopen($filename, "r");
+        $data = array();
+        while(! feof($file)) {
+            $line = fgetcsv($file);
+            if ($line[0] !== null) {
+                $stmt = oci_parse($this->con, "INSERT INTO SCALAR_DATA (ID, DATE_CREATED, VALUE) "
+                        ."VALUES(:MYSCALARID, to_date(:MYDATE, 'dd/mm/yyyy hh24:mi:ss'), :MYVALUE)");
+                oci_bind_by_name($stmt, ':MYSCALARID', $line[0]);
+                oci_bind_by_name($stmt, ':MYDATE', $line[1]);
+                oci_bind_by_name($stmt, ':MYVALUE', $line[2]);
+                oci_execute($stmt, OCI_DEFAULT);
+                oci_commit($this->con);
+                oci_free_statement($stmt);
+                array_push($data, $line);
+            }
+       }
+       fclose($file);
+       return $data;
+   }
+   
+   public function get_sensor_ids() {
+       $query = 'SELECT SENSOR_ID FROM SENSORS';
+       $stmt = oci_parse ($this->con, $query);
+       oci_execute($stmt, OCI_DEFAULT);
+       return $stmt;
+   }
+   
+   public function get_image($_FILES) {
+       $query = 'SELECT RECOREDED_DATA FROM IMAGES';
+
+       $stmt = oci_parse ($this->con, $query);
+       oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
+       oci_execute($stmt, OCI_DEFAULT);
+  
+       return $stmt;
+   }
 }
 
 ?>
