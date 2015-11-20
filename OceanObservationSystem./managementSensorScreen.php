@@ -4,7 +4,10 @@ To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
+<?php
+ob_start();
 
+?>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -15,32 +18,35 @@ and open the template in the editor.
         <!--check the role of the user - only administrators are allowed to access this section-->
         <?php require_once 'Includes/db.php'; ?>
         
-        <h1 align="left" style="font-size: 175%">Sensor and User Management Center</h1>        
+        <h1 align="left" style="font-size: 175%">Sensor and User Management Center</h1> 
         <form name="sensorManagement" method="post">
-            <input type="submit" value="Back" name="back">
+            <input class="logoutButton" type="submit" value="Back" name="back" style="font-size:100%; width:100px; margin:10 ">
+            <input class="logoutButton" type="submit" value="Home" name="home" style="font-size:100%; width:100px; margin:10 ">
             <br><br>
 
             <!--return to home screen when "home" button is pressed-->
+            <?php if (isset($_POST['home'])) { header('Location: homeScreen.php'); }?> 
             <?php if (isset($_POST['back'])) { header('Location: managementScreen.php'); }?> 
 
             <!--display sensor management screen - buttons for the different actions-->
-
-            <h1 align="left" style="font-size: 150%">Sensors</h1>
-            <input type="submit" value="Create New Sensor" name="newSensor">
-            <input type="submit" value="Delete Sensor" name="deleteSensor">
+            <div align="center">
+            <h1 align="center" style="font-size: 150%">Sensors</h1>
+            <input class="logoutButton" type="submit" value="Create New Sensor" name="newSensor" style="font-size:100%; width:200px; margin:10 ">
+            <input class="logoutButton" type="submit" value="Delete Sensor" name="deleteSensor" style="font-size:100%; width:200px; margin:10 ">
+            <p style="color:red;display:<?php if(isset($_POST['deleteSensor'])&&$_POST['sensorSelected']==''){?>inline <?php } else { ?> none <?php } ?>"><br>Please select a sensor to delete</p>
             <br><br>
-            
+            </div>
             <!-- get the current sensors -->
             <?php $objParse = OceanDB::getInstance()->get_sensors(); ?>
 
             <!--display current sensors in the system-->
-            <table width="700" border="1">
+            <table class="searchTable" width="700" border="1">
                 <tr>
-                <th width="25"> <div align="center"> </div></th>    
-                <th width="91"> <div align="center">Sensor ID </div></th>
-                <th width="98"> <div align="center">Location </div></th>
-                <th width="198"> <div align="center">Sensor Type </div></th>
-                <th width="97"> <div align="center">Description </div></th>
+                    <td width="25"> <div align="center"> </div></td>    
+                    <td width="91"> <div align="center">Sensor ID </div></td>
+                    <td width="98"> <div align="center">Location </div></td>
+                    <td width="198"> <div align="center">Sensor Type </div></td>
+                    <td width="97"> <div align="center">Description </div></td>
                 </tr>
                 <?php while($objResult = oci_fetch_array($objParse,OCI_BOTH)){ ?>
                     <tr>
@@ -54,13 +60,12 @@ and open the template in the editor.
             </table>
            
             
-            <?php if (isset($_POST['newSensor'])) { ?>
-                <?php header('Location: createNewSensor.php'); ?>
-            <?php } elseif (isset($_POST['deleteSensor'])) { ?>
-                <?php $sen = $_POST['sensorSelected']; ?>
-            <?php } ?>
+            <?php if (isset($_POST['newSensor'])) { header('Location: createNewSensor.php'); } ?>
 
-        </form>                                    
+            <?php if (isset($_POST['deleteSensor'])&&$_POST['sensorSelected']!='') { OceanDB::getInstance()->delete_sensor($_POST['sensorSelected']);header('Location: managementSensorScreen.php'); } ?>
+            
+        </form> 
     </body>
+    <?php   require_once("Includes/css.php");  ?>
 </html>
 

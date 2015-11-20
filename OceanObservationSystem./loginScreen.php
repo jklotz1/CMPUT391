@@ -18,9 +18,9 @@ and open the template in the editor.
                 <tr> 
                 <th>
                     <br>
-                    <span style='color:crimson;'>Username: </span><input type="text" name="user" value="<?php echo isset($_POST['pressed']) ? $_POST['user'] : '' ?>">    
+                    <span style='color:crimson;'>Username: </span><input type="text" name="user" value="<?php echo (isset($_POST['logon']) or isset($_REQUEST['person'])) ? $_POST['user'] : '' ?>">    
                 <?php   
-                    if (isset($_REQUEST['pressed'])){
+                    if (isset($_REQUEST['logon']) or isset($_REQUEST['person'])){
                         if($_POST["user"] == "")
                         {
                             echo "<p style='color:red;'>Please enter a username<p>";
@@ -31,29 +31,32 @@ and open the template in the editor.
                 
                 <span style='color:crimson;'>Password: </span><input type="password" name="userpassword">
                 <?php   
-                    if (isset($_REQUEST['pressed'])){
+                    if (isset($_REQUEST['logon']) or isset($_REQUEST['person'])){
                         if($_POST["userpassword"] == "")
                         {
                             echo "<p style='color:red;'>Please enter a password<p>";
                         } else { echo "<br> <br> <br>"; }
                     } else { echo "<br> <br> <br>"; }
                 ?>                
-                <input class="logoutButton" type="submit" value="Log On" name="pressed">
+                <input class="logoutButton" type="submit" value="Log On" name="logon">
+                <input class="logoutButton" type="submit" value="Account" name="person">
+                
                 <?php
                 require_once("Includes/db.php");
-                if (isset($_REQUEST['pressed'])){
+                if (isset($_REQUEST['logon']) or isset($_REQUEST['person'])){
                     if ($_POST["user"]!="" && $_POST["userpassword"]!=""){
                         $valid = OceanDB::getInstance()->is_valid_login($_POST["user"],$_POST["userpassword"]);
                         if($valid)
                         {
                             session_start();
                             $_SESSION['user'] = $_POST["user"];
-                            header('Location: homeScreen.php');
-                            //header('Location: managementScreen.php');
+                            $_SESSION['screen'] = "Logon";
+                            if (isset($_REQUEST['logon'])) { header('Location: homeScreen.php'); }
+                            if (isset($_REQUEST['person'])) { header('Location: personalAccount.php'); }
                             exit();
                         }
                         else
-                            echo "<p style='color:red;'>Incorrect username and/or password<p>"; 
+                            echo "<br><p style='color:red;'>Incorrect username and/or password<p>"; 
                     }
                 }
                 ?>

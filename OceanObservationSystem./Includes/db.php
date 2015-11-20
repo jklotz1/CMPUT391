@@ -151,14 +151,14 @@ class OceanDB{
         return $objParse;
     }
     
-    public function get_scalar_data_values($sensorId, $startDate, $endDate){
+    public function get_scalar_data_values($sensorId, $startDate, $endDate, $startTime, $endTime){
 
       
         $sql = "SELECT S1.VALUE, S1.DATE_CREATED "
                 . "FROM sjpartri.SCALAR_DATA S1  "
                . "WHERE S1.SENSOR_ID LIKE '$sensorId' "
                . "AND S1.DATE_CREATED "
-                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss')";
+                . "BETWEEN to_date('$startDate $startTime','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate $endTime','yyyy-mm-dd hh24:mi:ss')";
                 
         
         $objParse = oci_parse ($this->con, $sql);
@@ -167,100 +167,30 @@ class OceanDB{
     }
     
     
-    public function get_keyword_search_results($keyword, $sensorId, $startDate, $endDate){
+    
+    public function get_search_results($keyword,$location, $sensorType, $sensorId, $startDate, $endDate, $startTime, $endTime){
       
-        $keys = explode(" ",$_POST["txtKeyword"]);
-        $sql = "SELECT distinct S.SENSOR_ID,S.LOCATION,S.DESCRIPTION,S.SENSOR_TYPE, S1.VALUE, S1.DATE_CREATED "
-                . "FROM sjpartri.SENSORS S, sjpartri.SCALAR_DATA S1, sjpartri.IMAGES I, sjpartri.AUDIO_RECORDINGS AR "
-                . "WHERE S.SENSOR_ID LIKE '$sensorId' "
-                . "AND( S1.DATE_CREATED "
-                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss') "
-                . "OR I.DATE_CREATED "
-                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss') "
-                . "OR AR.DATE_CREATED "
-                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss'))";
             
-                
-        
-        foreach($keys as $k){
-        
-            $sql.= "AND lower(S.DESCRIPTION) LIKE lower('%$k%')";
-        }
-        $objParse = oci_parse ($this->con, $sql);
-        oci_execute ($objParse);
-        return $objParse;
-    }
-    
-    public function get_location_search_results($location, $sensorId, $startDate, $endDate){
-        
-        $keys = explode(" ",$location);
-        $sql = "SELECT distinct S.SENSOR_ID,S.LOCATION,S.DESCRIPTION,S.SENSOR_TYPE, S1.VALUE, S1.DATE_CREATED "
-                ."FROM sjpartri.SENSORS S, sjpartri.SCALAR_DATA S1, sjpartri.IMAGES I, sjpartri.AUDIO_RECORDINGS AR " 
-                . "WHERE S.SENSOR_ID LIKE '$sensorId' "
-                . "AND( S1.DATE_CREATED "
-                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss') "
-                . "OR I.DATE_CREATED "
-                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss') "
-                . "OR AR.DATE_CREATED "
-                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss'))";
-        
-        
-        foreach($keys as $k){
-            $sql.= "AND lower(S.LOCATION) LIKE lower('$k')";
-        }
-        $objParse = oci_parse ($this->con, $sql);
-        oci_execute ($objParse);
-        return $objParse;
-    }
-    
-      public function get_sensor_type_search_results($sensorType, $sensorId, $startDate, $endDate){
-
-        $keys = explode(" ",$sensorType);
-        $sql = "SELECT distinct S.SENSOR_ID,S.LOCATION,S.DESCRIPTION,S.SENSOR_TYPE, S1.VALUE, S1.DATE_CREATED "
-                ."FROM sjpartri.SENSORS S, sjpartri.SCALAR_DATA S1, sjpartri.IMAGES I, sjpartri.AUDIO_RECORDINGS AR " 
-                . "WHERE S.SENSOR_ID LIKE '$sensorId' "
-                . "AND( S1.DATE_CREATED "
-                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss') "
-                . "OR I.DATE_CREATED "
-                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss') "
-                . "OR AR.DATE_CREATED "
-                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss'))";
-        
-        
-        foreach($keys as $k){
-            $sql.= "AND lower(SENSOR_TYPE) LIKE lower('%$k%')";
-        }
-        $objParse = oci_parse ($this->con, $sql);
-        oci_execute ($objParse);
-        return $objParse;
-        
-    }
-    
-    
-    
-    public function get_search_results($keyword,$location, $sensorType, $sensorId, $startDate, $endDate){
-  
      
         
-        $sql = "SELECT distinct S.SENSOR_ID,S.LOCATION,S.DESCRIPTION,S.SENSOR_TYPE, S1.VALUE, S1.DATE_CREATED "
+        $sql = "SELECT distinct S.SENSOR_ID, S.LOCATION,S.DESCRIPTION,S.SENSOR_TYPE "
                 ."FROM sjpartri.SENSORS S, sjpartri.SCALAR_DATA S1, sjpartri.IMAGES I, sjpartri.AUDIO_RECORDINGS AR " 
                 . "WHERE S.SENSOR_ID LIKE '$sensorId' "
                 . "AND (S1.SENSOR_ID LIKE '$sensorId' "
                 . "OR I.SENSOR_ID  LIKE '$sensorId' "
                 . "OR AR.SENSOR_ID = '$sensorId' )"
                 . "AND( S1.DATE_CREATED "
-                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss') "
+                . "BETWEEN to_date('$startDate $startTime','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate $endTime','yyyy-mm-dd hh24:mi:ss') "
                 . "OR I.DATE_CREATED "
-                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss') "
+                . "BETWEEN to_date('$startDate $startTime','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate $endTime','yyyy-mm-dd hh24:mi:ss') "
                 . "OR AR.DATE_CREATED "
-                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss')) ";
+                . "BETWEEN to_date('$startDate $startTime','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate $endTime','yyyy-mm-dd hh24:mi:ss')) ";
         
        
         
         if($keyword != ""){
        $keyword_keys = explode(" ",$keyword);
         foreach($keyword_keys as $k1){
-        
             $sql.= "AND lower(S.DESCRIPTION) LIKE lower('%$k1%')";
         }
         
@@ -275,7 +205,7 @@ class OceanDB{
         }
         
         if($sensorType != ""){
-             $sensor_keys = explode(" ",$location);
+             $sensor_keys = explode(" ",$sensorType);
         foreach($sensor_keys as $k2){
              $sql.= "AND lower(S.SENSOR_TYPE) LIKE lower('%$k2%')";
         }
@@ -289,12 +219,12 @@ class OceanDB{
         
     }
     
-    public function get_thumbnail($sensorId,$startDate,$endDate){
+    public function get_thumbnail($sensorId,$startDate,$endDate, $startTime, $endTime){
         
        $query = "SELECT THUMBNAIL, DATE_CREATED "
                . "FROM IMAGES WHERE SENSOR_ID = '$sensorId' "
                . "AND DATE_CREATED "
-               . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss')";
+               . "BETWEEN to_date('$startDate $startTime','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate $endTime','yyyy-mm-dd hh24:mi:ss')";
 
        $stmt = oci_parse ($this->con, $query);
        
@@ -303,11 +233,11 @@ class OceanDB{
        return $stmt;
     }
     
-    public function get_audioInfo($sensorId,$startDate, $endDate){
+    public function get_audioInfo($sensorId,$startDate,$endDate, $startTime, $endTime){
         $query = "SELECT DATE_CREATED "
                 . "FROM AUDIO_RECORDINGS WHERE SENSOR_ID='$sensorId'"
                 . "AND DATE_CREATED "
-                . "BETWEEN to_date('$startDate','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate','yyyy-mm-dd hh24:mi:ss')";
+                . "BETWEEN to_date('$startDate $startTime','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate $endTime','yyyy-mm-dd hh24:mi:ss')";
         
         $objParse = oci_parse ($this->con, $query);
         
@@ -317,39 +247,7 @@ class OceanDB{
         
     }
     
-    public function full_search_results($sensorID,$keyword, $sensorType, $location, $startDate, $endDate){
-        
-        $keyword_keys = explode(" ",$keyword);
-      $sensorType_keys = explode(" ",$sensorType);
-        $location_keys = explode(" ",$location);
-        
-        $sql = "Select distinct S.SENSOR_ID,S.LOCATION,S.DESCRIPTION,S.SENSOR_TYPE, S1.VALUE, S1.DATE_CREATED
-                From sjpartri.SENSORS S, sjpartri.SCALAR_DATA S1, sjpartri.AUDIO_RECORDINGS AR, sjpartri.IMAGES I, sjpartri.SUBSCRIPTIONS SB
-                WHERE S.SENSOR_ID=S1.SENSOR_ID
-                AND S.SENSOR_ID=AR.SENSOR_ID
-                AND S.SENSOR_ID=I.SENSOR_ID
-                AND S.SENSOR_ID = $sensorID
-                AND lower(S.DESCRIPTION) LIKE lower('%$keyword%')
-                AND lower(S.SENSOR_TYPE) LIKE lower('%$sensorType%')
-                AND lower(S.LOCATION) LIKE lower('$location')";
-        
-       foreach($keyword_keys as $k1){
-          $sql.= "or lower(S.DESCRIPTION) LIKE lower('%$k1%')";
-       }
-       foreach($sensorType_keys as $k2){
-        $sql.= "or lower(S.SENSOR_TYPE) LIKE lower('%$k2%')";
-      }
-        foreach($location_keys as $k3){
-           $sql.= "and lower(S.LOCATION) LIKE lower('$k3')";
-       }
-        
-        $objParse = oci_parse ($this->con, $sql);
-        oci_execute ($objParse, OCI_DEFAULT);
-        return $objParse;
-           
-    }
-    
-    
+
     
     //gets the users role to allow the correct activity
     public function get_user_role($user){
@@ -386,7 +284,8 @@ class OceanDB{
     public function get_user_info(){
         $query = "SELECT * 
             FROM SJPARTRI.PERSONS P
-            LEFT JOIN SJPARTRI.USERS U ON P.PERSON_ID = U.PERSON_ID";
+            RIGHT JOIN SJPARTRI.USERS U ON P.PERSON_ID = U.PERSON_ID
+            ORDER BY P.PERSON_ID, USER_NAME";
         $users = oci_parse ($this->con, $query);
         oci_execute ($users);
         return $users;
@@ -408,8 +307,21 @@ class OceanDB{
         $query = "SELECT MAX(SENSOR_ID) FROM SJPARTRI.SENSORS";
         $sensorID = oci_parse ($this->con, $query);
         oci_execute ($sensorID);
+        $id=0;
         while (($row = oci_fetch_array($sensorID,OCI_BOTH)) != false) {
             $id = $row["MAX(SENSOR_ID)"];
+         }
+        return $id+1; 
+    }
+    
+    public function get_next_personID()
+    {
+        $query = "SELECT MAX(PERSON_ID) FROM SJPARTRI.PERSONS";
+        $personID = oci_parse ($this->con, $query);
+        oci_execute ($personID);
+        $id=0;
+        while (($row = oci_fetch_array($personID,OCI_BOTH)) != false) {
+            $id = $row["MAX(PERSON_ID)"];
          }
         return $id+1; 
     }
@@ -417,13 +329,399 @@ class OceanDB{
     //add new sensor to the database
     public function add_new_sensor($sensorID, $location, $type, $desciption)
     {
-        $query = "INSERT INTO SJPARTRI.SENSORS VALUES ($sensorID,$location,$type,$desciption)";
+        $query = "INSERT INTO SJPARTRI.SENSORS VALUES ($sensorID,'$location','$type','$desciption')";
         $sensor = oci_parse ($this->con, $query);
-        $success = oci_execute ($sensor);
+        $success = oci_execute($sensor);
         return $success;
     }
-
     
+    public function delete_sensor($sensorID)
+    {
+        //must delete all associate data entries with sensor
+        //delete audio records
+        $query = "DELETE FROM SJPARTRI.AUDIO_RECORDINGS WHERE SENSOR_ID = $sensorID";
+        $sensor = oci_parse ($this->con, $query);
+        oci_execute($sensor);
+        
+        //delete image records
+        $query = "DELETE FROM SJPARTRI.IMAGES WHERE SENSOR_ID = $sensorID";
+        $sensor = oci_parse ($this->con, $query);
+        oci_execute($sensor);
+        
+        //delete scalar records
+        $query = "DELETE FROM SJPARTRI.SCALAR_DATA WHERE SENSOR_ID = $sensorID";
+        $sensor = oci_parse ($this->con, $query);
+        oci_execute($sensor);
+        
+        //delete subscription
+        $query = "DELETE FROM SJPARTRI.SUBSCRIPTIONS WHERE SENSOR_ID = $sensorID";
+        $sensor = oci_parse ($this->con, $query);
+        oci_execute($sensor);
+        
+        //now can delete sensor
+        $query = "DELETE FROM SJPARTRI.SENSORS WHERE SENSOR_ID = $sensorID";
+        $sensor = oci_parse ($this->con, $query);
+        oci_execute($sensor);
+    }
+    
+    //delete user
+    public function delete_user($username)
+    {
+        //delete user
+        $query = "DELETE FROM SJPARTRI.USERS WHERE USER_NAME = '$username'";
+        $sensor = oci_parse ($this->con, $query);
+        $success = oci_execute($sensor);
+        return $success;
+    }
+    
+    public function add_new_user($user, $passwd, $role, $perID)
+    {
+        $query = "INSERT INTO SJPARTRI.USERS VALUES ('$user', '$passwd', '$role', $perID, sysdate)";
+        $user = oci_parse ($this->con, $query);
+        $success = oci_execute($user);
+        return $success;
+    }
+    
+    public function add_new_person($peronID,$fname,$lname,$address,$email,$phone)
+    {
+        $query = "INSERT INTO SJPARTRI.PERSONS VALUES ($peronID,'$fname','$lname','$address','$email','$phone')";
+        $person = oci_parse ($this->con, $query);
+        $success = oci_execute($person);
+        return $success;
+    }
+    
+    //get users - personal info and user roles
+    public function get_persons(){
+        $query = "SELECT * 
+            FROM SJPARTRI.PERSONS P
+            ORDER BY P.PERSON_ID";
+        $persons = oci_parse ($this->con, $query);
+        oci_execute ($persons);
+        return $persons;
+    }
+    
+    public function get_person_by_ID($personID){
+        $query = "SELECT * 
+            FROM SJPARTRI.PERSONS P
+            WHERE PERSON_ID = $personID";
+        $persons = oci_parse ($this->con, $query);
+        oci_execute ($persons);
+        $personInfo = null;
+        while (($row = oci_fetch_array($persons,OCI_BOTH)) != false) {
+            $personInfo = $row;
+         }
+        return $personInfo;
+    }
+    
+    public function get_personID($user)
+    {
+        $query = "SELECT PERSON_ID FROM SJPARTRI.USERS WHERE USER_NAME = '$user'";
+        $personID = oci_parse ($this->con, $query);
+        oci_execute ($personID);
+        while (($row = oci_fetch_array($personID,OCI_BOTH)) != false) {
+            $id = $row["PERSON_ID"];
+         }
+        return $id; 
+    }
+    
+    public function delete_person($personID)
+    {
+        //delete person
+        $query = "DELETE FROM SJPARTRI.USERS WHERE PERSON_ID = $personID";
+        $sensor = oci_parse ($this->con, $query);
+        oci_execute($sensor);
+        
+        $query = "DELETE FROM SJPARTRI.PERSONS WHERE PERSON_ID = $personID";
+        $sensor = oci_parse ($this->con, $query);
+        oci_execute($sensor);
+        
+    }
+    
+    public function get_user_info_only($user){
+        $query = "SELECT U.* 
+            FROM SJPARTRI.USERS U 
+            WHERE U.USER_NAME = '$user'";
+        $users = oci_parse ($this->con, $query);
+        oci_execute ($users);
+        $userInfo = null;
+        while (($row = oci_fetch_array($users,OCI_BOTH)) != false) {
+            $userInfo = $row;
+         }
+        return $userInfo;
+    }
+
+    public function get_personal_info($username){
+        $query = "SELECT P.* "
+                ."FROM SJPARTRI.PERSONS P "
+                ."INNER JOIN SJPARTRI.USERS U ON U.PERSON_ID = P.PERSON_ID "
+                ."WHERE U.USER_NAME = '$username'";
+        $person = oci_parse ($this->con, $query);
+        oci_execute ($person);
+        $personInfo = null;
+        while (($row = oci_fetch_array($person,OCI_BOTH)) != false) {
+            $personInfo = $row;
+         }
+        return $personInfo;
+    }
+    
+    public function get_all_users_by_user($username){
+       $query = "SELECT U.* "
+                ."FROM SJPARTRI.USERS U "
+                ."WHERE U.PERSON_ID = (SELECT P.PERSON_ID "
+                                        ."FROM SJPARTRI.PERSONS P "
+                                        ."LEFT JOIN SJPARTRI.USERS U1 ON U1.PERSON_ID=P.PERSON_ID "
+                                        ."WHERE U1.USER_NAME = '$username' )" ;
+        $users = oci_parse ($this->con, $query);
+        oci_execute ($users);
+        return $users;
+    }
+    
+    public function password_match($username, $passwordTest){
+        $query = "SELECT U.PASSWORD "
+                ."FROM SJPARTRI.USERS U "
+                ."WHERE U.USER_NAME =  '$username'" ;
+        $user = oci_parse ($this->con, $query);
+        oci_execute ($user);
+        while (($row = oci_fetch_array($user,OCI_BOTH)) != false) {
+            $password = $row["PASSWORD"];
+            if ($password == $passwordTest) { return TRUE; }
+            else { return FALSE; }
+         }
+        return FALSE;
+    }
+    
+    public function update_user($username, $role, $newUser, $passwd,$personID){
+        $query = "UPDATE SJPARTRI.USERS U 
+                  SET U.ROLE='$role',
+                    U.USER_NAME = '$newUser',
+                    U.PASSWORD  = '$passwd',
+                    U.PERSON_ID = $personID
+                  WHERE U.USER_NAME= '$username'";
+        $sensor = oci_parse ($this->con, $query);
+        $success = oci_execute($sensor);
+        return $success;
+    }
+    
+    public function user_exist($usernameTest){
+        $query = "SELECT U.USER_NAME "
+                ."FROM SJPARTRI.USERS U "
+                ."WHERE U.USER_NAME = '$usernameTest'" ;
+        $user = oci_parse ($this->con, $query);
+        oci_execute ($user);
+        $match = false;
+        while (($row = oci_fetch_array($user,OCI_BOTH)) != false) {
+            $match = true;
+         }
+        return $match;
+    }
+    
+    public function update_person($id, $fName, $lName, $address, $email, $phone){
+        $query = "UPDATE SJPARTRI.PERSONS P
+                SET P.FIRST_NAME = '$fName',
+                P.LAST_NAME = '$lName',
+                P.ADDRESS = '$address',
+                P.EMAIL = '$email',
+                P.PHONE = '$phone' 
+                WHERE P.PERSON_ID = $id";
+        $person = oci_parse ($this->con, $query);
+        $success = oci_execute($person);
+        return $success;
+    }
+    
+    public function upload_image($_FILES, $description, $sensorId) {
+        $myblobid = 1;
+        $mysensorid = $sensorId;
+        $mydescription = $description;
+        $mydate = date('d/M/Y H:i:s');
+
+
+        $query = 'DELETE FROM IMAGES WHERE IMAGE_ID = :MYBLOBID';
+        $stmt = oci_parse ($this->con, $query);
+        oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
+        $e = oci_execute($stmt, OCI_COMMIT_ON_SUCCESS);
+        if (!$e) {
+            die;
+        }
+        oci_free_statement($stmt);
+  
+
+        // Insert the BLOB from PHP's tempory upload area
+        $lob = oci_new_descriptor($this->con, OCI_D_LOB);
+        $stmt = oci_parse($this->con, "INSERT INTO IMAGES (IMAGE_ID, SENSOR_ID, DATE_CREATED, DESCRIPTION, RECOREDED_DATA) "
+            ."VALUES(:MYBLOBID, :MYSENSORID, to_date(:MYDATE, 'dd/mm/yyyy hh24:mi:ss'), :MYDESCRIPTION, EMPTY_BLOB()) RETURNING RECOREDED_DATA INTO :RECOREDED_DATA");
+        oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
+        oci_bind_by_name($stmt, ':MYSENSORID', $mysensorid);
+        oci_bind_by_name($stmt, ":MYDATE", $mydate);
+        oci_bind_by_name($stmt, ':MYDESCRIPTION', $mydescription);
+        oci_bind_by_name($stmt, ':RECOREDED_DATA', $lob, -1, OCI_B_BLOB);
+        oci_execute($stmt, OCI_DEFAULT);
+
+        if ($lob->savefile($_FILES['file']['tmp_name'])) {
+            oci_commit($this->con);
+        }
+        else {
+            echo "Couldn't upload Blob\n";
+        }
+        $lob->free();
+        oci_free_statement($stmt);
+
+        $query = 'SELECT RECOREDED_DATA FROM IMAGES WHERE IMAGE_ID = :MYBLOBID';
+
+        $stmt = oci_parse ($this->con, $query);
+        oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
+        oci_execute($stmt, OCI_DEFAULT);
+        $arr = oci_fetch_assoc($stmt);
+        $result = $arr['RECOREDED_DATA']->load();
+    
+        $desired_width = 50;
+        $desired_height = 50;
+        $im = imagecreatefromstring($result);
+        $new = imagecreatetruecolor($desired_width, $desired_height);
+        $x = imagesx($im);
+        $y = imagesy($im);
+        imagecopyresampled($new, $im, 0, 0, 0, 0, $desired_width, $desired_height, $x, $y);
+        imagedestroy($im);
+        oci_free_statement($stmt);
+
+        //header('Content-type: image/jpeg');
+        ob_start();
+        imagejpeg($new, null, 100);
+        $mythumbnail = ob_get_contents();
+        ob_clean();
+    
+        $lob = oci_new_descriptor($this->con, OCI_D_LOB);
+        $stmt = oci_parse($this->con, "UPDATE IMAGES SET THUMBNAIL = EMPTY_BLOB() WHERE IMAGE_ID = :MYBLOBID RETURNING THUMBNAIL INTO :MYTHUMBNAIL");
+        oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
+        oci_bind_by_name($stmt, ':MYTHUMBNAIL', $lob, -1, OCI_B_BLOB);
+        oci_execute($stmt, OCI_DEFAULT);
+        if ($lob->save($mythumbnail)) {
+            oci_commit($this->con);
+        }
+        else {
+            echo "Couldn't upload Blob\n";
+        }
+        $lob->free();
+        oci_free_statement($stmt);
+
+        $query = 'SELECT RECOREDED_DATA FROM IMAGES WHERE IMAGE_ID = :MYBLOBID';
+
+        $stmt = oci_parse ($this->con, $query);
+        oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
+        oci_execute($stmt, OCI_DEFAULT);
+  
+        return $stmt;
+
+    }
+    
+    public function upload_audio($_FILES, $description, $sensorId) {
+        $myblobid = 18;
+        $mysensorid = $sensorId;
+        $mydescription = $description;
+        $mydate = date('d/M/Y H:i:s');
+
+        $filename = $_FILES['file']['tmp_name'];
+        $file = fopen($filename, "r");
+        
+        $size_in_bytes = filesize($filename);
+        fseek($file, 20);
+        $rawheader = fread($file, 16);
+        $header = unpack('vtype/vchannels/Vsamplerate/Vbytespersec/valignment/vbits', $rawheader);
+        $sec = ceil($size_in_bytes/$header['bytespersec']);
+
+        $query = 'DELETE FROM AUDIO_RECORDINGS WHERE RECORDING_ID = :MYBLOBID';
+        $stmt = oci_parse ($this->con, $query);
+        oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
+        $e = oci_execute($stmt, OCI_COMMIT_ON_SUCCESS);
+        if (!$e) {
+            die;
+        }
+        oci_free_statement($stmt);
+  
+
+        // Insert the BLOB from PHP's tempory upload area
+        $lob = oci_new_descriptor($this->con, OCI_D_LOB);
+        $stmt = oci_parse($this->con, "INSERT INTO AUDIO_RECORDINGS (RECORDING_ID, SENSOR_ID, DATE_CREATED, LENGTH, DESCRIPTION, RECORDED_DATA) "
+            ."VALUES(:MYBLOBID, :MYSENSORID, to_date(:MYDATE, 'dd/mm/yyyy hh24:mi:ss'), :MYLENGTH, :MYDESCRIPTION, EMPTY_BLOB()) RETURNING RECORDED_DATA INTO :RECORDED_DATA");
+        oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
+        oci_bind_by_name($stmt, ':MYSENSORID', $mysensorid);
+        oci_bind_by_name($stmt, ":MYDATE", $mydate);
+        oci_bind_by_name($stmt, ":MYLENGTH", $sec);
+        oci_bind_by_name($stmt, ':MYDESCRIPTION', $mydescription);
+        oci_bind_by_name($stmt, ':RECORDED_DATA', $lob, -1, OCI_B_BLOB);
+        oci_execute($stmt, OCI_DEFAULT);
+
+        if ($lob->savefile($_FILES['file']['tmp_name'])) {
+            oci_commit($this->con);
+        }
+        else {
+            echo "Couldn't upload Blob\n";
+        }
+        $lob->free();
+        oci_free_statement($stmt);
+        $query = 'SELECT RECORDED_DATA FROM AUDIO_RECORDINGS WHERE RECORDING_ID = :MYBLOBID';
+
+        $stmt = oci_parse ($this->con, $query);
+        oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
+        oci_execute($stmt, OCI_DEFAULT);
+  
+        return $stmt;
+        }
+        
+    public function upload_csv($_FILES) {
+        $filename = $_FILES['file']['tmp_name'];
+        $file = fopen($filename, "r");
+        
+        while(! feof($file)) {
+            $line = fgetcsv($file);
+            if ($line[0] !== null) {
+                $query = 'DELETE FROM SCALAR_DATA WHERE ID = :MYID';
+                $stmt = oci_parse ($this->con, $query);
+                oci_bind_by_name($stmt, ':MYID', $line[0]);
+                $e = oci_execute($stmt, OCI_COMMIT_ON_SUCCESS);
+                if (!$e) {
+                    die;
+                }
+                oci_free_statement($stmt);
+            }
+        }
+        fclose($file);
+        $filename = $_FILES['file']['tmp_name'];
+        $file = fopen($filename, "r");
+        $data = array();
+        while(! feof($file)) {
+            $line = fgetcsv($file);
+            if ($line[0] !== null) {
+                $stmt = oci_parse($this->con, "INSERT INTO SCALAR_DATA (ID, DATE_CREATED, VALUE) "
+                        ."VALUES(:MYSCALARID, to_date(:MYDATE, 'dd/mm/yyyy hh24:mi:ss'), :MYVALUE)");
+                oci_bind_by_name($stmt, ':MYSCALARID', $line[0]);
+                oci_bind_by_name($stmt, ':MYDATE', $line[1]);
+                oci_bind_by_name($stmt, ':MYVALUE', $line[2]);
+                oci_execute($stmt, OCI_DEFAULT);
+                oci_commit($this->con);
+                oci_free_statement($stmt);
+                array_push($data, $line);
+            }
+       }
+       fclose($file);
+       return $data;
+   }
+   
+   public function get_sensor_ids() {
+       $query = 'SELECT SENSOR_ID FROM SENSORS';
+       $stmt = oci_parse ($this->con, $query);
+       oci_execute($stmt, OCI_DEFAULT);
+       return $stmt;
+   }
+   
+   public function get_image($_FILES) {
+       $query = 'SELECT RECOREDED_DATA FROM IMAGES';
+
+       $stmt = oci_parse ($this->con, $query);
+       oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
+       oci_execute($stmt, OCI_DEFAULT);
+  
+       return $stmt;
+   }
 }
 
 ?>
