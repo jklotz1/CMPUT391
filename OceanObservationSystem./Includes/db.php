@@ -57,6 +57,7 @@ class OceanDB{
          else
              return false;            
     }
+
     
     public function get_person_id_by_name($name) {
 
@@ -234,7 +235,7 @@ class OceanDB{
     }
     
     public function get_audioInfo($sensorId,$startDate,$endDate, $startTime, $endTime){
-        $query = "SELECT DATE_CREATED, DESCRIPTION "
+        $query = "SELECT DATE_CREATED, DESCRIPTION, RECORDING_ID "
                 . "FROM AUDIO_RECORDINGS WHERE SENSOR_ID='$sensorId'"
                 . "AND DATE_CREATED "
                 . "BETWEEN to_date('$startDate $startTime','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate $endTime','yyyy-mm-dd hh24:mi:ss')";

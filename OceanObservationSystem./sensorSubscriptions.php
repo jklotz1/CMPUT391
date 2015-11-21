@@ -32,7 +32,7 @@ and open the template in the editor.
               
                    $num = count($data);
                    
-                   $nonSubscription_Results = OceanDB::getInstance()->get_non_subcribed_sensor_table_results($output, $objResult);
+                   //$nonSubscription_Results = OceanDB::getInstance()->get_non_subcribed_sensor_table_results($output, $objResult);
                    
                 
                 

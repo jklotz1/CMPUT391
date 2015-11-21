@@ -243,13 +243,11 @@ and open the template in the editor.
 
                                 <td> <div align="center">Sensor ID </div></td>
 
-                                <td> <div align="center">Location </div></td>
-
-                                <td> <div align="center">Sensor Type </div></td>
+                                <td> <div align="center">Date Created </div></td>
 
                                 <td> <div align="center">Description </div></td>
 
-                                <td> <div align="center">Media </div></td>
+                                <td> <div align="center">Media/Value </div></td>
 
                             </tr>
                    
@@ -273,24 +271,15 @@ and open the template in the editor.
                                 
                                 <td><div align="center"><?php echo $sensors_content[$k]["SENSOR_ID"]; ?></div></td>
 
-                                <td><div align="center"><?php echo $sensors_content[$k]["LOCATION"]; ?></div></td>
+                                <td><div align="center"><?php echo $thumbResult['DATE_CREATED'];  ?></div></td>
 
-                                <td><div align="center"><?php echo $sensors_content[$k]["SENSOR_TYPE"]; ?></div></td>
+                                <td><div align="center"><?php echo $thumbResult['DESCRIPTION']; ?></div></td>
 
-                                <td><div align="center"><?php echo $sensors_content[$k]["DESCRIPTION"]; ?></div></td>
                                 <td><div align="center">
-                                        <p><h3>IMAGE:</h3></p>
+                                        <p><h3>THUMBNAIL:</h3></p>
                                                 <p><img src="data:image/jpeg;base64,<?php echo base64_encode($result); ?>" />
                                                     <br>
-                                                     <medium>
-                                                      DATE-CREATED:
-                                                    <?php echo $thumbResult['DATE_CREATED']; ?>
-                                                     </medium>
-                                                    <br>
-                                                     <medium>
-                                                      DESCRIPTION:
-                                                    <?php echo $thumbResult['DESCRIPTION']; ?>
-                                                    </medium>
+                                                    
                                                     <br>
                                                     <input class="downloadbutton" type="button" value="Download" name="Download" />
                                                     <BR>
@@ -315,24 +304,19 @@ and open the template in the editor.
                                         while ($audioDate = oci_fetch_array($audioDates, OCI_BOTH)) {
                                             ?>
                             <tr>
-                                                          <td><div align="center"><?php echo $sensors_content[$k]["SENSOR_ID"]; ?></div></td>
+                                <td><div align="center"><?php echo $sensors_content[$k]["SENSOR_ID"]; ?></div></td>
 
-                                <td><div align="center"><?php echo $sensors_content[$k]["LOCATION"]; ?></div></td>
+                                <td><div align="center"><?php echo $audioDate["DATE_CREATED"]; ?></div></td>
 
-                                <td><div align="center"><?php echo $sensors_content[$k]["SENSOR_TYPE"]; ?></div></td>
+                                <td><div align="center"><?php echo $audioDate["DESCRIPTION"]; ?></div></td>
 
-                                <td><div align="center"><?php echo $sensors_content[$k]["DESCRIPTION"]; ?></div></td>
                                 <td><div align="center">
                                                  <p><h3>AUDIO RECORDING:</h3></p>
                                                    <medium>
-                                                      DATE-CREATED:
-                                                 <?php echo $audioDate["DATE_CREATED"]; ?>
+                                                      RECORDING ID:
+                                                 <?php echo $audioDate["RECORDING_ID"]; ?>
                                                    </medium>
-                                                    <br>
-                                                     <medium>
-                                                      DESCRIPTION:
-                                                 <?php echo $audioDate["DESCRIPTION"]; ?>
-                                                   </medium>
+                                                    
                                                     <br>
                                                     <input class="downloadbutton" type="button" value="Download" name="Download" />
                                                 </p>
@@ -353,20 +337,13 @@ and open the template in the editor.
                             <tr>
                                         <td><div align="center"><?php echo $sensors_content[$k]["SENSOR_ID"]; ?></div></td>
 
-                                <td><div align="center"><?php echo $sensors_content[$k]["LOCATION"]; ?></div></td>
+                                <td><div align="center"><?php echo $sensorResult["DATE_CREATED"];?></div></td>
 
-                                <td><div align="center"><?php echo $sensors_content[$k]["SENSOR_TYPE"]; ?></div></td>
+                                <td><div align="center"></div></td>
 
-                                <td><div align="center"><?php echo $sensors_content[$k]["DESCRIPTION"]; ?></div></td>
                                 <td><div align="center">
                                          <p><h3>SCALAR DATA:</h3></p>
-                                    <medium>
-                                                      DATE-CREATED:
-                                    <?php
-                                        echo $sensorResult["DATE_CREATED"];
-                                        ?>
-                                    </medium>
-                                    <br>
+                                  
                                             VALUE:
                                      <?php echo $sensorResult["VALUE"];
                                            echo '<br>';
