@@ -221,7 +221,7 @@ class OceanDB{
     
     public function get_thumbnail($sensorId,$startDate,$endDate, $startTime, $endTime){
         
-       $query = "SELECT THUMBNAIL, DATE_CREATED "
+       $query = "SELECT THUMBNAIL, DATE_CREATED, DESCRIPTION "
                . "FROM IMAGES WHERE SENSOR_ID = '$sensorId' "
                . "AND DATE_CREATED "
                . "BETWEEN to_date('$startDate $startTime','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate $endTime','yyyy-mm-dd hh24:mi:ss')";
@@ -234,7 +234,7 @@ class OceanDB{
     }
     
     public function get_audioInfo($sensorId,$startDate,$endDate, $startTime, $endTime){
-        $query = "SELECT DATE_CREATED "
+        $query = "SELECT DATE_CREATED, DESCRIPTION "
                 . "FROM AUDIO_RECORDINGS WHERE SENSOR_ID='$sensorId'"
                 . "AND DATE_CREATED "
                 . "BETWEEN to_date('$startDate $startTime','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate $endTime','yyyy-mm-dd hh24:mi:ss')";

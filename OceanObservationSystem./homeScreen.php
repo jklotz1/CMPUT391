@@ -243,11 +243,7 @@ and open the template in the editor.
 
                                 <td> <div align="center">Description </div></td>
 
-                                <td> <div align="center">Thumb Nails </div></td>
-
-                                <td> <div align="center">Audio Files </div></td>
-                
-                                <td> <div align="center">Scalar Data Value </div></td>
+                                <td> <div align="center">Media </div></td>
 
                             </tr>
                    
@@ -256,23 +252,7 @@ and open the template in the editor.
                          //while ($objResult = oci_fetch_array($sensors_content[$k], OCI_BOTH)){
                                //$sensorID = $objResult["SENSOR_ID"];
                          $sensorID=$sensors_content[$k]["SENSOR_ID"];
-                         ?>
-                         
-                        
-                            <tr>
-                                
-                                <td><div align="center"><?php echo $sensors_content[$k]["SENSOR_ID"]; ?></div></td>
-
-                                <td><div align="center"><?php echo $sensors_content[$k]["LOCATION"]; ?></div></td>
-
-                                <td><div align="center"><?php echo $sensors_content[$k]["SENSOR_TYPE"]; ?></div></td>
-
-                                <td><div align="center"><?php echo $sensors_content[$k]["DESCRIPTION"]; ?></div></td>
-                                <td><div align="center">
-                                  
-                       
-           <?php
-                         
+                    
                          
                 //Images Row
                 if(count($thumbnails_content) != 0){
@@ -283,12 +263,28 @@ and open the template in the editor.
                 $result = $thumbResult['THUMBNAIL']->load();
                
                 ?>
-                                                
+                            <tr>
+                                
+                                <td><div align="center"><?php echo $sensors_content[$k]["SENSOR_ID"]; ?></div></td>
+
+                                <td><div align="center"><?php echo $sensors_content[$k]["LOCATION"]; ?></div></td>
+
+                                <td><div align="center"><?php echo $sensors_content[$k]["SENSOR_TYPE"]; ?></div></td>
+
+                                <td><div align="center"><?php echo $sensors_content[$k]["DESCRIPTION"]; ?></div></td>
+                                <td><div align="center">
+                                        <p><h3>IMAGE:</h3></p>
                                                 <p><img src="data:image/jpeg;base64,<?php echo base64_encode($result); ?>" />
                                                     <br>
-                                                     <small>
+                                                     <medium>
+                                                      DATE-CREATED:
                                                     <?php echo $thumbResult['DATE_CREATED']; ?>
-                                                    </small>
+                                                     </medium>
+                                                    <br>
+                                                     <medium>
+                                                      DESCRIPTION:
+                                                    <?php echo $thumbResult['DESCRIPTION']; ?>
+                                                    </medium>
                                                     <br>
                                                     <input class="downloadbutton" type="button" value="Download" name="Download" />
                                                     <BR>
@@ -298,8 +294,9 @@ and open the template in the editor.
                 <?php }}
                 ?>
                                     </div>
-                                                </td>   
-                                                 <td><div align="center">
+                                                </td>
+                            </tr>
+                                               
                                                 
                                 
                 <?php                                
@@ -311,7 +308,26 @@ and open the template in the editor.
 
                                         while ($audioDate = oci_fetch_array($audioDates, OCI_BOTH)) {
                                             ?>
-                                                <p> <?php echo $audioDate["DATE_CREATED"]; ?>
+                            <tr>
+                                                          <td><div align="center"><?php echo $sensors_content[$k]["SENSOR_ID"]; ?></div></td>
+
+                                <td><div align="center"><?php echo $sensors_content[$k]["LOCATION"]; ?></div></td>
+
+                                <td><div align="center"><?php echo $sensors_content[$k]["SENSOR_TYPE"]; ?></div></td>
+
+                                <td><div align="center"><?php echo $sensors_content[$k]["DESCRIPTION"]; ?></div></td>
+                                <td><div align="center">
+                                                 <p><h3>AUDIO RECORDING:</h3></p>
+                                                   <medium>
+                                                      DATE-CREATED:
+                                                 <?php echo $audioDate["DATE_CREATED"]; ?>
+                                                   </medium>
+                                                    <br>
+                                                     <medium>
+                                                      DESCRIPTION:
+                                                 <?php echo $audioDate["DESCRIPTION"]; ?>
+                                                   </medium>
+                                                    <br>
                                                     <input class="downloadbutton" type="button" value="Download" name="Download" />
                                                 </p>
                           
@@ -319,18 +335,33 @@ and open the template in the editor.
                 ?>
                                     </div>
                                                 </td>   
-                                               <td><div align="center">
+                            </tr>
+                                               
                             <?php    
                            //Scalar Row
                               if(count($scalarData_content) != 0){ 
                                    
                                  $scalarData = OceanDB::getInstance()->get_scalar_data_values($sensorID, $_POST["startDate"], $_POST["endDate"],$_POST["startTime"],$_POST["endTime"]);
                                     while ($sensorResult = oci_fetch_array($scalarData, OCI_BOTH)) {
-                                      
-                                        
+                                      ?>
+                            <tr>
+                                        <td><div align="center"><?php echo $sensors_content[$k]["SENSOR_ID"]; ?></div></td>
+
+                                <td><div align="center"><?php echo $sensors_content[$k]["LOCATION"]; ?></div></td>
+
+                                <td><div align="center"><?php echo $sensors_content[$k]["SENSOR_TYPE"]; ?></div></td>
+
+                                <td><div align="center"><?php echo $sensors_content[$k]["DESCRIPTION"]; ?></div></td>
+                                <td><div align="center">
+                                         <p><h3>SCALAR DATA:</h3></p>
+                                    <medium>
+                                                      DATE-CREATED:
+                                    <?php
                                         echo $sensorResult["DATE_CREATED"];
                                         ?>
-                                            - VALUE:
+                                    </medium>
+                                    <br>
+                                            VALUE:
                                      <?php echo $sensorResult["VALUE"];
                                            echo '<br>';
                                     } ?>
