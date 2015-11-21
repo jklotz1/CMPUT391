@@ -79,7 +79,8 @@ $_SESSION['screen'] = 'personalAccount';
             
             <?php if(isset($_REQUEST['save'])&&!$empty){
                 $success = OceanDB::getInstance()->update_person($personInfo["PERSON_ID"],$_POST['firstName'],$_POST['lastName'],$_POST['address'],$_POST['email'],$_POST['phone']);
-            }   if ($success) { ?> <p style="color:red">Saved!</p> <?php ; header('Location: personalAccount.php'); }
+               if ($success) { ?> <p style="color:red">Saved!</p> <?php ; header('Location: personalAccount.php'); }
+            }
             ?>
             
             

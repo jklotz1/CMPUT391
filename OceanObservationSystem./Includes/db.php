@@ -824,6 +824,106 @@ class OceanDB{
   
        return $stmt;
    }
+   
+   public function get_subscribed_sensors($user){
+        $query = "SELECT S.* 
+                    FROM SJPARTRI.USERS U
+                    INNER JOIN SJPARTRI.SUBSCRIPTIONS SB ON U.PERSON_ID = SB.PERSON_ID
+                    INNER JOIN SJPARTRI.SENSORS S ON SB.SENSOR_ID = S.SENSOR_ID
+                    WHERE U.USER_NAME = '$user'
+                    ORDER BY S.SENSOR_ID";
+        $sensors = oci_parse ($this->con, $query);
+        oci_execute ($sensors);
+        return $sensors;
+    }
+    
+    public function get_data_to_display($sensor_id,$time){
+        //create view with relevant data
+        $query = "CREATE VIEW vw_data AS SELECT D.YEAR as YEAR, D.MONTH as MONTH, D.QUARTER as QUARTER, D.WEEKOFYEAR as WEEK, D.DAY as DAY, D.DAYOFWEEK as dayofweek, DATE_CREATED as DATE_CREATED, D.VALUE as VALUE
+                        FROM (SELECT DISTINCT SD.ID, extract(year from DATE_CREATED) as YEAR, extract(month from DATE_CREATED) as MONTH, 
+                                    extract(day from DATE_CREATED) as DAY, TO_CHAR(DATE_CREATED, 'Q') AS QUARTER, TO_CHAR(DATE_CREATED, 'D') AS DAYOFWEEK,
+                                    TO_CHAR(DATE_CREATED+1, 'IW') AS WEEKOFYEAR, SD.VALUE as VALUE, DATE_CREATED
+                                FROM SJPARTRI.USERS U
+                                JOIN SJPARTRI.PERSONS P ON U.PERSON_ID=P.PERSON_ID
+                                JOIN SJPARTRI.SUBSCRIPTIONS SB ON SB.PERSON_ID=P.PERSON_ID
+                                JOIN SJPARTRI.SENSORS S ON S.SENSOR_ID=SB.SENSOR_ID
+                                JOIN SJPARTRI.SCALAR_DATA SD ON S.SENSOR_ID=SD.SENSOR_ID
+                                WHERE S.SENSOR_ID = $sensor_id) D
+                        ORDER BY D.YEAR, D.MONTH, D.DAY, D.VALUE";
+        $view = oci_parse ($this->con, $query);
+        oci_execute ($view);
+        
+        //retrieve data for years
+        if ($time == 'yearly'){
+            $query = "SELECT YEAR, CAST(AVG(VALUE)AS DECIMAL(16,3)) AS AVERAGE, MIN(VALUE) AS MINIMUM, MAX(VALUE) AS MAXIMUM
+                        FROM VW_DATA
+                        GROUP BY YEAR
+                        ORDER BY YEAR";
+            $data = oci_parse ($this->con, $query);
+            oci_execute ($data);
+        }
+        
+        //retrieve data for quarters
+        if ($time == 'quarterly'){
+            $query = "SELECT YEAR, QUARTER, CAST(AVG(VALUE)AS DECIMAL(16,3)) AS AVERAGE, MIN(VALUE) AS MINIMUM, MAX(VALUE) AS MAXIMUM
+                FROM vw_data
+                GROUP BY YEAR, QUARTER
+                ORDER BY YEAR, QUARTER";
+            $data = oci_parse ($this->con, $query);
+            oci_execute ($data);
+        }
+        
+        //retrieve data for months
+        if ($time == 'monthly'){
+            $query = "SELECT YEAR, MONTH, CAST(AVG(VALUE)AS DECIMAL(16,3)) AS AVERAGE, MIN(VALUE) AS MINIMUM, MAX(VALUE) AS MAXIMUM
+                        FROM vw_data
+                        GROUP BY YEAR, MONTH
+                        ORDER BY YEAR, MONTH";
+            $data = oci_parse ($this->con, $query);
+            oci_execute ($data);
+        }
+        
+        //retrieve data for weeks
+        if ($time == 'weekly'){
+            $query = "SELECT YEAR, MONTH, DAY, WEEK, DAYOFWEEK, DATE_CREATED, VALUE
+                        FROM ( SELECT YEAR, MONTH, (CASE WHEN WEEK=53 AND MONTH=1 THEN TO_CHAR(00) ELSE WEEK END) WEEK, DAY, DAYOFWEEK, DATE_CREATED, VALUE
+                                FROM VW_DATA )
+                        ORDER BY YEAR, WEEK";
+            $data = oci_parse ($this->con, $query);
+            oci_execute ($data);
+        }
+
+        //retrieve data for days
+        if ($time == 'daily'){
+            $query = "SELECT YEAR, MONTH, DAY, CAST(AVG(VALUE)AS DECIMAL(16,3)) AS AVERAGE, MIN(VALUE) AS MINIMUM, MAX(VALUE) AS MAXIMUM
+                        FROM vw_data
+                        GROUP BY YEAR, MONTH, DAY
+                        ORDER BY YEAR, MONTH, DAY";
+            $data = oci_parse ($this->con, $query);
+            oci_execute ($data);
+        }
+        
+        //drop view from database
+        $query = "DROP VIEW VW_DATA";
+        $viewDLT = oci_parse ($this->con, $query);
+        oci_execute ($viewDLT);
+        
+        return $data;
+    }
+    
+    public function get_sensor_by_ID($sensor_id){
+        $query = "SELECT * 
+            FROM SJPARTRI.SENSORS S
+            WHERE S.SENSOR_ID = $sensor_id";
+        $sensors = oci_parse ($this->con, $query);
+        oci_execute ($sensors);
+        $sensorInfo = null;
+        while (($row = oci_fetch_array($sensors,OCI_BOTH)) != false) {
+            $sensorInfo = $row;
+         }
+        return $sensorInfo;
+    }
+    
 }
 
 ?>

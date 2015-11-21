@@ -44,6 +44,10 @@ and open the template in the editor.
             header('Location: uploadScreen.php');
             
         }
+        if (isset($_POST['dataAnalysisModule'])) {
+            header('Location: analysisScreen.php');
+            
+        }
         if (isset($_POST['subscribeModule'])){
             header('Location: mainSubscriptionScreen.php');
               exit();
