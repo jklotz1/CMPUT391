@@ -517,20 +517,26 @@ class OceanDB{
     }
     
     public function upload_image($_FILES, $description, $sensorId) {
-        $myblobid = 1;
         $mysensorid = $sensorId;
         $mydescription = $description;
         $mydate = date('d/M/Y H:i:s');
-
-
-        $query = 'DELETE FROM IMAGES WHERE IMAGE_ID = :MYBLOBID';
+        
+        $query = "SELECT MAX(IMAGE_ID) AS MAXIMUM FROM IMAGES";
         $stmt = oci_parse ($this->con, $query);
-        oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
-        $e = oci_execute($stmt, OCI_COMMIT_ON_SUCCESS);
-        if (!$e) {
-            die;
-        }
+        oci_execute($stmt, OCI_DEFAULT);
+        oci_fetch($stmt);
+        $myblobid = oci_result($stmt, "MAXIMUM");
         oci_free_statement($stmt);
+        $myblobid = $myblobid + 1;
+            
+        //$query = 'DELETE FROM IMAGES WHERE IMAGE_ID = :MYBLOBID';
+        //$stmt = oci_parse ($this->con, $query);
+        //oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
+        //$e = oci_execute($stmt, OCI_COMMIT_ON_SUCCESS);
+        //if (!$e) {
+            //die;
+        //}
+        //oci_free_statement($stmt);
   
 
         // Insert the BLOB from PHP's tempory upload area
@@ -548,7 +554,7 @@ class OceanDB{
             oci_commit($this->con);
         }
         else {
-            echo "Couldn't upload Blob\n";
+            echo "Couldn't upload image\n";
         }
         $lob->free();
         oci_free_statement($stmt);
@@ -586,7 +592,7 @@ class OceanDB{
             oci_commit($this->con);
         }
         else {
-            echo "Couldn't upload Blob\n";
+            echo "Couldn't upload image\n";
         }
         $lob->free();
         oci_free_statement($stmt);
@@ -602,10 +608,18 @@ class OceanDB{
     }
     
     public function upload_audio($_FILES, $description, $sensorId) {
-        $myblobid = 18;
         $mysensorid = $sensorId;
         $mydescription = $description;
         $mydate = date('d/M/Y H:i:s');
+        
+        $query = "SELECT MAX(RECORDING_ID) AS MAXIMUM FROM AUDIO_RECORDINGS";
+        $stmt = oci_parse ($this->con, $query);
+        oci_execute($stmt, OCI_DEFAULT);
+        oci_fetch($stmt);
+        $myblobid = oci_result($stmt, "MAXIMUM");
+        oci_free_statement($stmt);
+        $myblobid = $myblobid + 1;
+
 
         $filename = $_FILES['file']['tmp_name'];
         $file = fopen($filename, "r");
@@ -615,15 +629,6 @@ class OceanDB{
         $rawheader = fread($file, 16);
         $header = unpack('vtype/vchannels/Vsamplerate/Vbytespersec/valignment/vbits', $rawheader);
         $sec = ceil($size_in_bytes/$header['bytespersec']);
-
-        $query = 'DELETE FROM AUDIO_RECORDINGS WHERE RECORDING_ID = :MYBLOBID';
-        $stmt = oci_parse ($this->con, $query);
-        oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
-        $e = oci_execute($stmt, OCI_COMMIT_ON_SUCCESS);
-        if (!$e) {
-            die;
-        }
-        oci_free_statement($stmt);
   
 
         // Insert the BLOB from PHP's tempory upload area
@@ -642,10 +647,11 @@ class OceanDB{
             oci_commit($this->con);
         }
         else {
-            echo "Couldn't upload Blob\n";
+            echo "Couldn't upload audio recording\n";
         }
         $lob->free();
         oci_free_statement($stmt);
+        
         $query = 'SELECT RECORDED_DATA FROM AUDIO_RECORDINGS WHERE RECORDING_ID = :MYBLOBID';
 
         $stmt = oci_parse ($this->con, $query);
@@ -659,28 +665,21 @@ class OceanDB{
         $filename = $_FILES['file']['tmp_name'];
         $file = fopen($filename, "r");
         
-        while(! feof($file)) {
-            $line = fgetcsv($file);
-            if ($line[0] !== null) {
-                $query = 'DELETE FROM SCALAR_DATA WHERE ID = :MYID';
-                $stmt = oci_parse ($this->con, $query);
-                oci_bind_by_name($stmt, ':MYID', $line[0]);
-                $e = oci_execute($stmt, OCI_COMMIT_ON_SUCCESS);
-                if (!$e) {
-                    die;
-                }
-                oci_free_statement($stmt);
-            }
-        }
-        fclose($file);
-        $filename = $_FILES['file']['tmp_name'];
-        $file = fopen($filename, "r");
+        $query = "SELECT MAX(ID) AS MAXIMUM FROM SCALAR_DATA";
+        $stmt = oci_parse ($this->con, $query);
+        oci_execute($stmt, OCI_DEFAULT);
+        oci_fetch($stmt);
+        $myblobid = oci_result($stmt, "MAXIMUM");
+        oci_free_statement($stmt);
+        $myblobid = $myblobid + 1;
+        
         $data = array();
         while(! feof($file)) {
             $line = fgetcsv($file);
             if ($line[0] !== null) {
-                $stmt = oci_parse($this->con, "INSERT INTO SCALAR_DATA (ID, DATE_CREATED, VALUE) "
-                        ."VALUES(:MYSCALARID, to_date(:MYDATE, 'dd/mm/yyyy hh24:mi:ss'), :MYVALUE)");
+                $stmt = oci_parse($this->con, "INSERT INTO SCALAR_DATA (ID, SENSOR_ID, DATE_CREATED, VALUE) "
+                        ."VALUES(:MYBLOBID, :MYSCALARID, to_date(:MYDATE, 'dd/mm/yyyy hh24:mi:ss'), :MYVALUE)");
+                oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
                 oci_bind_by_name($stmt, ':MYSCALARID', $line[0]);
                 oci_bind_by_name($stmt, ':MYDATE', $line[1]);
                 oci_bind_by_name($stmt, ':MYVALUE', $line[2]);
@@ -688,6 +687,7 @@ class OceanDB{
                 oci_commit($this->con);
                 oci_free_statement($stmt);
                 array_push($data, $line);
+                $myblobid = $myblobid + 1;
             }
        }
        fclose($file);
