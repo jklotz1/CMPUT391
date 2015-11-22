@@ -298,11 +298,11 @@ and open the template in the editor.
 
                                 <td><div align="center">
                                         <p><h3>THUMBNAIL:</h3></p>
-                                                <p><img src="data:image/jpeg;base64,<?php echo base64_encode($result); ?>" />
+                                                <p><img src="data:image/jpeg;base64,<?php echo base64_encode($result); ?>"/>
                                                     <br>
                                                     
                                                
-                                                    <input class="downloadbutton" type="button" value="Download" name="downloadImage" onclick="test()"/>
+                                                    <input class="downloadbutton" type="button" value="Download" name="downloadImage" onclick="downloadImage()"/>
                                                 
                                                     
                                                  
@@ -310,16 +310,13 @@ and open the template in the editor.
                                                 <?php
                                                 $image = OceanDB::getInstance()->get_image($thumbResult['IMAGE_ID']);
                                                 $imageResult = oci_fetch_assoc($image);
-                                                $filename = $thumbResult['THUMBNAIL'];
-                                                //$im = $imageResult['RECOREDED_DATA']->load();
+                                                //$filename = $thumbResult['THUMBNAIL'];
+                                                $im = $imageResult['RECOREDED_DATA']->load();
                                                 ?>
                                                 <script type="text/javascript">
-                                                    function test() {
-                                                        var name = 'test'
-                                                        var img = "<?php echo base64_encode($result); ?>";
-                                                        var img2 = img.toDataURL("image/jpg");
-                                                        this.href = img2;
-                                                        this.download = name + '.jpg';
+                                                    function downloadImage() {
+                                                        var img = "<?php echo base64_encode($im); ?>";
+                                                        window.location.href = 'data:application/octet-stream;base64,' + img;
                                                     }
                                                 </script>
                                                     <?php
@@ -356,9 +353,20 @@ and open the template in the editor.
                                                    </medium>
                                                     
                                                     <br>
-                                                    <input class="downloadbutton" type="button" value="Download" name="downloadAudio" />
+                                                    <input class="downloadbutton" type="button" value="Download" name="downloadAudio" onclick="downloadAudio()" />
                                                 </p>
-                          
+                                                <?php
+                                                $audio = OceanDB::getInstance()->get_audio($audioDate['RECORDING_ID']);
+                                                $audioResult = oci_fetch_assoc($audio);
+                                                //$filename = $audioDate["RECORDING_ID"];
+                                                $ad = $audioResult['RECORDED_DATA']->load();
+                                                ?>
+                                                <script type="text/javascript">
+                                                    function downloadAudio() {
+                                                        var ad = "<?php echo base64_encode($ad); ?>";
+                                                        window.location.href = 'data:application/octet-stream;base64,' + ad;
+                                                    }
+                                                </script>
                 <?php }}
                 ?>
                                     </div>

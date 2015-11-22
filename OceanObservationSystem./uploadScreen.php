@@ -22,7 +22,7 @@
         </form>
         <?php if (!isset($_FILES['file'])) { ?>
         <form action="<?php echo $_SERVER['PHP_SELF']; ?>" name="upload" method="post" enctype="multipart/form-data">
-            <input class="uploadButton" type="file" value="Choose File" style="font-size:100%; width:200px; margin:10 " name="file"> Choose File to Upload<br>
+            <input class="uploadButton" type="file" value="Choose File" style="font-size:100%; width:200px; margin:10" name="file"> Choose File to Upload<br>
             <table>
                 <tr><td>Description (For image or audio recording only):
                         <input name="description" type="text" maxlength="128" id="description" value="<?php echo $_POST["description"]; ?>"></td></tr>

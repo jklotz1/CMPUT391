@@ -701,6 +701,15 @@ class OceanDB{
        return $stmt;
    }
    
+   public function get_audio($audioid) {
+       
+       $query = 'SELECT RECORDED_DATA FROM AUDIO_RECORDINGS WHERE RECORDING_ID = :MYAUDIOID';
+       $stmt = oci_parse ($this->con, $query);
+       oci_bind_by_name($stmt, ':MYAUDIOID', $audioid);
+       oci_execute($stmt, OCI_DEFAULT);
+       return $stmt;
+   }
+   
    public function get_subscribed_sensors($user){
         $query = "SELECT S.* 
                     FROM SJPARTRI.USERS U
