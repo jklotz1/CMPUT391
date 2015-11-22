@@ -209,7 +209,7 @@ class OceanDB{
     
     public function get_thumbnail($sensorId,$startDate,$endDate, $startTime, $endTime){
         
-       $query = "SELECT THUMBNAIL, DATE_CREATED, DESCRIPTION "
+       $query = "SELECT THUMBNAIL, DATE_CREATED, DESCRIPTION, IMAGE_ID "
                . "FROM IMAGES WHERE SENSOR_ID = '$sensorId' "
                . "AND DATE_CREATED "
                . "BETWEEN to_date('$startDate $startTime','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate $endTime','yyyy-mm-dd hh24:mi:ss')";
@@ -528,16 +528,7 @@ class OceanDB{
         $myblobid = oci_result($stmt, "MAXIMUM");
         oci_free_statement($stmt);
         $myblobid = $myblobid + 1;
-            
-        //$query = 'DELETE FROM IMAGES WHERE IMAGE_ID = :MYBLOBID';
-        //$stmt = oci_parse ($this->con, $query);
-        //oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
-        //$e = oci_execute($stmt, OCI_COMMIT_ON_SUCCESS);
-        //if (!$e) {
-            //die;
-        //}
-        //oci_free_statement($stmt);
-  
+ 
 
         // Insert the BLOB from PHP's tempory upload area
         $lob = oci_new_descriptor($this->con, OCI_D_LOB);
@@ -701,13 +692,21 @@ class OceanDB{
        return $stmt;
    }
    
-   public function get_image($_FILES) {
-       $query = 'SELECT RECOREDED_DATA FROM IMAGES';
-
+   public function get_image($imageid) {
+       
+       $query = 'SELECT RECOREDED_DATA FROM IMAGES WHERE IMAGE_ID = :MYIMAGEID';
        $stmt = oci_parse ($this->con, $query);
-       oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
+       oci_bind_by_name($stmt, ':MYIMAGEID', $imageid);
        oci_execute($stmt, OCI_DEFAULT);
-  
+       return $stmt;
+   }
+   
+   public function get_audio($audioid) {
+       
+       $query = 'SELECT RECORDED_DATA FROM AUDIO_RECORDINGS WHERE RECORDING_ID = :MYAUDIOID';
+       $stmt = oci_parse ($this->con, $query);
+       oci_bind_by_name($stmt, ':MYAUDIOID', $audioid);
+       oci_execute($stmt, OCI_DEFAULT);
        return $stmt;
    }
    
