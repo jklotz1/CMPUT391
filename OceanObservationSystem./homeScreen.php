@@ -235,8 +235,13 @@ and open the template in the editor.
                         $thumbnails_content[$i] = $result;
                    }
                    
-                   $audioDates_content[$i] = $audioDates;
-                   $scalarData_content[$i] = $scalarData;
+                   while($result = oci_fetch_array($audioDates, OCI_BOTH)){
+                            $audioDates_content[$i] = $result;
+                   }
+                               
+                   while($result = oci_fetch_array($scalarData, OCI_BOTH)){
+                        $scalarData_content[$i] = $result;
+                   }
                    
                }
            

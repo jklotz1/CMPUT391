@@ -153,7 +153,7 @@ class OceanDB{
     }
     
     public function get_scalar_data_values($sensorId, $startDate, $endDate, $startTime, $endTime){
-
+     
       
         $sql = "SELECT S1.VALUE, S1.DATE_CREATED "
                 . "FROM sjpartri.SCALAR_DATA S1  "
@@ -170,16 +170,11 @@ class OceanDB{
     
     
     public function get_search_results($keyword,$location, $sensorType, $sensorId, $startDate, $endDate, $startTime, $endTime){
-      
-     
-        
+
         $sql = "SELECT distinct S.SENSOR_ID, S.LOCATION,S.DESCRIPTION,S.SENSOR_TYPE "
                 ."FROM sjpartri.SENSORS S " 
                 . "WHERE S.SENSOR_ID LIKE '$sensorId' ";
-              
-        
-        
-       
+         
         
         if($keyword != ""){
        $keyword_keys = explode(" ",$keyword);
