@@ -253,7 +253,7 @@
 
 
 ###Data Analysis Module
-#####Path: loginScreen.php -> homeScreen.php -> analysisScreen.php
+#####Path: loginScreen.php -> homeScreen.php -> analysisScreen.php -> reportScreen.php
 
 ####Navigation to Anaysis Screen
 1. Log in using a username and password
@@ -264,10 +264,9 @@
     - Data Analysis Module
     - Subscribe Module
 3. Click the Data Analysis Module button from the task bar
-4. You are now directed to the "Data Analysis" Screen. There is one buttons with description:
-    - Home
+4. You are now directed to the "Data Analysis" Screen. Here you will a "home" button to return to the home page and a drop menu to select a sensor.
 
 ####To Run Report:
 1. Select a sensor from the drop down menu from the "Data Analysis" Screen
 2. Click "Show Data"
-##### Note: this report is initially filtered by year; the date field can be selected to reveal a shorter unit of time (ie. years, quarters, months, weeks, days)
+##### Note: this report is initially filtered by year; the date field can be selected to reveal a smaller unit of time (ie. years, quarters, months, weeks, days)

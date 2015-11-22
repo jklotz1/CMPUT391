@@ -723,17 +723,18 @@ class OceanDB{
     }
     
     public function create_view_data($sensorID){
-        $query = "CREATE VIEW vw_data AS SELECT D.YEAR as YEAR, D.MONTH as MONTH, D.QUARTER as QUARTER, D.WEEKOFYEAR as WEEK, D.DAY as DAY, D.DAYOFWEEK as dayofweek, D.DATE_CREATED as DATE_CREATED, D.VALUE as VALUE
-                            FROM (SELECT DISTINCT SD.ID, extract(year from DATE_CREATED) as YEAR, extract(month from DATE_CREATED) as MONTH, 
-                                        extract(day from DATE_CREATED) as DAY, TO_CHAR(DATE_CREATED, 'Q') AS QUARTER, TO_CHAR(DATE_CREATED, 'D') AS DAYOFWEEK,
-                                        TO_CHAR(DATE_CREATED+1, 'IW') AS WEEKOFYEAR, SD.VALUE as VALUE, DATE_CREATED as DATE_CREATED
-                                    FROM SJPARTRI.USERS U
-                                    JOIN SJPARTRI.PERSONS P ON U.PERSON_ID=P.PERSON_ID
-                                    JOIN SJPARTRI.SUBSCRIPTIONS SB ON SB.PERSON_ID=P.PERSON_ID
-                                    JOIN SJPARTRI.SENSORS S ON S.SENSOR_ID=SB.SENSOR_ID
-                                    JOIN SJPARTRI.SCALAR_DATA SD ON S.SENSOR_ID=SD.SENSOR_ID
-                                    WHERE S.SENSOR_ID = '$sensorID') D
-                            ORDER BY D.YEAR, D.MONTH, D.DAY, D.VALUE";
+        $query = "CREATE VIEW vw_data AS SELECT D.YEAR as YEAR, D.MONTH as MONTH, D.QUARTER as QUARTER, D.WEEKOFYEAR as WEEK, D.DAY as DAY, 
+                        D.DAYOFWEEK as dayofweek, D.DATE_CREATED as DATE_CREATED, D.VALUE as VALUE
+                    FROM (SELECT DISTINCT SD.ID, extract(year from DATE_CREATED) as YEAR, extract(month from DATE_CREATED) as MONTH, 
+                                extract(day from DATE_CREATED) as DAY, TO_CHAR(DATE_CREATED, 'Q') AS QUARTER, TO_CHAR(DATE_CREATED, 'D') AS DAYOFWEEK,
+                                TO_CHAR(DATE_CREATED+1, 'IW') AS WEEKOFYEAR, SD.VALUE as VALUE, DATE_CREATED as DATE_CREATED
+                            FROM SJPARTRI.USERS U
+                            JOIN SJPARTRI.PERSONS P ON U.PERSON_ID=P.PERSON_ID
+                            JOIN SJPARTRI.SUBSCRIPTIONS SB ON SB.PERSON_ID=P.PERSON_ID
+                            JOIN SJPARTRI.SENSORS S ON S.SENSOR_ID=SB.SENSOR_ID
+                            JOIN SJPARTRI.SCALAR_DATA SD ON S.SENSOR_ID=SD.SENSOR_ID
+                            WHERE S.SENSOR_ID = '$sensorID') D
+                    ORDER BY D.YEAR, D.MONTH, D.DAY, D.VALUE";  
         $view = oci_parse ($this->con, $query);
         oci_execute ($view);  
     }
