@@ -6,6 +6,7 @@
     - ./report (contains the project report)
     - ./document (contains the user documentation)
     - ./code (contains the source code)
+3. You may need to change the permissions of each .php file to minimum "Read Only"
 3. Go into the ./code folder:
     - You should see another folder called "OceanObservationSystem."
 4. Click the "OceanObservationSystem." folder and then click the "Includes" folder
