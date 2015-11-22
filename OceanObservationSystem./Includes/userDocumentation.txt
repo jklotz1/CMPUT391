@@ -1,0 +1,273 @@
+# User Documentation
+
+## Installation Guide
+1. Unzip the CMPUT391Project_Group14 
+2. There are three folders:
+    - ./report (contains the project report)
+    - ./document (contains the user documentation)
+    - ./code (contains the source code)
+3. Go into the ./code folder:
+    - You should see another folder called "OceanObservationSystem."
+4. Click the "OceanObservationSystem." folder and then click the "Includes" folder
+5. Inside the Includes folder, you should have the db.php file
+6. In order to set up the database connection:
+    - Manipulate the $user object to the username of oracle account
+    - Manipulate the $pass object to the password of the oracle account
+    - Manipulate the $dbHost object to the path of server
+7. Place the OceanObservationSystem folder in the path /compsci/webdocs/(username)/web_docs/OceanObservationSystem
+7. The OceanObservationSystem can be set up in an external IDE, we used Netbean 8.0.2
+8. Follow the setup of IDE and connect to the databases in the IDE's services
+9. Go to the url of the server, http://consort.cs.ualberta.ca/~(username)/OceanObservationSystem./
+    - In our case, it is available at http://consort.cs.ualberta.ca/~sjpartri/cmput_project/OceanObservationSystem./loginScreen.php
+
+##Modules 
+
+###Login Module
+#####Path: loginScreen.php -> homeScreen.php or personalAccount.php
+
+####Logging on
+1. Enter username and password
+2. Select "Log On"
+3. The next screen you are directed to is the Home Screen
+
+####Edit Personal Settings
+1. Enter username and password
+2. Select "Account"
+3. The next screen you are directed to is the Personal Account Screen
+4. Edit fields and select "Save Changes"
+
+####Edit Personal Settings
+1. Enter username and password
+2. Select "Account"
+3. The next screen you are directed to is the Personal Account Screen
+4. Select user from table and select "Save"
+
+
+###User and Sensor Management Module
+#####Path: loginScreen.php -> homeScreen.php -> managementScreen.php -> managementUserScreen.php or managementSensorScreen.php
+
+####Navigation to Management Screen
+1. Log in using a username and password
+2. The next screen you are directed to is the Home Screen, there is a task bar and in it are the following buttons:
+    - Search Module
+    - Management Module
+    - Upload Module
+    - Data Analysis Module
+    - Subscribe Module
+3. Click the Management Module button from the task bar
+4. You are now directed to the "User and Sensor Management" Screen. There are three buttons with descriptions:
+    - Home
+    - Sensors
+    - Users
+
+####To Add a Sensor:
+1. Click the "Sensors" button located on "User and Sensor Management" Screen.
+2. On this screen are four buttons and a table of sensors
+    - Back Button
+    - Home Button
+    - Create New Sensor
+    - Delete Sensor
+3. Click the "Create New Sensor" Button
+4. You are now directed to the Create New Sensor Screen, fill out all fields and select "Save"
+
+####To Delete a Sensor:
+1. Click the "Sensors" button located on "User and Sensor Management" Screen.
+2. On this screen are four buttons and a table of sensors
+    - Back Button
+    - Home Button
+    - Create New Sensor
+    - Delete Sensor
+3. Select a sensor in the table 
+4. Click the "Delete Sensor" button
+##### Note: when a sensor is deleted, all associated data records will be deleted as well
+
+####To Add a User:
+1. Click the "Users" button located on "User and Sensor Management" Screen.
+2. On this screen are eight buttons, a table of users and a table of personal accounts
+    - Back Button
+    - Home Button
+    - Create New User
+    - Edit User
+    - Delete User
+    - Create New Person
+    - Edit Person
+    - Delete Person
+3. Click the "Create New User" Button
+4. You are now directed to the Create New User Screen, fill out all fields and select "Save"
+##### Note: if the Person Profile doesn't exist in the drop down list select the button "Add Person Profile" to add a new person
+
+####To Edit a User:
+1. Click the "Users" button located on "User and Sensor Management" Screen.
+2. On this screen are eight buttons, a table of users and a table of personal accounts
+    - Back Button
+    - Home Button
+    - Create New User
+    - Edit User
+    - Delete User
+    - Create New Person
+    - Edit Person
+    - Delete Person
+3. Select user in the user table
+4. Click the "Edit User" Button
+5. You are now directed to the Edit User Screen, update fields and select "Save"
+
+####To Change Password of a User:
+1. Click the "Users" button located on "User and Sensor Management" Screen.
+2. On this screen are eight buttons, a table of users and a table of personal accounts
+    - Back Button
+    - Home Button
+    - Create New User
+    - Edit User
+    - Delete User
+    - Create New Person
+    - Edit Person
+    - Delete Person
+3. Select user in the user table
+4. Click the "Edit User" Button
+5. You are now directed to the Edit User Screen
+6. Enter the old password, the new password and confirm the new password
+7. Click "Save"
+
+####To Delete User:
+1. Click the "Users" button located on "User and Sensor Management" Screen.
+2. On this screen are eight buttons, a table of users and a table of personal accounts
+    - Back Button
+    - Home Button
+    - Create New User
+    - Edit User
+    - Delete User
+    - Create New Person
+    - Edit Person
+    - Delete Person
+3. Select user in the user table
+4. Click the "Delete User" Button
+
+####To Add a Person:
+1. Click the "Users" button located on "User and Sensor Management" Screen.
+2. On this screen are eight buttons, a table of users and a table of personal accounts
+    - Back Button
+    - Home Button
+    - Create New User
+    - Edit User
+    - Delete User
+    - Create New Person
+    - Edit Person
+    - Delete Person
+3. Click the "Create New Person" Button
+4. You are now directed to the Create New Person Screen, fill out all fields and select "Save"
+
+####To Edit a User:
+1. Click the "Users" button located on "User and Sensor Management" Screen.
+2. On this screen are eight buttons, a table of users and a table of personal accounts
+    - Back Button
+    - Home Button
+    - Create New User
+    - Edit User
+    - Delete User
+    - Create New Person
+    - Edit Person
+    - Delete Person
+3. Select user in the person table
+4. Click the "Edit Person" Button
+5. You are now directed to the Edit Person Screen, update fields and select "Save"
+
+####To Delete Person:
+1. Click the "Users" button located on "User and Sensor Management" Screen.
+2. On this screen are eight buttons, a table of users and a table of personal accounts
+    - Back Button
+    - Home Button
+    - Create New User
+    - Edit User
+    - Delete User
+    - Create New Person
+    - Edit Person
+    - Delete Person
+3. Select person in the person table
+4. Click the "Delete Person" button
+##### Note: when a person is deleted, all associated user records will be deleted as well
+
+
+###Subscribe Module
+#####Path: loginScreen.php -> homeScreen.php -> mainSubScriptionScreen.php -> subscribeScreen.php or availableSensorSubscriptions.php
+
+####Navigation to Main Subscription Screen
+1. Log in using a username and password
+2. The next screen you are directed to is the Home Screen, there is a task bar and in it are the following buttons:
+    - Search Module
+    - Management Module
+    - Upload Module
+    - Data Analysis Module
+    - Subscribe Module
+3. Click the Subscribe Module button from the task bar
+4. You are now directed to the "Subscription Navigation" Screen. There are three buttons with descriptions:
+    - Home
+    - Subscription(s)
+    - Available Subscription(s)
+
+####To Subscribe to a New Sensor:
+1. Click the Available Subscription(s) button located on "Subscription Navigation" Screen.
+2. On this screen are two buttons and a table of subscriptions
+    - Back Button
+    - Home Button
+    - Available Subscription Table
+##### Note: If you are subscribed to all the sensors, a message will appear stating "CURRENTLY SUBSCRIBED TO EVERY SENSOR"
+3. Click the Subscribe Button located beside each sensor entry in the table
+4. The sensor will disappear from the table and you are now subscribed to it.
+
+####To Unsubscribe From a Sensor:
+1. Click the Subscription(s) button located on "Subscription Navgation" Screen
+2. On this screen are two buttons and a table of subscriptions
+    - Back Button
+    - Home Button
+    - Subscription Table
+##### Note: If you are not subscribed to any of the sensors, a message will appear stating "CURRENTLY NOT SUBSCRIBED TO ANY SENSOR"
+3. Click the UnSubscribe Button located beside each sensor entry in the table
+4. The sensor will disappear from the table and you are now unsubscribed to it.
+
+###Search Module
+#####Path: loginScreen.php -> homeScreen.php -> searchModule.php
+
+####Navigation to Main Subscription Screen
+1. Log in using a username and password
+2. The next screen you are directed to is the Home Screen, there is a task bar and in it are the following buttons:
+    - Search Module
+    - Management Module
+    - Upload Module
+    - Data Analysis Module
+    - Subscribe Module
+
+#### How to Search
+1. Click the Search Module button from the task bar
+2. A form opens up to satisfy advanced searching needs . There are three options:
+    - Keywords
+    - Sensor Type
+    - Location
+3. Click the "Submit" button when finished.
+4. The "Search Criteria" form will be populated with the advanced search options you have selected
+##### Note: Start Date and End Date are required to complete a search
+5. Fill in the appropriate search field and click the "Search" button when finished 
+6. A table of search results will appear below.
+##### Note: If a search was unsucessful an error message will appear.
+7. You can download image files, audio files, and scalar data from the table directly by clicking the download button 
+   associated with each entry.
+
+
+###Data Analysis Module
+#####Path: loginScreen.php -> homeScreen.php -> analysisScreen.php
+
+####Navigation to Anaysis Screen
+1. Log in using a username and password
+2. The next screen you are directed to is the Home Screen, there is a task bar and in it are the following buttons:
+    - Search Module
+    - Management Module
+    - Upload Module
+    - Data Analysis Module
+    - Subscribe Module
+3. Click the Data Analysis Module button from the task bar
+4. You are now directed to the "Data Analysis" Screen. There is one buttons with description:
+    - Home
+
+####To Run Report:
+1. Select a sensor from the drop down menu from the "Data Analysis" Screen
+2. Click "Show Data"
+##### Note: this report is initially filtered by year; the date field can be selected to reveal a shorter unit of time (ie. years, quarters, months, weeks, days)

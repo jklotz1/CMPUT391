@@ -18,6 +18,12 @@ and open the template in the editor.
 
 </head>
 <body>
+     <form name="logon" method="post">
+         <input class="logoutButton" type="submit" value="Help" name="Help">
+                   <?php 
+                   if (isset($_POST['Help'])) { header('Location: userDocumentation.php'); }
+                   ?>
+        </form>
 
     <!-- Navigation ToolBar -->
     <form name="homeNavigation" method="post">
@@ -38,6 +44,11 @@ and open the template in the editor.
         
         if (isset($_POST['managementModule'])) {
             header('Location: managementScreen.php');
+            
+        }
+        
+        if (isset($_POST['uploadModule'])) {
+            header('Location: uploadScreen.php');
             
         }
 
@@ -206,59 +217,67 @@ and open the template in the editor.
             }
             
             if(count($sensorID_data) == 0){
-                 echo "<br><p style='color:red;'>YOU ARE NOT SUBSCRIBED TO ANY SENSORS. PLEASE VISIT THE SUBSCRIBE PAGE.<p>"; 
+                 echo "<br><p style='color:red;'>YOU ARE NOT SUBSCRIBED TO ANY SENSORS. PLEASE VISIT THE SUBSCGRIBE PAGE.<p>"; 
             }else{
            
                for ($i = 0; $i <= count($sensorID_data); $i++) {
                    $sensorID = $sensorID_data[$i];
+              
                    
                    $thumbnails = OceanDB::getInstance()->get_thumbnail($sensorID, $_POST["startDate"], $_POST["endDate"], $_POST["startTime"],$_POST["endTime"]);
                  
                    $audioDates = OceanDB::getInstance()->get_audioInfo($sensorID, $_POST["startDate"], $_POST["endDate"],$_POST["startTime"],$_POST["endTime"]);
                    $scalarData = OceanDB::getInstance()->get_scalar_data_values($sensorID, $_POST["startDate"], $_POST["endDate"],$_POST["startTime"],$_POST["endTime"]);
                    $objParse1 = OceanDB::getInstance()->get_search_results($_POST["txtKeyword"],$_POST['txtLocation'],$_POST["txtSensorType"] , $sensorID, $_POST["startDate"], $_POST["endDate"],$_POST["startTime"],$_POST["endTime"]);
-                   
-                   while($result= oci_fetch_array($objParse1, OCI_BOTH)){
-                   $sensors_content[] =  $result;
+                
+                    
+                   while($result1= oci_fetch_array($objParse1, OCI_BOTH)){
+                        $sensors_content[] =  $result1;
+                        
                    }
              
                    while($result = oci_fetch_array($thumbnails, OCI_BOTH)){
-                       
+                    
                         $thumbnails_content[$i] = $result;
                    }
                    
-                   $audioDates_content[$i] = $audioDates;
-                   $scalarData_content[$i] = $scalarData;
+                   while($result = oci_fetch_array($audioDates, OCI_BOTH)){
+                            $audioDates_content[$i] = $result;
+                   }
+                               
+                   while($result = oci_fetch_array($scalarData, OCI_BOTH)){
+                        $scalarData_content[$i] = $result;
+                   }
                    
                }
            
                
-               if( count($thumbnails_content) == 0 ){
+               if( count($thumbnails_content) == 0 && count($audioDates_content) == 0 && count($scalarData_content) == 0){
                     echo "<br><p style='color:red;'>NO SEARCH RESULTS FOUND<p>"; 
                }else{
                    
                ?>
+ 
                    <table  class = "searchResult">
                             <tr>
 
                                 <td> <div align="center">Sensor ID </div></td>
 
-                                <td> <div align="center">Location </div></td>
-
-                                <td> <div align="center">Sensor Type </div></td>
+                                <td> <div align="center">Date Created </div></td>
 
                                 <td> <div align="center">Description </div></td>
 
-                                <td> <div align="center">Media </div></td>
+                                <td> <div align="center">Media/Value </div></td>
 
                             </tr>
                    
                     <?php
+                    $cnt = 0;
                      for ($k = 0; $k < count($sensors_content); $k++) {    
-                         //while ($objResult = oci_fetch_array($sensors_content[$k], OCI_BOTH)){
-                               //$sensorID = $objResult["SENSOR_ID"];
-                         $sensorID=$sensors_content[$k]["SENSOR_ID"];
-                    
+                      
+                         $sensorID= $sensors_content[$k]["SENSOR_ID"];
+                       
+                       
                          
                 //Images Row
                 if(count($thumbnails_content) != 0){
@@ -273,32 +292,37 @@ and open the template in the editor.
                                 
                                 <td><div align="center"><?php echo $sensors_content[$k]["SENSOR_ID"]; ?></div></td>
 
-                                <td><div align="center"><?php echo $sensors_content[$k]["LOCATION"]; ?></div></td>
+                                <td><div align="center"><?php echo $thumbResult['DATE_CREATED'];  ?></div></td>
 
-                                <td><div align="center"><?php echo $sensors_content[$k]["SENSOR_TYPE"]; ?></div></td>
+                                <td><div align="center"><?php echo $thumbResult['DESCRIPTION']; ?></div></td>
 
-                                <td><div align="center"><?php echo $sensors_content[$k]["DESCRIPTION"]; ?></div></td>
                                 <td><div align="center">
-                                        <p><h3>IMAGE:</h3></p>
-                                                <p><img src="data:image/jpeg;base64,<?php echo base64_encode($result); ?>" />
+                                        <p><h3>THUMBNAIL:</h3></p>
+                                                <p><img src="data:image/jpeg;base64,<?php echo base64_encode($result); ?>"/>
                                                     <br>
-                                                     <medium>
-                                                      DATE-CREATED:
-                                                    <?php echo $thumbResult['DATE_CREATED']; ?>
-                                                     </medium>
-                                                    <br>
-                                                     <medium>
-                                                      DESCRIPTION:
-                                                    <?php echo $thumbResult['DESCRIPTION']; ?>
-                                                    </medium>
-                                                    <br>
-                                                    <input class="downloadbutton" type="button" value="Download" name="Download" />
-                                                    <BR>
+                                                    
+                                               
+                                                    <input class="downloadbutton" type="button" value="Download" name="downloadImage" onclick="downloadImage()"/>
+                                                
+                                                    
                                                  
                                                 </p>
-                          
-                <?php }}
-                ?>
+                                                <?php
+                                                $image = OceanDB::getInstance()->get_image($thumbResult['IMAGE_ID']);
+                                                $imageResult = oci_fetch_assoc($image);
+                                                //$filename = $thumbResult['THUMBNAIL'];
+                                                $im = $imageResult['RECOREDED_DATA']->load();
+                                                ?>
+                                                <script type="text/javascript">
+                                                    function downloadImage() {
+                                                        var img = "<?php echo base64_encode($im); ?>";
+                                                        window.location.href = 'data:application/octet-stream;base64,' + img;
+                                                    }
+                                                </script>
+                                                    <?php
+            }}
+                                                ?>
+                                                
                                     </div>
                                                 </td>
                             </tr>
@@ -315,28 +339,34 @@ and open the template in the editor.
                                         while ($audioDate = oci_fetch_array($audioDates, OCI_BOTH)) {
                                             ?>
                             <tr>
-                                                          <td><div align="center"><?php echo $sensors_content[$k]["SENSOR_ID"]; ?></div></td>
+                                <td><div align="center"><?php echo $sensors_content[$k]["SENSOR_ID"]; ?></div></td>
 
-                                <td><div align="center"><?php echo $sensors_content[$k]["LOCATION"]; ?></div></td>
+                                <td><div align="center"><?php echo $audioDate["DATE_CREATED"]; ?></div></td>
 
-                                <td><div align="center"><?php echo $sensors_content[$k]["SENSOR_TYPE"]; ?></div></td>
+                                <td><div align="center"><?php echo $audioDate["DESCRIPTION"]; ?></div></td>
 
-                                <td><div align="center"><?php echo $sensors_content[$k]["DESCRIPTION"]; ?></div></td>
                                 <td><div align="center">
                                                  <p><h3>AUDIO RECORDING:</h3></p>
                                                    <medium>
-                                                      DATE-CREATED:
-                                                 <?php echo $audioDate["DATE_CREATED"]; ?>
+                                                      RECORDING ID:
+                                                 <?php echo $audioDate["RECORDING_ID"]; ?>
                                                    </medium>
+                                                    
                                                     <br>
-                                                     <medium>
-                                                      DESCRIPTION:
-                                                 <?php echo $audioDate["DESCRIPTION"]; ?>
-                                                   </medium>
-                                                    <br>
-                                                    <input class="downloadbutton" type="button" value="Download" name="Download" />
+                                                    <input class="downloadbutton" type="button" value="Download" name="downloadAudio" onclick="downloadAudio()" />
                                                 </p>
-                          
+                                                <?php
+                                                $audio = OceanDB::getInstance()->get_audio($audioDate['RECORDING_ID']);
+                                                $audioResult = oci_fetch_assoc($audio);
+                                                //$filename = $audioDate["RECORDING_ID"];
+                                                $ad = $audioResult['RECORDED_DATA']->load();
+                                                ?>
+                                                <script type="text/javascript">
+                                                    function downloadAudio() {
+                                                        var ad = "<?php echo base64_encode($ad); ?>";
+                                                        window.location.href = 'data:application/octet-stream;base64,' + ad;
+                                                    }
+                                                </script>
                 <?php }}
                 ?>
                                     </div>
@@ -353,20 +383,13 @@ and open the template in the editor.
                             <tr>
                                         <td><div align="center"><?php echo $sensors_content[$k]["SENSOR_ID"]; ?></div></td>
 
-                                <td><div align="center"><?php echo $sensors_content[$k]["LOCATION"]; ?></div></td>
+                                <td><div align="center"><?php echo $sensorResult["DATE_CREATED"];?></div></td>
 
-                                <td><div align="center"><?php echo $sensors_content[$k]["SENSOR_TYPE"]; ?></div></td>
+                                <td><div align="center"></div></td>
 
-                                <td><div align="center"><?php echo $sensors_content[$k]["DESCRIPTION"]; ?></div></td>
                                 <td><div align="center">
                                          <p><h3>SCALAR DATA:</h3></p>
-                                    <medium>
-                                                      DATE-CREATED:
-                                    <?php
-                                        echo $sensorResult["DATE_CREATED"];
-                                        ?>
-                                    </medium>
-                                    <br>
+                                  
                                             VALUE:
                                      <?php echo $sensorResult["VALUE"];
                                            echo '<br>';
@@ -384,135 +407,11 @@ and open the template in the editor.
            }
         }
         
+        
         ?>
-        
-                                                
-                                                
-                                                
-                                                
-                                                
-                                                
-                                                
-                                                
-                                                
-        <?php
-        /*
-        if ($data > 0) {
-            ?>
-   
-            <?php
-        while ($objResult = oci_fetch_array($objParse1, OCI_BOTH)) {
-                                $sensorID = $objResult["SENSOR_ID"];
-                                echo ($sensorID);
-                                $thumbnails1 = OceanDB::getInstance()->get_thumbnail($sensorID, $_POST["startDate"], $_POST["endDate"]);
-                                $audioDates1 = OceanDB::getInstance()->get_audioInfo($sensorID,  $_POST["startDate"], $_POST["endDate"]);
-                                $scalarData1 = OceanDB::getInstance()->get_scalar_data_values($sensorID, $_POST["startDate"], $_POST["endDate"]);
-                                
-                              
-                  
-                           
-                                while ($res = oci_fetch_array($thumbnails1, OCI_BOTH)) {
-                                    $data[] = $res;
-                                 
-                                }
-                        
-                                $thumbnail_count = count($data);
-                                echo($thumbnail_count);
-                                
-                                  while ($res = oci_fetch_array($audioDates1, OCI_BOTH)) {
-                                    $data[] = $res;
-                                 
-                                }
-                                
-                                $audioDates_count = count($data);
-                                
-                                
-                            
-                               // while ($res = oci_fetch_array($thumbnails, OCI_BOTH)) {
-                                  //  $data[] = $res;
-                              //  }
-                             //   $audio_count = count($data);
-                                
-                                if($audioDates_count == 0 ){
-                                    echo 'hello';
-                                }else{
-
-            ?>
-            
-                            <tr>
-                             
-                                <td><div align="center"><?php echo $objResult["SENSOR_ID"]; ?></div></td>
-
-                                <td><div align="center"><?php echo $objResult["LOCATION"]; ?></div></td>
-
-                                <td><div align="center"><?php echo $objResult["SENSOR_TYPE"]; ?></div></td>
-
-                                <td><div align="center"><?php echo $objResult["DESCRIPTION"]; ?></div></td>
-                                   <td><div align="center">
-                    
-            <?php
-        
-
-            $thumbnails = OceanDB::getInstance()->get_thumbnail($sensorID, $_POST["startDate"], $_POST["endDate"]);
-            while ($thumbResult = oci_fetch_array($thumbnails, OCI_BOTH)) {
-                $result = $thumbResult['THUMBNAIL']->load();
-                ?>
-                                      
-                                                <p><img src="data:image/jpeg;base64,<?php echo base64_encode($result); ?>" />
-                                                    <br>
-                                                     <small>
-                                                    <?php echo $thumbResult['DATE_CREATED']; ?>
-                                                    </small>
-                                                    <br>
-                                                    <input class="downloadbutton" type="button" value="Download" name="Download" />
-                                                    <BR>
-                                                 
-                                                </p>
-                                                
-            <?php } ?>
-                                </td>
-                                <td><div align="center">
-                                        <?php
-                                     
-                                        $audioDates = OceanDB::getInstance()->get_audioInfo($sensorID,  $_POST["startDate"], $_POST["endDate"]);
-
-                                        while ($audioDate = oci_fetch_array($audioDates, OCI_BOTH)) {
-                                            ?>
-                                                <p> <?php echo $audioDate["DATE_CREATED"]; ?>
-                                                    <input class="downloadbutton" type="button" value="Download" name="Download" />
-                                                </p>
-                                            <?php } ?>
-                                    
-                                </td>
-                                <td>
-                                         
-                                    <?php
-                                   
-                                 $scalarData = OceanDB::getInstance()->get_scalar_data_values($sensorID, $_POST["startDate"], $_POST["endDate"]);
-                                    while ($sensorResult = oci_fetch_array($scalarData, OCI_BOTH)) {
-                                      
-                                        
-                                        echo $sensorResult["DATE_CREATED"];
-                                        ?>
-                                            - VALUE:
-                                     <?php echo $sensorResult["VALUE"];} ?>
-                                
-                                </td>
-                            </tr>
-            <?php
-        }
-        }
-        }
-            }
-    }
-    }
-    */
-
-?>
-         
+  
         
     </table>
-
 </body>
 <?php   require_once("Includes/css.php");  ?>
 </html>

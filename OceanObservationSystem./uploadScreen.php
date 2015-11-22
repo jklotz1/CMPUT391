@@ -1,9 +1,15 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title></title>
+        <title>Upload Module</title>
     </head>
     <body>
+         <form name="logon" method="post">
+         <input class="logoutButton" type="submit" value="Help" name="Help">
+                   <?php 
+                   if (isset($_POST['Help'])) { header('Location: userDocumentation.php'); }
+                   ?>
+        </form>
         <h1 align="left" style="font-size: 175%">Upload Center</h1>
         <?php  
             require_once 'Includes/db.php';
@@ -16,10 +22,11 @@
         </form>
         <?php if (!isset($_FILES['file'])) { ?>
         <form action="<?php echo $_SERVER['PHP_SELF']; ?>" name="upload" method="post" enctype="multipart/form-data">
-                <input class="uploadButton" type="file" value="Choose File" style="font-size:100%; width:200px; margin:10 " name="file"> Choose File to Upload<br>
-                Description:
-                <input name="description" type="text" maxlength="128" id="description" value="<?php echo $_POST["description"]; ?>"><br>
-                Sensor_Id:&nbsp;
+            <input class="uploadButton" type="file" value="Choose File" style="font-size:100%; width:200px; margin:10" name="file"> Choose File to Upload<br>
+            <table>
+                <tr><td>Description (For image or audio recording only):
+                        <input name="description" type="text" maxlength="128" id="description" value="<?php echo $_POST["description"]; ?>"></td></tr>
+                <tr><td>Sensor_Id (For image or audio recording only):&nbsp;
                 <?php
                 $sensor_ids = OceanDB::getInstance()->get_sensor_ids();
                 ?>
@@ -29,7 +36,8 @@
                     echo '<option>' . htmlspecialchars($row['SENSOR_ID']) . '</option>';
                 }
                 ?>
-                </select><br>
+                </select></td></tr>
+                </table>
                 <input class="logoutButton" type="submit" value="Upload" style="font-size:100%; width:200px; margin:10 " name="upload"> Upload File<br> 
                     
         </form>
@@ -90,7 +98,7 @@
             <?php
             }
             else {
-                echo "Improper file type\n";
+                echo "No file chosen or improper file type\n";
                 ?>
                 <form name="uploadAnother" method="post">
                     <input class="logoutButton" type="submit" value="Upload Another File" style="font-size:100%; width:200px; margin:10" name="uploadAnother">

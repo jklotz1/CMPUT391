@@ -6,11 +6,18 @@ and open the template in the editor.
 -->
 
 <html>
+
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title></title>
     </head>
     <body>
+        <form name="logon" method="post">
+         <input class="logoutButton" type="submit" value="Help" name="Help">
+                   <?php 
+                   if (isset($_POST['Help'])) { header('Location: userDocumentation.php'); }
+                   ?>
+        </form>
         <h1 align="center" style="font-size: 200%">Welcome to The Ocean Observation System</h1>
         <br><br><br>
         <form name="logon" method="post">

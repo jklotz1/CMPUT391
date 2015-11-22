@@ -57,6 +57,7 @@ class OceanDB{
          else
              return false;            
     }
+
     
     public function get_person_id_by_name($name) {
 
@@ -152,7 +153,7 @@ class OceanDB{
     }
     
     public function get_scalar_data_values($sensorId, $startDate, $endDate, $startTime, $endTime){
-
+     
       
         $sql = "SELECT S1.VALUE, S1.DATE_CREATED "
                 . "FROM sjpartri.SCALAR_DATA S1  "
@@ -169,24 +170,11 @@ class OceanDB{
     
     
     public function get_search_results($keyword,$location, $sensorType, $sensorId, $startDate, $endDate, $startTime, $endTime){
-      
-            
-     
-        
+
         $sql = "SELECT distinct S.SENSOR_ID, S.LOCATION,S.DESCRIPTION,S.SENSOR_TYPE "
-                ."FROM sjpartri.SENSORS S, sjpartri.SCALAR_DATA S1, sjpartri.IMAGES I, sjpartri.AUDIO_RECORDINGS AR " 
-                . "WHERE S.SENSOR_ID LIKE '$sensorId' "
-                . "AND (S1.SENSOR_ID LIKE '$sensorId' "
-                . "OR I.SENSOR_ID  LIKE '$sensorId' "
-                . "OR AR.SENSOR_ID = '$sensorId' )"
-                . "AND( S1.DATE_CREATED "
-                . "BETWEEN to_date('$startDate $startTime','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate $endTime','yyyy-mm-dd hh24:mi:ss') "
-                . "OR I.DATE_CREATED "
-                . "BETWEEN to_date('$startDate $startTime','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate $endTime','yyyy-mm-dd hh24:mi:ss') "
-                . "OR AR.DATE_CREATED "
-                . "BETWEEN to_date('$startDate $startTime','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate $endTime','yyyy-mm-dd hh24:mi:ss')) ";
-        
-       
+                ."FROM sjpartri.SENSORS S " 
+                . "WHERE S.SENSOR_ID LIKE '$sensorId' ";
+         
         
         if($keyword != ""){
        $keyword_keys = explode(" ",$keyword);
@@ -221,7 +209,7 @@ class OceanDB{
     
     public function get_thumbnail($sensorId,$startDate,$endDate, $startTime, $endTime){
         
-       $query = "SELECT THUMBNAIL, DATE_CREATED, DESCRIPTION "
+       $query = "SELECT THUMBNAIL, DATE_CREATED, DESCRIPTION, IMAGE_ID "
                . "FROM IMAGES WHERE SENSOR_ID = '$sensorId' "
                . "AND DATE_CREATED "
                . "BETWEEN to_date('$startDate $startTime','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate $endTime','yyyy-mm-dd hh24:mi:ss')";
@@ -234,7 +222,7 @@ class OceanDB{
     }
     
     public function get_audioInfo($sensorId,$startDate,$endDate, $startTime, $endTime){
-        $query = "SELECT DATE_CREATED, DESCRIPTION "
+        $query = "SELECT DATE_CREATED, DESCRIPTION, RECORDING_ID "
                 . "FROM AUDIO_RECORDINGS WHERE SENSOR_ID='$sensorId'"
                 . "AND DATE_CREATED "
                 . "BETWEEN to_date('$startDate $startTime','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate $endTime','yyyy-mm-dd hh24:mi:ss')";
@@ -529,21 +517,18 @@ class OceanDB{
     }
     
     public function upload_image($_FILES, $description, $sensorId) {
-        $myblobid = 1;
         $mysensorid = $sensorId;
         $mydescription = $description;
         $mydate = date('d/M/Y H:i:s');
-
-
-        $query = 'DELETE FROM IMAGES WHERE IMAGE_ID = :MYBLOBID';
+        
+        $query = "SELECT MAX(IMAGE_ID) AS MAXIMUM FROM IMAGES";
         $stmt = oci_parse ($this->con, $query);
-        oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
-        $e = oci_execute($stmt, OCI_COMMIT_ON_SUCCESS);
-        if (!$e) {
-            die;
-        }
+        oci_execute($stmt, OCI_DEFAULT);
+        oci_fetch($stmt);
+        $myblobid = oci_result($stmt, "MAXIMUM");
         oci_free_statement($stmt);
-  
+        $myblobid = $myblobid + 1;
+ 
 
         // Insert the BLOB from PHP's tempory upload area
         $lob = oci_new_descriptor($this->con, OCI_D_LOB);
@@ -560,7 +545,7 @@ class OceanDB{
             oci_commit($this->con);
         }
         else {
-            echo "Couldn't upload Blob\n";
+            echo "Couldn't upload image\n";
         }
         $lob->free();
         oci_free_statement($stmt);
@@ -598,7 +583,7 @@ class OceanDB{
             oci_commit($this->con);
         }
         else {
-            echo "Couldn't upload Blob\n";
+            echo "Couldn't upload image\n";
         }
         $lob->free();
         oci_free_statement($stmt);
@@ -614,10 +599,18 @@ class OceanDB{
     }
     
     public function upload_audio($_FILES, $description, $sensorId) {
-        $myblobid = 18;
         $mysensorid = $sensorId;
         $mydescription = $description;
         $mydate = date('d/M/Y H:i:s');
+        
+        $query = "SELECT MAX(RECORDING_ID) AS MAXIMUM FROM AUDIO_RECORDINGS";
+        $stmt = oci_parse ($this->con, $query);
+        oci_execute($stmt, OCI_DEFAULT);
+        oci_fetch($stmt);
+        $myblobid = oci_result($stmt, "MAXIMUM");
+        oci_free_statement($stmt);
+        $myblobid = $myblobid + 1;
+
 
         $filename = $_FILES['file']['tmp_name'];
         $file = fopen($filename, "r");
@@ -627,15 +620,6 @@ class OceanDB{
         $rawheader = fread($file, 16);
         $header = unpack('vtype/vchannels/Vsamplerate/Vbytespersec/valignment/vbits', $rawheader);
         $sec = ceil($size_in_bytes/$header['bytespersec']);
-
-        $query = 'DELETE FROM AUDIO_RECORDINGS WHERE RECORDING_ID = :MYBLOBID';
-        $stmt = oci_parse ($this->con, $query);
-        oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
-        $e = oci_execute($stmt, OCI_COMMIT_ON_SUCCESS);
-        if (!$e) {
-            die;
-        }
-        oci_free_statement($stmt);
   
 
         // Insert the BLOB from PHP's tempory upload area
@@ -654,10 +638,11 @@ class OceanDB{
             oci_commit($this->con);
         }
         else {
-            echo "Couldn't upload Blob\n";
+            echo "Couldn't upload audio recording\n";
         }
         $lob->free();
         oci_free_statement($stmt);
+        
         $query = 'SELECT RECORDED_DATA FROM AUDIO_RECORDINGS WHERE RECORDING_ID = :MYBLOBID';
 
         $stmt = oci_parse ($this->con, $query);
@@ -671,28 +656,21 @@ class OceanDB{
         $filename = $_FILES['file']['tmp_name'];
         $file = fopen($filename, "r");
         
-        while(! feof($file)) {
-            $line = fgetcsv($file);
-            if ($line[0] !== null) {
-                $query = 'DELETE FROM SCALAR_DATA WHERE ID = :MYID';
-                $stmt = oci_parse ($this->con, $query);
-                oci_bind_by_name($stmt, ':MYID', $line[0]);
-                $e = oci_execute($stmt, OCI_COMMIT_ON_SUCCESS);
-                if (!$e) {
-                    die;
-                }
-                oci_free_statement($stmt);
-            }
-        }
-        fclose($file);
-        $filename = $_FILES['file']['tmp_name'];
-        $file = fopen($filename, "r");
+        $query = "SELECT MAX(ID) AS MAXIMUM FROM SCALAR_DATA";
+        $stmt = oci_parse ($this->con, $query);
+        oci_execute($stmt, OCI_DEFAULT);
+        oci_fetch($stmt);
+        $myblobid = oci_result($stmt, "MAXIMUM");
+        oci_free_statement($stmt);
+        $myblobid = $myblobid + 1;
+        
         $data = array();
         while(! feof($file)) {
             $line = fgetcsv($file);
             if ($line[0] !== null) {
-                $stmt = oci_parse($this->con, "INSERT INTO SCALAR_DATA (ID, DATE_CREATED, VALUE) "
-                        ."VALUES(:MYSCALARID, to_date(:MYDATE, 'dd/mm/yyyy hh24:mi:ss'), :MYVALUE)");
+                $stmt = oci_parse($this->con, "INSERT INTO SCALAR_DATA (ID, SENSOR_ID, DATE_CREATED, VALUE) "
+                        ."VALUES(:MYBLOBID, :MYSCALARID, to_date(:MYDATE, 'dd/mm/yyyy hh24:mi:ss'), :MYVALUE)");
+                oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
                 oci_bind_by_name($stmt, ':MYSCALARID', $line[0]);
                 oci_bind_by_name($stmt, ':MYDATE', $line[1]);
                 oci_bind_by_name($stmt, ':MYVALUE', $line[2]);
@@ -700,6 +678,7 @@ class OceanDB{
                 oci_commit($this->con);
                 oci_free_statement($stmt);
                 array_push($data, $line);
+                $myblobid = $myblobid + 1;
             }
        }
        fclose($file);
@@ -713,13 +692,21 @@ class OceanDB{
        return $stmt;
    }
    
-   public function get_image($_FILES) {
-       $query = 'SELECT RECOREDED_DATA FROM IMAGES';
-
+   public function get_image($imageid) {
+       
+       $query = 'SELECT RECOREDED_DATA FROM IMAGES WHERE IMAGE_ID = :MYIMAGEID';
        $stmt = oci_parse ($this->con, $query);
-       oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
+       oci_bind_by_name($stmt, ':MYIMAGEID', $imageid);
        oci_execute($stmt, OCI_DEFAULT);
-  
+       return $stmt;
+   }
+   
+   public function get_audio($audioid) {
+       
+       $query = 'SELECT RECORDED_DATA FROM AUDIO_RECORDINGS WHERE RECORDING_ID = :MYAUDIOID';
+       $stmt = oci_parse ($this->con, $query);
+       oci_bind_by_name($stmt, ':MYAUDIOID', $audioid);
+       oci_execute($stmt, OCI_DEFAULT);
        return $stmt;
    }
    
@@ -728,85 +715,99 @@ class OceanDB{
                     FROM SJPARTRI.USERS U
                     INNER JOIN SJPARTRI.SUBSCRIPTIONS SB ON U.PERSON_ID = SB.PERSON_ID
                     INNER JOIN SJPARTRI.SENSORS S ON SB.SENSOR_ID = S.SENSOR_ID
-                    WHERE U.USER_NAME = '$user'
+                    WHERE U.USER_NAME = '$user' and S.SENSOR_TYPE = 's'
                     ORDER BY S.SENSOR_ID";
         $sensors = oci_parse ($this->con, $query);
         oci_execute ($sensors);
         return $sensors;
     }
     
-    public function get_data_to_display($sensor_id,$time){
-        //create view with relevant data
-        $query = "CREATE VIEW vw_data AS SELECT D.YEAR as YEAR, D.MONTH as MONTH, D.QUARTER as QUARTER, D.WEEKOFYEAR as WEEK, D.DAY as DAY, D.DAYOFWEEK as dayofweek, DATE_CREATED as DATE_CREATED, D.VALUE as VALUE
-                        FROM (SELECT DISTINCT SD.ID, extract(year from DATE_CREATED) as YEAR, extract(month from DATE_CREATED) as MONTH, 
-                                    extract(day from DATE_CREATED) as DAY, TO_CHAR(DATE_CREATED, 'Q') AS QUARTER, TO_CHAR(DATE_CREATED, 'D') AS DAYOFWEEK,
-                                    TO_CHAR(DATE_CREATED+1, 'IW') AS WEEKOFYEAR, SD.VALUE as VALUE, DATE_CREATED
-                                FROM SJPARTRI.USERS U
-                                JOIN SJPARTRI.PERSONS P ON U.PERSON_ID=P.PERSON_ID
-                                JOIN SJPARTRI.SUBSCRIPTIONS SB ON SB.PERSON_ID=P.PERSON_ID
-                                JOIN SJPARTRI.SENSORS S ON S.SENSOR_ID=SB.SENSOR_ID
-                                JOIN SJPARTRI.SCALAR_DATA SD ON S.SENSOR_ID=SD.SENSOR_ID
-                                WHERE S.SENSOR_ID = $sensor_id) D
-                        ORDER BY D.YEAR, D.MONTH, D.DAY, D.VALUE";
+    public function create_view_data($sensorID){
+        $query = "CREATE VIEW vw_data AS SELECT D.YEAR as YEAR, D.MONTH as MONTH, D.QUARTER as QUARTER, D.WEEKOFYEAR as WEEK, D.DAY as DAY, D.DAYOFWEEK as dayofweek, D.DATE_CREATED as DATE_CREATED, D.VALUE as VALUE
+                            FROM (SELECT DISTINCT SD.ID, extract(year from DATE_CREATED) as YEAR, extract(month from DATE_CREATED) as MONTH, 
+                                        extract(day from DATE_CREATED) as DAY, TO_CHAR(DATE_CREATED, 'Q') AS QUARTER, TO_CHAR(DATE_CREATED, 'D') AS DAYOFWEEK,
+                                        TO_CHAR(DATE_CREATED+1, 'IW') AS WEEKOFYEAR, SD.VALUE as VALUE, DATE_CREATED as DATE_CREATED
+                                    FROM SJPARTRI.USERS U
+                                    JOIN SJPARTRI.PERSONS P ON U.PERSON_ID=P.PERSON_ID
+                                    JOIN SJPARTRI.SUBSCRIPTIONS SB ON SB.PERSON_ID=P.PERSON_ID
+                                    JOIN SJPARTRI.SENSORS S ON S.SENSOR_ID=SB.SENSOR_ID
+                                    JOIN SJPARTRI.SCALAR_DATA SD ON S.SENSOR_ID=SD.SENSOR_ID
+                                    WHERE S.SENSOR_ID = '$sensorID') D
+                            ORDER BY D.YEAR, D.MONTH, D.DAY, D.VALUE";
+        $view = oci_parse ($this->con, $query);
+        oci_execute ($view);  
+    }
+    
+    public function drop_view_data(){
+        $query = "DROP VIEW VW_DATA";
         $view = oci_parse ($this->con, $query);
         oci_execute ($view);
-        
+    }
+    
+    public function get_data_to_display_year(){
+       
         //retrieve data for years
-        if ($time == 'yearly'){
-            $query = "SELECT YEAR, CAST(AVG(VALUE)AS DECIMAL(16,3)) AS AVERAGE, MIN(VALUE) AS MINIMUM, MAX(VALUE) AS MAXIMUM
-                        FROM VW_DATA
-                        GROUP BY YEAR
-                        ORDER BY YEAR";
-            $data = oci_parse ($this->con, $query);
-            oci_execute ($data);
-        }
-        
-        //retrieve data for quarters
-        if ($time == 'quarterly'){
-            $query = "SELECT YEAR, QUARTER, CAST(AVG(VALUE)AS DECIMAL(16,3)) AS AVERAGE, MIN(VALUE) AS MINIMUM, MAX(VALUE) AS MAXIMUM
+        $query = "SELECT YEAR, CAST(AVG(VALUE)AS DECIMAL(16,3)) AS AVERAGE, MIN(VALUE) AS MINIMUM, MAX(VALUE) AS MAXIMUM
+                    FROM VW_DATA
+                    GROUP BY YEAR
+                    ORDER BY YEAR";
+        $data = oci_parse ($this->con, $query);
+        oci_execute ($data);
+        return $data;
+    }
+    
+    public function get_data_to_display_quarter($year){
+
+    //retrieve data for quarters
+    $query = "SELECT YEAR, QUARTER, CAST(AVG(VALUE)AS DECIMAL(16,3)) AS AVERAGE, MIN(VALUE) AS MINIMUM, MAX(VALUE) AS MAXIMUM
                 FROM vw_data
+                WHERE YEAR = '$year'
                 GROUP BY YEAR, QUARTER
                 ORDER BY YEAR, QUARTER";
-            $data = oci_parse ($this->con, $query);
-            oci_execute ($data);
-        }
-        
-        //retrieve data for months
-        if ($time == 'monthly'){
-            $query = "SELECT YEAR, MONTH, CAST(AVG(VALUE)AS DECIMAL(16,3)) AS AVERAGE, MIN(VALUE) AS MINIMUM, MAX(VALUE) AS MAXIMUM
-                        FROM vw_data
-                        GROUP BY YEAR, MONTH
-                        ORDER BY YEAR, MONTH";
-            $data = oci_parse ($this->con, $query);
-            oci_execute ($data);
-        }
-        
-        //retrieve data for weeks
-        if ($time == 'weekly'){
-            $query = "SELECT YEAR, MONTH, DAY, WEEK, DAYOFWEEK, DATE_CREATED, VALUE
-                        FROM ( SELECT YEAR, MONTH, (CASE WHEN WEEK=53 AND MONTH=1 THEN TO_CHAR(00) ELSE WEEK END) WEEK, DAY, DAYOFWEEK, DATE_CREATED, VALUE
-                                FROM VW_DATA )
-                        ORDER BY YEAR, WEEK";
-            $data = oci_parse ($this->con, $query);
-            oci_execute ($data);
-        }
+    $data = oci_parse ($this->con, $query);
+    oci_execute ($data);
+    return $data;
+    }
+    
+    public function get_data_to_display_months($quarter, $year){
 
-        //retrieve data for days
-        if ($time == 'daily'){
-            $query = "SELECT YEAR, MONTH, DAY, CAST(AVG(VALUE)AS DECIMAL(16,3)) AS AVERAGE, MIN(VALUE) AS MINIMUM, MAX(VALUE) AS MAXIMUM
+    //retrieve data for quarters
+    $query = "SELECT YEAR, MONTH, CAST(AVG(VALUE)AS DECIMAL(16,3)) AS AVERAGE, MIN(VALUE) AS MINIMUM, MAX(VALUE) AS MAXIMUM
+                FROM vw_data
+                WHERE QUARTER = '$quarter' AND YEAR = '$year'
+                GROUP BY YEAR, MONTH
+                ORDER BY YEAR, MONTH";
+    $data = oci_parse ($this->con, $query);
+    oci_execute ($data);
+    return $data;
+    }
+    
+    public function get_data_to_display_weeks($month, $year){
+
+    //retrieve data for weeks
+    $query = "SELECT YEAR, MONTH, WEEK, (CASE WHEN (DAYOFWEEK-1)>DAY THEN TO_CHAR(1) ELSE TO_CHAR(DAY-(DAYOFWEEK-1)) END) AS FIRSTDAY, 
+                    extract(day from LAST_DAY(DATE_CREATED)) as LASTDAY, 
+                    CAST(AVG(VALUE)AS DECIMAL(16,3)) AS AVERAGE, MIN(VALUE) AS MINIMUM, MAX(VALUE) AS MAXIMUM
+                FROM VW_DATA
+                WHERE MONTH = '$month' AND YEAR = '$year'
+                GROUP BY YEAR, MONTH, WEEK, (CASE WHEN (DAYOFWEEK-1)>DAY THEN TO_CHAR(1) ELSE TO_CHAR(DAY-(DAYOFWEEK-1)) END),extract(day from LAST_DAY(DATE_CREATED))
+                ORDER BY YEAR, MONTH, WEEK, (CASE WHEN (DAYOFWEEK-1)>DAY THEN TO_CHAR(1) ELSE TO_CHAR(DAY-(DAYOFWEEK-1)) END),extract(day from LAST_DAY(DATE_CREATED))";
+    $data = oci_parse ($this->con, $query);
+    oci_execute ($data);
+    return $data;
+    }
+
+    public function get_data_to_display_days($day, $month, $year){
+
+    //retrieve data for days
+    $query = "SELECT YEAR, MONTH, DAY, WEEK, CAST(AVG(VALUE)AS DECIMAL(16,3)) AS AVERAGE, MIN(VALUE) AS MINIMUM, MAX(VALUE) AS MAXIMUM
                         FROM vw_data
-                        GROUP BY YEAR, MONTH, DAY
-                        ORDER BY YEAR, MONTH, DAY";
-            $data = oci_parse ($this->con, $query);
-            oci_execute ($data);
-        }
-        
-        //drop view from database
-        $query = "DROP VIEW VW_DATA";
-        $viewDLT = oci_parse ($this->con, $query);
-        oci_execute ($viewDLT);
-        
-        return $data;
+                        WHERE TO_CHAR(TO_DATE('$year-$month-$day','YYYY-MM-DD')+1, 'IW') = WEEK AND MONTH = $month
+                        GROUP BY YEAR, MONTH, DAY, WEEK
+                        ORDER BY YEAR, MONTH, DAY, WEEK";
+    $data = oci_parse ($this->con, $query);
+    oci_execute ($data);
+    return $data;
     }
     
     public function get_sensor_by_ID($sensor_id){
