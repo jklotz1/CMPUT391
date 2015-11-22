@@ -289,7 +289,7 @@ and open the template in the editor.
                                                     <br>
                                                     
                                                     <br>
-                                                    <input class="downloadbutton" type="button" value="Download" name="Download" />
+                                                    <input class="downloadbutton" type="button" value="Download" name="downloadImage" />
                                                     <BR>
                                                  
                                                 </p>
@@ -326,7 +326,7 @@ and open the template in the editor.
                                                    </medium>
                                                     
                                                     <br>
-                                                    <input class="downloadbutton" type="button" value="Download" name="Download" />
+                                                    <input class="downloadbutton" type="button" value="Download" name="downloadAudio" />
                                                 </p>
                           
                 <?php }}
@@ -374,7 +374,24 @@ and open the template in the editor.
     
         
     </table>
-
+    <?php
+    if (isset($_POST['Download'])) {
+            $result = OceanDB::getInstance()->get_image($_FILES);
+            $imageResult = oci_fetch_assoc($result);
+            $image = $imageResult['RECOREDED_DATA']->load();
+            while ($row = $image->fetch()) {
+                $filename = $row['filename'];
+                $mimetype = $row['mimetype'];
+                $filedata = $row['filedata'];
+                header("Content-length: ".strlen($filedata));
+                header("Content-type: $mimetype");
+                header("Content-disposition: download; filename=$filename"); //disposition of download forces a download
+                echo $filedata; 
+        }
+            
+            
+        }
+    ?>
 </body>
 <?php   require_once("Includes/css.php");  ?>
 </html>

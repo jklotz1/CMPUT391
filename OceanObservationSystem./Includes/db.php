@@ -533,16 +533,7 @@ class OceanDB{
         $myblobid = oci_result($stmt, "MAXIMUM");
         oci_free_statement($stmt);
         $myblobid = $myblobid + 1;
-            
-        //$query = 'DELETE FROM IMAGES WHERE IMAGE_ID = :MYBLOBID';
-        //$stmt = oci_parse ($this->con, $query);
-        //oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
-        //$e = oci_execute($stmt, OCI_COMMIT_ON_SUCCESS);
-        //if (!$e) {
-            //die;
-        //}
-        //oci_free_statement($stmt);
-  
+ 
 
         // Insert the BLOB from PHP's tempory upload area
         $lob = oci_new_descriptor($this->con, OCI_D_LOB);
