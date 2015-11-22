@@ -10,6 +10,12 @@ and open the template in the editor.
         <h1 align="left" style="font-size: 150%">Subscription Navigation </h1> 
     </head>
     <body>
+         <form name="logon" method="post">
+         <input class="logoutButton" type="submit" value="Help" name="Help">
+                   <?php 
+                   if (isset($_POST['Help'])) { header('Location: userDocumentation.php'); }
+                   ?>
+        </form>
               <!--check the role of the user - only administrators are allowed to access this section-->
         <?php require_once 'Includes/db.php';
             session_start();

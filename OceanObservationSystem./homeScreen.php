@@ -18,6 +18,12 @@ and open the template in the editor.
 
 </head>
 <body>
+     <form name="logon" method="post">
+         <input class="logoutButton" type="submit" value="Help" name="Help">
+                   <?php 
+                   if (isset($_POST['Help'])) { header('Location: userDocumentation.php'); }
+                   ?>
+        </form>
 
     <!-- Navigation ToolBar -->
     <form name="homeNavigation" method="post">
