@@ -251,6 +251,7 @@ and open the template in the editor.
                }else{
                    
                ?>
+ 
                    <table  class = "searchResult">
                             <tr>
 
@@ -265,6 +266,7 @@ and open the template in the editor.
                             </tr>
                    
                     <?php
+                    $cnt = 0;
                      for ($k = 0; $k < count($sensors_content); $k++) {    
                       
                          $sensorID= $sensors_content[$k]["SENSOR_ID"];
@@ -293,14 +295,31 @@ and open the template in the editor.
                                                 <p><img src="data:image/jpeg;base64,<?php echo base64_encode($result); ?>" />
                                                     <br>
                                                     
-                                                    <br>
-                                                    <input class="downloadbutton" type="button" value="Download" name="downloadImage" />
-                                                    <BR>
+                                               
+                                                    <input class="downloadbutton" type="button" value="Download" name="downloadImage" onclick="test()"/>
+                                                
+                                                    
                                                  
                                                 </p>
-                          
-                <?php }}
-                ?>
+                                                <?php
+                                                $image = OceanDB::getInstance()->get_image($thumbResult['IMAGE_ID']);
+                                                $imageResult = oci_fetch_assoc($image);
+                                                $filename = $thumbResult['THUMBNAIL'];
+                                                //$im = $imageResult['RECOREDED_DATA']->load();
+                                                ?>
+                                                <script type="text/javascript">
+                                                    function test() {
+                                                        var name = 'test'
+                                                        var img = "<?php echo base64_encode($result); ?>";
+                                                        var img2 = img.toDataURL("image/jpg");
+                                                        this.href = img2;
+                                                        this.download = name + '.jpg';
+                                                    }
+                                                </script>
+                                                    <?php
+            }}
+                                                ?>
+                                                
                                     </div>
                                                 </td>
                             </tr>
@@ -374,29 +393,11 @@ and open the template in the editor.
            }
         }
         
-        ?>
         
-    
+        ?>
+  
         
     </table>
-    <?php
-    if (isset($_POST['Download'])) {
-            $result = OceanDB::getInstance()->get_image($_FILES);
-            $imageResult = oci_fetch_assoc($result);
-            $image = $imageResult['RECOREDED_DATA']->load();
-            while ($row = $image->fetch()) {
-                $filename = $row['filename'];
-                $mimetype = $row['mimetype'];
-                $filedata = $row['filedata'];
-                header("Content-length: ".strlen($filedata));
-                header("Content-type: $mimetype");
-                header("Content-disposition: download; filename=$filename"); //disposition of download forces a download
-                echo $filedata; 
-        }
-            
-            
-        }
-    ?>
 </body>
 <?php   require_once("Includes/css.php");  ?>
 </html>
