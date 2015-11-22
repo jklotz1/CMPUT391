@@ -171,21 +171,13 @@ class OceanDB{
     
     public function get_search_results($keyword,$location, $sensorType, $sensorId, $startDate, $endDate, $startTime, $endTime){
       
-            
      
         
         $sql = "SELECT distinct S.SENSOR_ID, S.LOCATION,S.DESCRIPTION,S.SENSOR_TYPE "
-                ."FROM sjpartri.SENSORS S, sjpartri.SCALAR_DATA S1, sjpartri.IMAGES I, sjpartri.AUDIO_RECORDINGS AR " 
-                . "WHERE S.SENSOR_ID LIKE '$sensorId' "
-                . "AND (S1.SENSOR_ID LIKE '$sensorId' "
-                . "OR I.SENSOR_ID  LIKE '$sensorId' "
-                . "OR AR.SENSOR_ID = '$sensorId' )"
-                . "AND( S1.DATE_CREATED "
-                . "BETWEEN to_date('$startDate $startTime','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate $endTime','yyyy-mm-dd hh24:mi:ss') "
-                . "OR I.DATE_CREATED "
-                . "BETWEEN to_date('$startDate $startTime','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate $endTime','yyyy-mm-dd hh24:mi:ss') "
-                . "OR AR.DATE_CREATED "
-                . "BETWEEN to_date('$startDate $startTime','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate $endTime','yyyy-mm-dd hh24:mi:ss')) ";
+                ."FROM sjpartri.SENSORS S " 
+                . "WHERE S.SENSOR_ID LIKE '$sensorId' ";
+              
+        
         
        
         
