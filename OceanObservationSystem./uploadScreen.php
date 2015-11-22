@@ -1,9 +1,15 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title></title>
+        <title>Upload Module</title>
     </head>
     <body>
+         <form name="logon" method="post">
+         <input class="logoutButton" type="submit" value="Help" name="Help">
+                   <?php 
+                   if (isset($_POST['Help'])) { header('Location: userDocumentation.php'); }
+                   ?>
+        </form>
         <h1 align="left" style="font-size: 175%">Upload Center</h1>
         <?php  
             require_once 'Includes/db.php';

@@ -1,0 +1,87 @@
+# User Documentation
+
+## Installation Guide
+1. Unzip the CMPUT391Project_Group14 
+2. There are three folders:
+    - ./report (contains the project report)
+    - ./document (contains the user documentation)
+    - ./code (contains the source code)
+3. Go into the ./code folder:
+    - You should see another folder called "OceanObservationSystem."
+4. Click the "OceanObservationSystem." folder and then click the "Includes" folder
+5. Inside the Includes folder, you should have the db.php file
+6. In order to set up the database connection:
+    - Manipulate the $user object to the username of oracle account
+    - Manipulate the $pass object to the password of the oracle account
+    - Manipulate the $dbHost object to the path of server
+7. Place the OceanObservationSystem folder in the path /compsci/webdocs/(username)/web_docs/OceanObservationSystem
+7. The OceanObservationSystem can be set up in an external IDE, we used Netbean 8.0.2
+8. Follow the setup of IDE and connect to the databases in the IDE's services
+9. Go to the url of the server, http://consort.cs.ualberta.ca/~(username)/OceanObservationSystem./
+    - In our case, it is available at http://consort.cs.ualberta.ca/~sjpartri/cmput_project/OceanObservationSystem./loginScreen.php
+
+##Modules 
+
+###Subscribe Module
+#####Path: loginScreen.php -> homeScreen.php -> mainSubScriptionScreen.php -> subscribeScreen.php or availableSensorSubscriptions.php
+
+####Navigation to Main Subscription Screen
+1. Log in using a username and password
+2. The next screen you are directed to is the Home Screen, there is a task bar and in it are the following buttons:
+    - Search Module
+    - Management Module
+    - Upload Module
+    - Data Analysis Module
+    - Subscribe Module
+3. Click the Subscribe Module button from the task bar
+4. You are now directed to the "Subscription Navigation" Screen. There are three buttons with descriptions:
+    - Home
+    - Subscription(s)
+    - Available Subscription(s)
+
+####To Subscribe to a New Sensor:
+1. Click the Available Subscription(s) button located on "Subscription Navigation" Screen.
+2. On this screen are two buttons and a table of subscriptions
+    - Back Button
+    - Home Button
+    - Available Subscription Table
+##### Note: If you are subscribed to all the sensors, a message will appear stating "CURRENTLY SUBSCRIBED TO EVERY SENSOR"
+3. Click the Subscribe Button located beside each sensor entry in the table
+4. The sensor will disappear from the table and you are now subscribed to it.
+
+####To Unsubscribe From a Sensor:
+1. Click the Subscription(s) button located on "Subscription Navgation" Screen
+2. On this screen are two buttons and a table of subscriptions
+    - Back Button
+    - Home Button
+    - Subscription Table
+##### Note: If you are not subscribed to any of the sensors, a message will appear stating "CURRENTLY NOT SUBSCRIBED TO ANY SENSOR"
+3. Click the UnSubscribe Button located beside each sensor entry in the table
+4. The sensor will disappear from the table and you are now unsubscribed to it.
+
+###Search Module
+#####Path: loginScreen.php -> homeScreen.php -> searchModule.php
+
+####Navigation to Main Subscription Screen
+1. Log in using a username and password
+2. The next screen you are directed to is the Home Screen, there is a task bar and in it are the following buttons:
+    - Search Module
+    - Management Module
+    - Upload Module
+    - Data Analysis Module
+    - Subscribe Module
+
+#### How to Search
+1. Click the Search Module button from the task bar
+2. A form opens up to satisfy advanced searching needs . There are three options:
+    - Keywords
+    - Sensor Type
+    - Location
+3. Click the "Submit" button when finished.
+4. The "Search Criteria" form will be populated with the advanced search options you have selected
+##### Note: Start Date and End Date are required to complete a search
+5. Fill in the appropriate search field and click the "Search" button when finished 
+6. A table of search results will appear below.
+##### Note: If a search was unsucessful an error message will appear.
+7. You can download image files, audio files, and scalar data from the table directly by clicking the download button 
+   associated with each entry.
