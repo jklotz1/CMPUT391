@@ -40,6 +40,11 @@ and open the template in the editor.
             header('Location: managementScreen.php');
             
         }
+        
+        if (isset($_POST['uploadModule'])) {
+            header('Location: uploadScreen.php');
+            
+        }
 
         if (isset($_POST['dataAnalysisModule'])) {
             header('Location: analysisScreen.php');
