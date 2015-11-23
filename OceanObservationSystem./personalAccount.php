@@ -9,6 +9,7 @@ and open the template in the editor.
 <?php
 ob_start();
 session_start();
+//user currently logged into the system
 $user = $_SESSION['user'];
 $_SESSION['screen'] = 'personalAccount';
 ?>
@@ -19,19 +20,23 @@ $_SESSION['screen'] = 'personalAccount';
         <title></title>
     </head>
     <body>
-        
-        <!--check the role of the user - only administrators are allowed to access this section-->
+       
+        <!--allows for access to OceanDB class for quering and conneting to database-->
         <?php require_once 'Includes/db.php';?>
 
-        <!--display user management screen when "Edit users" button is pressed-->
         <form name="personalProfile" method="post">
             
+            <!--get the personal information of the person associated with user the logged in-->
             <?php $personInfo = OceanDB::getInstance()->get_personal_info($user);?>
+            
+            <!--user action - "back" to return to login page-->
             <h1 align="left" style="font-size: 150%">Personal Profile: <?php echo $personInfo["FIRST_NAME"]." ".$personInfo["LAST_NAME"];?></h1>
             <input class="logoutButton" type="submit" value="Back" name="back" style="margin-bottom:30;margin-top:15">
             
+            <!--"back" is clicked - return to the log in page-->
             <?php if(isset($_POST['back'])){ header('Location: loginScreen.php'); }?>
             
+            <!--populate the fields with the personal information pulled from the database-->
             <table width="400" align="center">
                 <tr>
                     <td><div align="left">Person ID:</div></td>
@@ -65,10 +70,13 @@ $_SESSION['screen'] = 'personalAccount';
 
             </table>
             
+            <!--user action - "save changes" to the person account information,"cancel changes" to the personal account information-->
             <div align="center">
             <input class="logoutButton" type="submit" value="Save Changes" name="save" align="center" style="margin-bottom:0;margin-top:15">
             <input class="logoutButton" type="submit" value="Cancel Changes" name="cancel" align="center" style="margin-bottom:0;margin-top:15">
             </div>
+            
+            <!--"save changes" clicked make sure that all fields are filled in-->
             <?php if(isset($_REQUEST['save'])) {
                 $empty = false;
                 if ($_POST['firstName']=='' or $_POST['lastName']=='' or $_POST['address']=='' or $_POST['email']=='' or $_POST['phone']==''){
@@ -77,16 +85,17 @@ $_SESSION['screen'] = 'personalAccount';
             }
             ?>
             
+            <!--update personal information if all fields are filled in-->
             <?php if(isset($_REQUEST['save'])&&!$empty){
                 $success = OceanDB::getInstance()->update_person($personInfo["PERSON_ID"],$_POST['firstName'],$_POST['lastName'],$_POST['address'],$_POST['email'],$_POST['phone']);
                if ($success) { ?> <p style="color:red">Saved!</p> <?php ; header('Location: personalAccount.php'); }
             }
             ?>
-            
-            
+                      
             <!--get all user accounts associated with username-->
             <?php $usersAll = OceanDB::getInstance()->get_all_users_by_user($user); ?>
             
+            <!--populate table with all users-->
             <table class="searchTable" width="100" border="1" style="margin-top:50">
                 <tr>
                     <td width="25"> <div align="center"> </div></td>
@@ -101,11 +110,14 @@ $_SESSION['screen'] = 'personalAccount';
                     </tr>
                 <?php } ?>
             </table>
+            
+            <!--"edit user" button to edit user-->
             <div align="center">
             <input class="logoutButton" type="submit" value="Edit User" name="userEdit" style="margin-top:15;margin-bottom:15">
             <p style="color:red;display:<?php if(isset($_POST['userEdit'])&&$_POST['userSelected']==''){?>inline <?php } else { ?> none <?php } ?>"><br>Select a user to edit</p>
             </div>
             
+            <!--if edit button clicked and user selected then edit the user in a different page-->
             <?php if(isset($_POST['userEdit'])&&$_POST['userSelected']){
                 $_SESSION['userToEdit'] = $_POST['userSelected'];
                 header('Location: editUserScreen.php');

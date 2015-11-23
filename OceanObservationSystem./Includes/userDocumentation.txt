@@ -8,8 +8,8 @@
     - ./code (contains the source code)
 3. You may need to change the permissions of each .php file to minimum "Read Only"
 3. Go into the ./code folder:
-    - You should see another folder called "OceanObservationSystem."
-4. Click the "OceanObservationSystem." folder and then click the "Includes" folder
+    - You should see another folder called "OceanObservationSystem"
+4. Click the "OceanObservationSystem" folder and then click the "Includes" folder
 5. Inside the Includes folder, you should have the db.php file
 6. In order to set up the database connection:
     - Manipulate the $user object to the username of oracle account

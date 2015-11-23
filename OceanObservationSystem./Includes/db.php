@@ -58,7 +58,7 @@ class OceanDB{
              return false;            
     }
 
-    
+    //Give a user object and are returned the person id
     public function get_person_id_by_name($name) {
 
         $query = "SELECT PERSON_ID FROM SJPARTRI.USERS WHERE USER_NAME = '$name'";
@@ -68,6 +68,7 @@ class OceanDB{
 
     }
     
+    //get a list of all subscribed sensors
     public function sensor_table_results($user){
         $person_id = OceanDB::getInstance()->get_person_id_by_name($user);
         $person_id_parse = oci_fetch_array($person_id, OCI_BOTH);
@@ -78,6 +79,7 @@ class OceanDB{
         return $stid;
     }
     
+    //get the details of a given sensor
     public function get_subscription_details($sensorID){
         $sql = "SELECT SENSOR_ID, SENSOR_TYPE, LOCATION, DESCRIPTION "
              . "FROM sjpartri.SENSORS "
@@ -88,6 +90,7 @@ class OceanDB{
         return $objParse;
     }
     
+    //get an array of non-subscribed sensors
     public function get_non_subcribed_sensor_table_results($sensorTable, $count){
         
         $sensorID = $sensorTable["SENSOR_ID"][0];
@@ -121,6 +124,7 @@ class OceanDB{
         }
     }
     
+    //Is called when the subscribed button is clicked
     public function add_subscription($sensorID, $user){
    
         $person_id = OceanDB::getInstance()->get_person_id_by_name($user);
@@ -136,6 +140,7 @@ class OceanDB{
         
     }
     
+    //Is called when the unscribed button is clicked
     public function delete_subscription($sensorID, $user){
         $person_id = OceanDB::getInstance()->get_person_id_by_name($user);
         $person_id_parse = oci_fetch_array($person_id, OCI_BOTH);
@@ -152,6 +157,7 @@ class OceanDB{
         return $objParse;
     }
     
+    //get values of the scalar data necessary for the search module
     public function get_scalar_data_values($sensorId, $startDate, $endDate, $startTime, $endTime){
      
       
@@ -168,7 +174,7 @@ class OceanDB{
     }
     
     
-    
+    //get the sensor information assocated with a particular SENSOR_ID, necessary for search module
     public function get_search_results($keyword,$location, $sensorType, $sensorId, $startDate, $endDate, $startTime, $endTime){
 
         $sql = "SELECT distinct S.SENSOR_ID, S.LOCATION,S.DESCRIPTION,S.SENSOR_TYPE "
@@ -207,6 +213,7 @@ class OceanDB{
         
     }
     
+    //get THUMBNAIL associated with a particular Sensor ID
     public function get_thumbnail($sensorId,$startDate,$endDate, $startTime, $endTime){
         
        $query = "SELECT THUMBNAIL, to_char(DATE_CREATED, 'dd/mm/yyyy hh24:mi:ss') AS DATE_CREATED, DESCRIPTION, IMAGE_ID "
@@ -221,6 +228,7 @@ class OceanDB{
        return $stmt;
     }
     
+    //get audio information associated with a particular sensorID and time frame
     public function get_audioInfo($sensorId,$startDate,$endDate, $startTime, $endTime){
         $query = "SELECT to_char(DATE_CREATED, 'dd/mm/yyyy hh24:mi:ss') AS DATE_CREATED, DESCRIPTION, RECORDING_ID "
                 . "FROM AUDIO_RECORDINGS WHERE SENSOR_ID='$sensorId'"
