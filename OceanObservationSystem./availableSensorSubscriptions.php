@@ -49,7 +49,7 @@ Code Belongs to: Sean Partridge, Jessica Klotz, Brennan Stang
             ?>
 
             <!-- Create and populate the table -->
-            <table  class="availableSensorTable">
+            <table  class="searchResult">
                 <tr>
 
                     <td> <div align="center">Sensor Type </div></td>
