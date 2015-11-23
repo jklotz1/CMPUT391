@@ -831,12 +831,14 @@ class OceanDB{
         //group by year, month, week
         //also get the first and last day cause not all weeks will start on sunday and end on saturday so need to do checks on these dates
         $query = "SELECT YEAR, MONTH, WEEK, (CASE WHEN (DAYOFWEEK-1)>DAY THEN TO_CHAR(1) ELSE TO_CHAR(DAY-(DAYOFWEEK-1)) END) AS FIRSTDAY, 
-                        extract(day from LAST_DAY(DATE_CREATED)) as LASTDAY, 
+                        extract(day from LAST_DAY(DATE_CREATED)) as LASTDAYMONTH,DAY+(7-(DAYOFWEEK)) AS LASTDAY,
                         CAST(AVG(VALUE)AS DECIMAL(16,3)) AS AVERAGE, MIN(VALUE) AS MINIMUM, MAX(VALUE) AS MAXIMUM
                     FROM VW_DATA
                     WHERE MONTH = '$month' AND YEAR = '$year'
-                    GROUP BY YEAR, MONTH, WEEK, (CASE WHEN (DAYOFWEEK-1)>DAY THEN TO_CHAR(1) ELSE TO_CHAR(DAY-(DAYOFWEEK-1)) END),extract(day from LAST_DAY(DATE_CREATED))
-                    ORDER BY YEAR, MONTH, WEEK, (CASE WHEN (DAYOFWEEK-1)>DAY THEN TO_CHAR(1) ELSE TO_CHAR(DAY-(DAYOFWEEK-1)) END),extract(day from LAST_DAY(DATE_CREATED))";
+                    GROUP BY YEAR, MONTH, (CASE WHEN (DAYOFWEEK-1)>DAY THEN TO_CHAR(1) ELSE TO_CHAR(DAY-(DAYOFWEEK-1)) END),
+                            extract(day from LAST_DAY(DATE_CREATED)),DAY+(7-(DAYOFWEEK)),WEEK
+                    ORDER BY YEAR, MONTH, (CASE WHEN (DAYOFWEEK-1)>DAY THEN TO_CHAR(1) ELSE TO_CHAR(DAY-(DAYOFWEEK-1)) END),
+                            extract(day from LAST_DAY(DATE_CREATED)),DAY+(7-(DAYOFWEEK)),WEEK";
         $data = oci_parse ($this->con, $query);
         oci_execute ($data);
         return $data;
@@ -848,7 +850,7 @@ class OceanDB{
         //get all entries also within this week that fall in the same month
         $query = "SELECT YEAR, MONTH, DAY, WEEK, CAST(AVG(VALUE)AS DECIMAL(16,3)) AS AVERAGE, MIN(VALUE) AS MINIMUM, MAX(VALUE) AS MAXIMUM
                             FROM vw_data
-                            WHERE TO_CHAR(TO_DATE('$year-$month-$day','YYYY-MM-DD')+1, 'IW') = WEEK AND MONTH = $month
+                            WHERE TO_CHAR(TO_DATE('$year-$month-$day','YYYY-MM-DD')+1, 'IW') = WEEK AND MONTH = $month AND YEAR = $year
                             GROUP BY YEAR, MONTH, DAY, WEEK
                             ORDER BY YEAR, MONTH, DAY, WEEK";
         $data = oci_parse ($this->con, $query);

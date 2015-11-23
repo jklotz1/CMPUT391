@@ -56,7 +56,7 @@ $personEdit = $_SESSION['personToEdit'];
                 </tr>
                 <tr>
                     <td><div align="left">Phone Number:</div> <div align="left" style="font-size:75%">(xxx-xxx-xxxx)</div></td>
-                    <td><div align="left"><input type="text" name="phone" maxlength="10"  size="30" value="<?php if(isset($_REQUEST['save'])){ echo $_POST['phone']; } else { echo $person['PHONE']; }?>"></div></td>                    
+                    <td><div align="left"><input type="text" name="phone" maxlength="20"  size="30" value="<?php if(isset($_REQUEST['save'])){ echo $_POST['phone']; } else { echo $person['PHONE']; }?>"></div></td>                    
                     <td><div align="left" style="color:red; display:<?php if(isset($_POST['save'])&&$_POST['phone']==''){?>inline <?php } else { ?> none <?php } ?>" >*Required</div></td>
                 </tr>
 
@@ -86,7 +86,7 @@ $personEdit = $_SESSION['personToEdit'];
             
             <!--update the person if all fields are filled out and return to previous page-->
             <?php if(isset($_REQUEST['save']) && !$empty) {
-                $success = OceanDB::getInstance()->update_person($person["PERSON_ID"],$_POST['firstName'],$_POST['lastName'],$_POST['address'],$_POST['email'],$_POST['phone']);
+                $success = OceanDB::getInstance()->update_person($person["PERSON_ID"],$_POST['firstName'],$_POST['lastName'],$_POST['address'],$_POST['email'],str_replace("-", "",$_POST['phone']));
                 if ($success){
                     if($screen == "createUser") { header('Location: createNewUser.php'); }
                     if($screen == "userManagement") { header('Location: managementUserScreen.php'); }

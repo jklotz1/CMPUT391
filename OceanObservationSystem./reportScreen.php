@@ -238,15 +238,15 @@ $weeksR = $_SESSION["weeks"];
         if ($date =='yearly'){ return $data["YEAR"]; }
         else if ($date =='quarterly'){ return "Q".$data["QUARTER"]."/".$data["YEAR"]; }
         else if ($date =='monthly'){ return $data["MONTH"]."/".$data["YEAR"]; }
-        else if ($date =='weekly'){return $data["FIRSTDAY"]."-".last_day($data["FIRSTDAY"],$data["LASTDAY"])."/".$data["MONTH"]."/".$data["YEAR"]; }
+        else if ($date =='weekly'){return $data["FIRSTDAY"]."-".last_day($data["LASTDAYMONTH"],$data["LASTDAY"])."/".$data["MONTH"]."/".$data["YEAR"]; }
         else if ($date =='daily'){ return $data["DAY"]."/".$data["MONTH"]."/".$data["YEAR"]; }
         return null;
     }
     
     //calculate the last day cause not always on a saturday
-    function last_day($first, $lastOfMonth){
-        if ($first+6 > $lastOfMonth) { return $lastOfMonth; }
-        else { return $first+6; }
+    function last_day($monthday, $lastday){
+        if ($lastday>$monthday) { return $monthday; }
+        else { return $lastday; }
     }
     
 ?>
