@@ -1,8 +1,12 @@
 <!-- Style Page -->
 
 <style>
-   
-  
+    h1{
+        color: white
+    }
+    *{
+        font-weight: 650;
+    }
    .logoutButton {
    border-top: 1px solid #96d1f8;
    background: #65a9d7;
@@ -32,9 +36,11 @@
    }
 .logoutButton:active {
    border-top-color: #1b435e;
-   background: #1b435e;
+   background-image: #1b435e;
 }
-body {background-color:lightgrey}
+body {background-image : url("Includes/ocean5.jpg");
+      background-size : cover;
+}
 .error {color: #FF0000;}
 
 .CSSTableGenerator {

@@ -20,7 +20,6 @@ and open the template in the editor.
             
             echo $parsedown->text($text);
             
-            require_once("Includes/css.php");  
         ?>
     </body>
 </html>

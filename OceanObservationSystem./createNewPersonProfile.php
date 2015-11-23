@@ -50,7 +50,7 @@ $screen = $_SESSION['screen'];
                     <td><div align="left" style="color:red; display:<?php if(isset($_POST['save'])&&$_POST['email']==''){?>inline <?php } else { ?> none <?php } ?>" >*Required</div></td>                
                 </tr>
                 <tr>
-                    <td><div align="left">Phone Number:</div></td>
+                    <td><div align="left">Phone Number:</div><div align="left" style="font-size:75%">(xxx-xxx-xxxx)</div></td>
                     <td><div align="left"><input type="text" name="phone" maxlength="20"  size="30" value="<?php if(isset($_REQUEST['save'])){ echo $_POST['phone']; } ?>"></div></td>                    
                     <td><div align="left" style="color:red; display:<?php if(isset($_POST['save'])&&$_POST['phone']==''){?>inline <?php } else { ?> none <?php } ?>" >*Required</div></td>
                 </tr>
