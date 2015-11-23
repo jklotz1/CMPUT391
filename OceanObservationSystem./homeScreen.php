@@ -8,7 +8,8 @@ and open the template in the editor.
     <?php
     require_once("Includes/db.php");
     session_start();
-    $user = $_SESSION['user']
+    $user = $_SESSION['user'];
+    $role = OceanDB::getInstance()->get_user_role($user);        
     ?> 
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -72,6 +73,7 @@ and open the template in the editor.
 
     <!-- Search Module -->
 <?php if (isset($_POST['searchModule'])) { ?> 
+    <?php if ($role == 's') { ?>
         <form name="searchCriteria" method="post" >
             <table class="searchTable">
 
@@ -87,10 +89,16 @@ and open the template in the editor.
 
             </table>
         </form>
-
+        <?php }else{
+            echo "<br>";
+            echo "<h1 align='center' style='font-size: 175%; color: red'>Access denied: Not a Scientist</h1>";
+        }
+        ?>
+        
 <?php } ?>
 
     <!-- Error Checking for Search Criteria -->
+     <?php if ($role == 's') { ?>
     <?php
     require_once("Includes/db.php");
     if (isset($_POST['searchSubmit'])) {
@@ -398,6 +406,7 @@ if (isset($_POST['searchSubmit'])) {
                             }
                         }
                     }
+}
                     ?>
 
 
