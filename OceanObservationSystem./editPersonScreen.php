@@ -7,7 +7,9 @@ and open the template in the editor.
 <?php
 ob_start();
 session_start();
+//get the previous screen to know where to return to
 $screen = $_SESSION['screen'];
+//personID of the person account to edit
 $personEdit = $_SESSION['personToEdit'];
 
 ?>
@@ -18,9 +20,13 @@ $personEdit = $_SESSION['personToEdit'];
         <title></title>
     </head>
     <body>
+        <!--get access to OceanDB class to connect and query the database-->
         <?php require_once 'Includes/db.php'; ?>
+        <!--get the personal account information of the person to edit-->
         <?php $person = OceanDB::getInstance()->get_person_by_id($personEdit);?>
         
+        <!--display the form to edit the person information-->
+        <!--this form is filled out with the information retrieved from the database-->
         <h1 align="center" style="font-size: 175%">Edit Personal Profile: <?php echo $person['FIRST_NAME']." ".$person['LAST_NAME']?></h1>        
         <form name="userCreate" method="post">
             <table width="400" align="center">
@@ -49,23 +55,27 @@ $personEdit = $_SESSION['personToEdit'];
                     <td><div align="left" style="color:red; display:<?php if(isset($_POST['save'])&&$_POST['email']==''){?>inline <?php } else { ?> none <?php } ?>" >*Required</div></td>                
                 </tr>
                 <tr>
-                    <td><div align="left">Phone Number:</div></td>
-                    <td><div align="left"><input type="text" name="phone" maxlength="10"  size="30" value="<?php if(isset($_REQUEST['save'])){ echo $_POST['phone']; } else { echo $person['PHONE']; }?>"></div></td>                    
+                    <td><div align="left">Phone Number:</div> <div align="left" style="font-size:75%">(xxx-xxx-xxxx)</div></td>
+                    <td><div align="left"><input type="text" name="phone" maxlength="20"  size="30" value="<?php if(isset($_REQUEST['save'])){ echo $_POST['phone']; } else { echo $person['PHONE']; }?>"></div></td>                    
                     <td><div align="left" style="color:red; display:<?php if(isset($_POST['save'])&&$_POST['phone']==''){?>inline <?php } else { ?> none <?php } ?>" >*Required</div></td>
                 </tr>
 
             </table>
             
+            <!--user action - "save" to update the person account, "cancel" to discard changes-->
             <div align="center">
             <input class="logoutButton" type="submit" value="Save" name="save" align="center" style="font-size:100%; width:100px; margin:10 ">
             <input class="logoutButton" type="submit" value="Cancel" name="cancel" align="center" style="font-size:100%; width:100px; margin:10 ">
             </div>
             
+            <!--"cancel" clicked - return to previous page and discard changes-->
             <?php if(isset($_REQUEST['cancel'])) {
                if($screen == "createUser") { header('Location: createNewUser.php'); } 
                if($screen == "userManagement") { header('Location: managementUserScreen.php'); }
             }?>
             
+            <!--"save" clicked - do checks on fields-->
+            <!--check: fields cannot be empty-->
             <?php if(isset($_REQUEST['save'])) {
                 $empty = false;
                 if ($_POST['firstName']=='' or $_POST['lastName']=='' or $_POST['address']=='' or $_POST['email']=='' or $_POST['phone']==''){
@@ -74,18 +84,19 @@ $personEdit = $_SESSION['personToEdit'];
             }
             ?>
             
+            <!--update the person if all fields are filled out and return to previous page-->
             <?php if(isset($_REQUEST['save']) && !$empty) {
-                $success = OceanDB::getInstance()->update_person($person["PERSON_ID"],$_POST['firstName'],$_POST['lastName'],$_POST['address'],$_POST['email'],$_POST['phone']);
+                $success = OceanDB::getInstance()->update_person($person["PERSON_ID"],$_POST['firstName'],$_POST['lastName'],$_POST['address'],$_POST['email'],str_replace("-", "",$_POST['phone']));
                 if ($success){
                     if($screen == "createUser") { header('Location: createNewUser.php'); }
                     if($screen == "userManagement") { header('Location: managementUserScreen.php'); }
                 }
             }
             ?>
-           
             
         </form> 
     </body>
+    <!--used for graphical interface-->
     <?php   require_once("Includes/css.php");  ?>
 </html>
 

@@ -6,8 +6,8 @@ and open the template in the editor.
 -->
 <?php
 ob_start();
-
 ?>
+
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -15,27 +15,34 @@ ob_start();
     </head>
     <body>
         
-        <!--check the role of the user - only administrators are allowed to access this section-->
+        <!--allows access to OceanDB class to connect and query database-->
         <?php require_once 'Includes/db.php'; ?>
         
+        <!--Display the management screen for sensors-->
         <h1 align="left" style="font-size: 175%">Sensor and User Management Center</h1> 
         <form name="sensorManagement" method="post">
+            <!--user action- "home" to return to the home screen, "back" to return to the main management screen-->
             <input class="logoutButton" type="submit" value="Back" name="back" style="font-size:100%; width:100px; margin:10 ">
             <input class="logoutButton" type="submit" value="Home" name="home" style="font-size:100%; width:100px; margin:10 ">
             <br><br>
 
             <!--return to home screen when "home" button is pressed-->
             <?php if (isset($_POST['home'])) { header('Location: homeScreen.php'); }?> 
+            <!--return to the management screen-->
             <?php if (isset($_POST['back'])) { header('Location: managementScreen.php'); }?> 
 
-            <!--display sensor management screen - buttons for the different actions-->
+            <!--display sensor management screen - buttons for the different user actions-->
+            <!--"create new sensor" button to create a new sensor, "delete sensor" to delete a sensor-->
             <div align="center">
             <h1 align="center" style="font-size: 150%">Sensors</h1>
             <input class="logoutButton" type="submit" value="Create New Sensor" name="newSensor" style="font-size:100%; width:200px; margin:10 ">
             <input class="logoutButton" type="submit" value="Delete Sensor" name="deleteSensor" style="font-size:100%; width:200px; margin:10 ">
+            
+            <!--if "delete" button is clicked a sensor must be selected or a message will be displayed-->
             <p style="color:red;display:<?php if(isset($_POST['deleteSensor'])&&$_POST['sensorSelected']==''){?>inline <?php } else { ?> none <?php } ?>"><br>Please select a sensor to delete</p>
             <br><br>
             </div>
+            
             <!-- get the current sensors -->
             <?php $objParse = OceanDB::getInstance()->get_sensors(); ?>
 
@@ -59,13 +66,15 @@ ob_start();
                 <?php } ?>
             </table>
            
-            
+            <!--"create new sensor" button is selected - user is taken to a different page to create -->
             <?php if (isset($_POST['newSensor'])) { header('Location: createNewSensor.php'); } ?>
 
+            <!--"delete sensor" if a sensor is selected the sensor is deleted-->
             <?php if (isset($_POST['deleteSensor'])&&$_POST['sensorSelected']!='') { OceanDB::getInstance()->delete_sensor($_POST['sensorSelected']);header('Location: managementSensorScreen.php'); } ?>
             
         </form> 
     </body>
+    <!--used for graphical interface-->
     <?php   require_once("Includes/css.php");  ?>
 </html>
 

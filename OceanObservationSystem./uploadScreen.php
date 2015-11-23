@@ -5,6 +5,7 @@
     </head>
     <body>
          <form name="logon" method="post">
+        <!--Help button for access to user documentation -->
          <input class="logoutButton" type="submit" value="Help" name="Help">
                    <?php 
                    if (isset($_POST['Help'])) { header('Location: userDocumentation.php'); }
@@ -21,11 +22,15 @@
             <?php if (isset($_POST['home'])) { header('Location: homeScreen.php'); }?> 
         </form>
         <?php if (!isset($_FILES['file'])) { ?>
+        <!-- For uploading files -->
         <form action="<?php echo $_SERVER['PHP_SELF']; ?>" name="upload" method="post" enctype="multipart/form-data">
+            <!--Button for choosing file to upload -->
             <input class="uploadButton" type="file" value="Choose File" style="font-size:100%; width:200px; margin:10" name="file"> Choose File to Upload<br>
             <table>
+                <!-- Description of image/audio file -->
                 <tr><td>Description (For image or audio recording only):
                         <input name="description" type="text" maxlength="128" id="description" value="<?php echo $_POST["description"]; ?>"></td></tr>
+                <!-- Drop down menu of sensor ids for image/audio file -->
                 <tr><td>Sensor_Id (For image or audio recording only):&nbsp;
                 <?php
                 $sensor_ids = OceanDB::getInstance()->get_sensor_ids();
@@ -38,50 +43,66 @@
                 ?>
                 </select></td></tr>
                 </table>
+            <!-- Button that uploads the file -->
                 <input class="logoutButton" type="submit" value="Upload" style="font-size:100%; width:200px; margin:10 " name="upload"> Upload File<br> 
                     
         </form>
         <?php
         }
         else {
+            //File to be uploaded
             $target_file = ($_FILES['file']['name']);
+            //Extension of file to determine what to do with eahc type
             $ext = pathinfo($target_file, PATHINFO_EXTENSION);
-        
+            //Jpg image file
             if ($ext == 'jpg') {
+                //Call to funciton for uploading image, image is inserted in this funtion 
                 $result = OceanDB::getInstance()->upload_image($_FILES, $_POST["description"], $_POST["sensorId"]);
+                //Fetch image data and load to display uploaded image
                 $imageResult = oci_fetch_assoc($result);
                 $image = $imageResult['RECOREDED_DATA']->load();
                 ?>
+                <!-- Image is uploaded -->
                 <h1 style="font-size: 115%; color:green">Upload Successful</h1>
+                <!-- Display uploaded image -->
                 <p><img src="data:image/jpeg;base64,<?php echo base64_encode($image); ?>" /></p><br>
                 <form name="uploadAnother" method="post">
+                    <!--Upload another file -->
                     <input class="logoutButton" type="submit" value="Upload Another File" style="font-size:100%; width:200px; margin:10" name="uploadAnother">
-                    <!--return to upload screen when "home" button is pressed-->
+                    <!--return to home screen when "home" button is pressed-->
                     <?php if (isset($_POST['uploadAnother'])) { header('Location: uploadScreen.php'); }?>
                 </form>
             <?php
             }
+            //Wav audio file
             elseif ($ext == 'wav') {
+                //Call to funciton for uploading audio, audio file is inserted in this funtion 
                 $result = OceanDB::getInstance()->upload_audio($_FILES, $_POST["description"], $_POST["sensorId"]);
                 $audioResult = oci_fetch_assoc($result);
                 $audio = $audioResult['RECORDED_DATA']->load();
                 ?>
+                <!-- Audio file is uploaded -->
                 <h1 style="font-size: 115%; color:green">Upload Successful</h1>
                 <p><audio controls>
                     <source src='<?= $audio?>' type="audio/wav">
                     Your browser does not support the audio element.
                     </audio></p>
+                 <!--Upload another file -->
                 <form name="uploadAnother" method="post">
                     <input class="logoutButton" type="submit" value="Upload Another File" style="font-size:100%; width:200px; margin:10" name="uploadAnother">
-                    <!--return to upload screen when "home" button is pressed-->
+                    <!--return to home screen when "home" button is pressed-->
                     <?php if (isset($_POST['uploadAnother'])) { header('Location: uploadScreen.php'); }?>
                 </form>
             <?php
             }
+            //Scalar data in csv file
             elseif ($ext == 'csv') {
+                //Call to funciton for uploading scalar data in batches form csv file, scalar data is inserted in this funtion 
                 $result = OceanDB::getInstance()->upload_csv($_FILES);
                 ?>
+                 <!-- Scalar data is uploaded -->
                 <h1 style="font-size: 115%; color:green">Upload Successful</h1>
+                <!--Display uploaded data -->
                 <p>Scalar Data Uploaded:</p>
                 <?php foreach($result as $key => $value) {
                     echo "Sensor_Id: ". $value[0] .", ";
@@ -90,29 +111,34 @@
                 <?php
                 }               
                 ?>
+                <!--Upload another file -->
                 <form name="uploadAnother" method="post">
                     <input class="logoutButton" type="submit" value="Upload Another File" style="font-size:100%; width:200px; margin:10" name="uploadAnother">
-                    <!--return to upload screen when "home" button is pressed-->
+                    <!--return to home screen when "home" button is pressed-->
                     <?php if (isset($_POST['uploadAnother'])) { header('Location: uploadScreen.php'); }?>
                 </form>
             <?php
             }
+            //If no file was chosen alert user
             elseif ($ext == NULL) {
                 echo "<p style='color:red; font-size: 20px;'>No file chosen </p>";
                 ?>
+                <!--Upload file -->
                 <form name="uploadAnother" method="post">
-                    <input class="logoutButton" type="submit" value="Upload Another File" style="font-size:100%; width:200px; margin:10" name="uploadAnother">
-                    <!--return to upload screen when "home" button is pressed-->
+                    <input class="logoutButton" type="submit" value="Upload File" style="font-size:100%; width:200px; margin:10" name="uploadAnother">
+                    <!--return to home screen when "home" button is pressed-->
                     <?php if (isset($_POST['uploadAnother'])) { header('Location: uploadScreen.php'); }?>
                 </form>
             <?php    
             }
+            //If file was the wrong type alert user
             else {
                 echo "<p style='color:red; font-size: 20px;'>Improper file type </p>";
                 ?>
-                    <form name="uploadAnother" method="post">
-                    <input class="logoutButton" type="submit" value="Upload Another File" style="font-size:100%; width:200px; margin:10" name="uploadAnother">
-                    <!--return to upload screen when "home" button is pressed-->
+                <!--Upload proper file -->
+                <form name="uploadAnother" method="post">
+                    <input class="logoutButton" type="submit" value="Upload File" style="font-size:100%; width:200px; margin:10" name="uploadAnother">
+                    <!--return to home screen when "home" button is pressed-->
                     <?php if (isset($_POST['uploadAnother'])) { header('Location: uploadScreen.php'); }?>
                 </form>
             <?php
