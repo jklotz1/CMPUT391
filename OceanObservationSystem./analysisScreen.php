@@ -47,6 +47,7 @@ $user = $_SESSION['user'];
 
         <?php if ($allow) { ?>
            
+            <!--get all scalar sensors that the current user is subscribed to and display in drop down -->
             <?php $sensors = OceanDB::getInstance()->get_subscribed_sensors($user);?>
             
             <table width="250" align="center">
@@ -60,12 +61,15 @@ $user = $_SESSION['user'];
                 </tr>
             </table>
 
-            
+            <!--check that a sensor has been selected in order to view the data analysis report-->
+            <!--if a sensor has not been select display message to user-->
             <div align="center">
                 <?php if($_REQUEST['show']&&$_POST["sensor"]==""){ echo "<div align='center' style='color:red;'>Select a sensor.</div>";}?>
                 <input class="logoutButton" type="submit" value="Show Data" name="show" align="center" style="margin-bottom:0;margin-top:15">
             </div>
             
+            <!--array for each time level, start as an empty array and will be manipulated in the reportScreen.php-->
+            <!--dates will be added when drilling down and dates will be removed when rolling up-->
             <?php if(isset($_REQUEST['show'])&&$_POST["sensor"]!=""){
                 $_SESSION['sensor'] = $_POST["sensor"];
                 $years = array();
@@ -85,6 +89,7 @@ $user = $_SESSION['user'];
         </form>              
                             
     </body>
+    <!--used for graphical interface-->
     <?php   require_once("Includes/css.php");  ?>
 </html>
 

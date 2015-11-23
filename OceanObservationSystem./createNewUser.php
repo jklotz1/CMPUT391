@@ -7,6 +7,7 @@ and open the template in the editor.
 <?php
 ob_start();
 session_start();
+//set the session variable to know which screen to return to when navigating to this page from other pages
 $_SESSION['screen'] = "createUser";
 ?>
 <html>
@@ -15,9 +16,12 @@ $_SESSION['screen'] = "createUser";
         <title></title>
     </head>
     <body>
+        <!--for accessing the OceanDB class for quering and connection to the database-->
         <?php require_once 'Includes/db.php'; ?>
+        <!--users must be associated with a person, get all persons - these will be placed in a drop down and can be selected-->
         <?php $people = OceanDB::getInstance()->get_persons(); ?>
         
+        <!--display form for creating a new user-->
         <h1 align="center" style="font-size: 175%">Add New User</h1>        
         <form name="userCreate" method="post">
             <table width="500" align="center" cellpadding="5">
@@ -38,6 +42,7 @@ $_SESSION['screen'] = "createUser";
                     <td><div align="left" style="color:red; display: <?php if(isset($_POST['saveNewUser'])&&$_POST['password2']==''){?>inline <?php } else { ?> none <?php } ?>" >*Required</div></td>
                 </tr>
                 <tr>
+                    <!--use radio buttons for role - one of three must be selected-->
                     <td><div align="left">Role:</div></td>
                     <td><div align="left"><input type="radio" name="role" value="a" <?php if(isset($_POST['saveNewUser'])&&$_POST['role']=='a'){ ?>checked<?php } ?>>Administrator</div></td>
                 </tr>
@@ -54,6 +59,9 @@ $_SESSION['screen'] = "createUser";
                     <td><div align="left" style="color:red; display: <?php if(isset($_POST['saveNewUser'])&&$_POST['role']==''){?>inline <?php } else { ?> none <?php } ?>">*Required - Select one</div></td>
                 </tr>
                 <tr>
+                    <!--use drop down to display all possible persons in the system that can be selected-->
+                    <!--if a person doesn't exist, "add new profile" can be clicked to create a new person profile-->
+                    <!--after creating a new person, the user will be returned here and the drop down updated-->
                     <td><div align="left">Person Profile:</div></td>
                     <td><div align="left"><select name="personProfile"><option value=""></option> <?php while($person = oci_fetch_array($people,OCI_ASSOC)){?>
                                                                                                     <option value="<?php echo $person['PERSON_ID']; ?>"<?php if(isset($_POST['saveNewUser'])&&$_POST['personProfile']== $person["PERSON_ID"]){?>selected<?php }?>><?php 
@@ -63,12 +71,14 @@ $_SESSION['screen'] = "createUser";
                 </tr>
                 
             </table>
+            <!--user actions - "save" to save new user, "cancel" to discard form and return to previous screen-->
             <p align="center">
                 <input class="logoutButton" type="submit" value="Save" name="saveNewUser" align="center" style="font-size:100%; width:100px; margin:10 ">
                 <input class="logoutButton" type="submit" value="Cancel" name="cancelNewUser" align="center" style="font-size:100%; width:100px; margin:10 ">
             </p>
             
-            <!-- check if all the fields have been filled in -->
+            <!--User entered fields must be checked before saving-->
+            <!--check: all the fields have been filled in -->
             <?php $isEmpty = false;
             
             if (isset($_POST['saveNewUser'])) {   
@@ -79,24 +89,27 @@ $_SESSION['screen'] = "createUser";
                 if ($_POST['personProfile'] == '') { $isEmpty = true; }
             } ?>
             
-            <!--check that username doesn't already exist-->
+            <!--check: that username doesn't already exist in the system-->
             <?php $validUser = false;
             if(isset($_POST['saveNewUser']) && !$isEmpty) {
                 $validUser = !(OceanDB::getInstance()->user_exist($_POST['username']));
             }?>
             
-            <!--check that passwords match-->
+            <!--check: the two passwords entered match-->
             <?php $validPassword = false;
             if(isset($_POST['saveNewUser']) && !$isEmpty) {
                 $validPassword = ($_POST['password'] == $_POST['password2']);
             }?>
             
+            
             <div align="center">
+            <!--if passwords don't match display message-->
             <?php if(isset($_POST['saveNewUser']) && !$validPassword && !$isEmpty) { echo "<p style='color:red;'>Passwords do not match.<p>";} ?>
+            <!--if username already exists display message-->
             <?php if(isset($_POST['saveNewUser']) && !$validUser && !$isEmpty) { echo "<p style='color:red;'>Username ".$_POST['username']." already exists<p>";}?>
             </div>
             
-            <!--check that passwords match-->
+            <!--if all checks pass: not empty, unique username, matching passwords - can save the user-->
             <?php if(isset($_POST['saveNewUser']) && !$isEmpty && $validPassword && $validUser) {
                 $success = OceanDB::getInstance()->add_new_user($_POST['username'],$_POST['password'],$_POST['role'],$_POST['personProfile']);
                 if ($success){
@@ -104,12 +117,15 @@ $_SESSION['screen'] = "createUser";
                 }
             }?>
             
+            <!--"add new profile" button clicked - go to page to create-->
             <?php if(isset($_POST['newProfile'])) { header('Location: createNewPersonProfile.php'); }?>
             
+            <!--"cancel" clicked - discard form and return to previous page-->
             <?php if(isset($_POST['cancelNewUser'])) { header('Location: managementUserScreen.php'); } ?>
                         
         </form> 
     </body>
+    <!--used for graphical interface-->
     <?php   require_once("Includes/css.php");  ?>
 </html>
 
