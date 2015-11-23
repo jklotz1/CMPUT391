@@ -546,11 +546,13 @@ class OceanDB{
         return $success;
     }
     
+    //Upload image file if file was of type jpg
     public function upload_image($_FILES, $description, $sensorId) {
         $mysensorid = $sensorId;
         $mydescription = $description;
         $mydate = date('d/M/Y H:i:s');
         
+        //Get new id for image, done by incrementing previous id by 1
         $query = "SELECT MAX(IMAGE_ID) AS MAXIMUM FROM IMAGES";
         $stmt = oci_parse ($this->con, $query);
         oci_execute($stmt, OCI_DEFAULT);
@@ -580,6 +582,7 @@ class OceanDB{
         $lob->free();
         oci_free_statement($stmt);
 
+        //Get uploaded image data for creating thumbnail
         $query = 'SELECT RECOREDED_DATA FROM IMAGES WHERE IMAGE_ID = :MYBLOBID';
 
         $stmt = oci_parse ($this->con, $query);
@@ -587,23 +590,30 @@ class OceanDB{
         oci_execute($stmt, OCI_DEFAULT);
         $arr = oci_fetch_assoc($stmt);
         $result = $arr['RECOREDED_DATA']->load();
-    
+        
+        //Set desired thumbnail size
         $desired_width = 50;
         $desired_height = 50;
+        //Create image from data
         $im = imagecreatefromstring($result);
+        //Create new image for thumbnail
         $new = imagecreatetruecolor($desired_width, $desired_height);
+        //Get image dimensions
         $x = imagesx($im);
         $y = imagesy($im);
+        //Copy image into resized image
         imagecopyresampled($new, $im, 0, 0, 0, 0, $desired_width, $desired_height, $x, $y);
+        //Destroy unneeded image
         imagedestroy($im);
         oci_free_statement($stmt);
 
-        //header('Content-type: image/jpeg');
+        //Get thumbnail from new image
         ob_start();
         imagejpeg($new, null, 100);
         $mythumbnail = ob_get_contents();
         ob_clean();
-    
+        
+        //Insert thumbnail into database
         $lob = oci_new_descriptor($this->con, OCI_D_LOB);
         $stmt = oci_parse($this->con, "UPDATE IMAGES SET THUMBNAIL = EMPTY_BLOB() WHERE IMAGE_ID = :MYBLOBID RETURNING THUMBNAIL INTO :MYTHUMBNAIL");
         oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
@@ -618,6 +628,7 @@ class OceanDB{
         $lob->free();
         oci_free_statement($stmt);
 
+        //Get uploaded image again for displaying
         $query = 'SELECT RECOREDED_DATA FROM IMAGES WHERE IMAGE_ID = :MYBLOBID';
 
         $stmt = oci_parse ($this->con, $query);
@@ -628,11 +639,13 @@ class OceanDB{
 
     }
     
+    //Upload audio file if file was of type wav
     public function upload_audio($_FILES, $description, $sensorId) {
         $mysensorid = $sensorId;
         $mydescription = $description;
         $mydate = date('d/M/Y H:i:s');
         
+        //Get new id for audio file, done by incrementing previous id by 1
         $query = "SELECT MAX(RECORDING_ID) AS MAXIMUM FROM AUDIO_RECORDINGS";
         $stmt = oci_parse ($this->con, $query);
         oci_execute($stmt, OCI_DEFAULT);
@@ -641,10 +654,11 @@ class OceanDB{
         oci_free_statement($stmt);
         $myblobid = $myblobid + 1;
 
-
+        //Get audio file
         $filename = $_FILES['file']['tmp_name'];
         $file = fopen($filename, "r");
         
+        //Calculate length of audio file
         $size_in_bytes = filesize($filename);
         fseek($file, 20);
         $rawheader = fread($file, 16);
@@ -682,10 +696,13 @@ class OceanDB{
         return $stmt;
         }
         
+     //Upload scalar data in batches from csv file  
     public function upload_csv($_FILES) {
+        //Get csv file
         $filename = $_FILES['file']['tmp_name'];
         $file = fopen($filename, "r");
         
+        //Get new id for first lone of csv file, done by incrementing previous id by 1
         $query = "SELECT MAX(ID) AS MAXIMUM FROM SCALAR_DATA";
         $stmt = oci_parse ($this->con, $query);
         oci_execute($stmt, OCI_DEFAULT);
@@ -694,6 +711,7 @@ class OceanDB{
         oci_free_statement($stmt);
         $myblobid = $myblobid + 1;
         
+        //Insert scalar data by each line in csv file
         $data = array();
         while(! feof($file)) {
             $line = fgetcsv($file);
@@ -708,6 +726,7 @@ class OceanDB{
                 oci_commit($this->con);
                 oci_free_statement($stmt);
                 array_push($data, $line);
+                //Get next id
                 $myblobid = $myblobid + 1;
             }
        }
@@ -715,6 +734,7 @@ class OceanDB{
        return $data;
    }
    
+   //Get all sensor ids for dropdown menu
    public function get_sensor_ids() {
        $query = 'SELECT SENSOR_ID FROM SENSORS';
        $stmt = oci_parse ($this->con, $query);
@@ -722,6 +742,7 @@ class OceanDB{
        return $stmt;
    }
    
+   //Get image for downloading
    public function get_image($imageid) {
        
        $query = 'SELECT RECOREDED_DATA FROM IMAGES WHERE IMAGE_ID = :MYIMAGEID';
@@ -731,6 +752,7 @@ class OceanDB{
        return $stmt;
    }
    
+   //Get audio file for downloading
    public function get_audio($audioid) {
        
        $query = 'SELECT RECORDED_DATA FROM AUDIO_RECORDINGS WHERE RECORDING_ID = :MYAUDIOID';
