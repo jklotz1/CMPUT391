@@ -97,16 +97,26 @@
                 </form>
             <?php
             }
-            else {
-                echo "No file chosen or improper file type\n";
+            elseif ($ext == NULL) {
+                echo "<p style='color:red; font-size: 20px;'>No file chosen </p>";
                 ?>
                 <form name="uploadAnother" method="post">
                     <input class="logoutButton" type="submit" value="Upload Another File" style="font-size:100%; width:200px; margin:10" name="uploadAnother">
                     <!--return to upload screen when "home" button is pressed-->
                     <?php if (isset($_POST['uploadAnother'])) { header('Location: uploadScreen.php'); }?>
                 </form>
-            <?php
+            <?php    
             }
+            else {
+                echo "<p style='color:red; font-size: 20px;'>Improper file type </p>";
+                ?>
+                    <form name="uploadAnother" method="post">
+                    <input class="logoutButton" type="submit" value="Upload Another File" style="font-size:100%; width:200px; margin:10" name="uploadAnother">
+                    <!--return to upload screen when "home" button is pressed-->
+                    <?php if (isset($_POST['uploadAnother'])) { header('Location: uploadScreen.php'); }?>
+                </form>
+            <?php
+            }           
         }
         ?>
     </body>

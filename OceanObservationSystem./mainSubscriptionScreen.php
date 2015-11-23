@@ -1,15 +1,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
+CMPUT 391 Project
+Code Belongs to: Sean Partridge, Jessica Klotz, Brennan Stang
 -->
 <html>
     <head>
         <meta charset="UTF-8">
+        <title>Subscription Navigation</title>
         <h1 align="left" style="font-size: 150%">Subscription Navigation </h1> 
     </head>
     <body>
+        
+    <!-- Navigation Panel -->
          <form name="logon" method="post">
          <input class="logoutButton" type="submit" value="Help" name="Help">
                    <?php 

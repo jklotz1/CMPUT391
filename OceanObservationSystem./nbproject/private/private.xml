@@ -3,9 +3,31 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+<<<<<<< HEAD
+            <file>file:/compsci/webdocs/sjpartri/web_docs/cmput_project/OceanObservationSystem./analysisScreen.php</file>
+            <file>file:/compsci/webdocs/sjpartri/web_docs/cmput_project/OceanObservationSystem./Includes/db.php</file>
+            <file>file:/compsci/webdocs/sjpartri/web_docs/cmput_project/OceanObservationSystem./Includes/userDocumentation.txt</file>
+            <file>file:/compsci/webdocs/sjpartri/web_docs/cmput_project/OceanObservationSystem./Includes/css.php</file>
+            <file>file:/compsci/webdocs/sjpartri/web_docs/cmput_project/OceanObservationSystem./userDocumentation.php</file>
+            <file>file:/compsci/webdocs/sjpartri/web_docs/cmput_project/OceanObservationSystem./loginScreen.php</file>
+            <file>file:/compsci/webdocs/sjpartri/web_docs/cmput_project/OceanObservationSystem./homeScreen.php</file>
+            <file>file:/compsci/webdocs/sjpartri/web_docs/cmput_project/OceanObservationSystem./mainSubscriptionScreen.php</file>
+            <file>file:/compsci/webdocs/sjpartri/web_docs/cmput_project/OceanObservationSystem./uploadScreen.php</file>
+            <file>file:/compsci/webdocs/sjpartri/web_docs/cmput_project/OceanObservationSystem./managementScreen.php</file>
+            <file>file:/compsci/webdocs/sjpartri/web_docs/cmput_project/OceanObservationSystem./sensorSubscriptions.php</file>
+            <file>file:/compsci/webdocs/sjpartri/web_docs/cmput_project/OceanObservationSystem./subscribeScreen.php</file>
+            <file>file:/compsci/webdocs/sjpartri/web_docs/cmput_project/OceanObservationSystem./index.php</file>
+            <file>file:/compsci/webdocs/sjpartri/web_docs/cmput_project/OceanObservationSystem./availableSensorSubscriptions.php</file>
+=======
+<<<<<<< HEAD
+            <file>file:/compsci/webdocs/bstang/web_docs/391Project/OceanObservationSystem./uploadScreen.php</file>
+            <file>file:/compsci/webdocs/bstang/web_docs/391Project/OceanObservationSystem./homeScreen.php</file>
+=======
             <file>file:/compsci/webdocs/jklotz/web_docs/cmput391project/OceanObservationSystem./Includes/db.php</file>
             <file>file:/compsci/webdocs/jklotz/web_docs/cmput391project/OceanObservationSystem./analysisScreen.php</file>
             <file>file:/compsci/webdocs/jklotz/web_docs/cmput391project/OceanObservationSystem./reportScreen.php</file>
+>>>>>>> 0cdf99d0b8b7ab470480d127fc47f8f5493065a8
+>>>>>>> 4d34372f6bc2019dbbd671430d24772be9f69e27
         </group>
     </open-files>
 </project-private>
