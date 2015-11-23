@@ -88,10 +88,7 @@
                 ?>
                 <!-- Audio file is uploaded -->
                 <h1 style="font-size: 115%; color:green">Upload Successful</h1>
-                <p><audio controls>
-                    <source src='<?= $audio?>' type="audio/wav">
-                    Your browser does not support the audio element.
-                    </audio></p>
+                <p>
                  <!--Upload another file -->
                 <form name="uploadAnother" method="post">
                     <input class="logoutButton" type="submit" value="Upload Another File" style="font-size:100%; width:200px; margin:10" name="uploadAnother">
