@@ -282,7 +282,6 @@ and open the template in the editor.
                 //Images Row
                 if(count($thumbnails_content) != 0){
                     
-                     
                      $thumbnails = OceanDB::getInstance()->get_thumbnail($sensorID, $_POST["startDate"], $_POST["endDate"],$_POST["startTime"],$_POST["endTime"]);
             while ($thumbResult = oci_fetch_array($thumbnails, OCI_BOTH)) {
                 $result = $thumbResult['THUMBNAIL']->load();
@@ -301,24 +300,14 @@ and open the template in the editor.
                                                 <p><img src="data:image/jpeg;base64,<?php echo base64_encode($result); ?>"/>
                                                     <br>
                                                     
-                                               
-                                                    <input class="downloadbutton" type="button" value="Download" name="downloadImage" onclick="downloadImage()"/>
-                                                
-                                                    
-                                                 
-                                                </p>
-                                                <?php
+                                                 <?php
                                                 $image = OceanDB::getInstance()->get_image($thumbResult['IMAGE_ID']);
                                                 $imageResult = oci_fetch_assoc($image);
                                                 //$filename = $thumbResult['THUMBNAIL'];
                                                 $im = $imageResult['RECOREDED_DATA']->load();
                                                 ?>
-                                                <script type="text/javascript">
-                                                    function downloadImage() {
-                                                        var img = "<?php echo base64_encode($im); ?>";
-                                                        window.location.href = 'data:application/octet-stream;base64,' + img;
-                                                    }
-                                                </script>
+                                                <a href="data:application/octet-stream;base64,<?php echo base64_encode($im);?>" download><input class=downloadbutton type="button" value="Download"/><a/>;
+                                                
                                                     <?php
             }}
                                                 ?>
@@ -327,8 +316,7 @@ and open the template in the editor.
                                                 </td>
                             </tr>
                                                
-                                                
-                                
+                                                          
                 <?php                                
                  //Audo Row
                 if(count($audioDates_content) != 0){
@@ -353,7 +341,6 @@ and open the template in the editor.
                                                    </medium>
                                                     
                                                     <br>
-                                                    <input class="downloadbutton" type="button" value="Download" name="downloadAudio" onclick="downloadAudio()" />
                                                 </p>
                                                 <?php
                                                 $audio = OceanDB::getInstance()->get_audio($audioDate['RECORDING_ID']);
@@ -361,12 +348,7 @@ and open the template in the editor.
                                                 //$filename = $audioDate["RECORDING_ID"];
                                                 $ad = $audioResult['RECORDED_DATA']->load();
                                                 ?>
-                                                <script type="text/javascript">
-                                                    function downloadAudio() {
-                                                        var ad = "<?php echo base64_encode($ad); ?>";
-                                                        window.location.href = 'data:application/octet-stream;base64,' + ad;
-                                                    }
-                                                </script>
+                                                <a href="data:application/octet-stream;base64,<?php echo base64_encode($ad);?>" download><input class=downloadbutton type="button" value="Download"/><a/>;
                 <?php }}
                 ?>
                                     </div>
@@ -389,11 +371,21 @@ and open the template in the editor.
 
                                 <td><div align="center">
                                          <p><h3>SCALAR DATA:</h3></p>
-                                  
+                                           <medium>
                                             VALUE:
-                                     <?php echo $sensorResult["VALUE"];
-                                           echo '<br>';
-                                    } ?>
+                                     <?php echo $sensorResult["VALUE"];?>
+                                           </medium>
+                                                    
+                                                    <br>
+                                                   
+                                                <?php
+                                                $data[0] = $sensors_content[$k]["SENSOR_ID"];
+                                                $data[1] = $sensorResult["DATE_CREATED"];
+                                                $data[2] = $sensorResult["VALUE"];
+                                                $fulldata = $data[0].",".$data[1].",".$data[2];
+                                                ?>
+                                                <a href="data:application/octet-stream, <?php echo $fulldata ;?>" download><input class=downloadbutton type="button" value="Download"/><a/>;
+                                  <?php  } ?>
                                             
                                                    </div>
                                 </td>

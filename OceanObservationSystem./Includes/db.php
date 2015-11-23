@@ -155,10 +155,10 @@ class OceanDB{
     public function get_scalar_data_values($sensorId, $startDate, $endDate, $startTime, $endTime){
      
       
-        $sql = "SELECT S1.VALUE, S1.DATE_CREATED "
-                . "FROM sjpartri.SCALAR_DATA S1  "
-               . "WHERE S1.SENSOR_ID LIKE '$sensorId' "
-               . "AND S1.DATE_CREATED "
+        $sql = "SELECT VALUE, to_char(DATE_CREATED, 'dd/mm/yyyy hh24:mi:ss') AS DATE_CREATED "
+                . "FROM sjpartri.SCALAR_DATA  "
+               . "WHERE SENSOR_ID LIKE '$sensorId' "
+               . "AND DATE_CREATED "
                 . "BETWEEN to_date('$startDate $startTime','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate $endTime','yyyy-mm-dd hh24:mi:ss')";
                 
         
@@ -209,7 +209,7 @@ class OceanDB{
     
     public function get_thumbnail($sensorId,$startDate,$endDate, $startTime, $endTime){
         
-       $query = "SELECT THUMBNAIL, DATE_CREATED, DESCRIPTION, IMAGE_ID "
+       $query = "SELECT THUMBNAIL, to_char(DATE_CREATED, 'dd/mm/yyyy hh24:mi:ss') AS DATE_CREATED, DESCRIPTION, IMAGE_ID "
                . "FROM IMAGES WHERE SENSOR_ID = '$sensorId' "
                . "AND DATE_CREATED "
                . "BETWEEN to_date('$startDate $startTime','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate $endTime','yyyy-mm-dd hh24:mi:ss')";
@@ -222,7 +222,7 @@ class OceanDB{
     }
     
     public function get_audioInfo($sensorId,$startDate,$endDate, $startTime, $endTime){
-        $query = "SELECT DATE_CREATED, DESCRIPTION, RECORDING_ID "
+        $query = "SELECT to_char(DATE_CREATED, 'dd/mm/yyyy hh24:mi:ss') AS DATE_CREATED, DESCRIPTION, RECORDING_ID "
                 . "FROM AUDIO_RECORDINGS WHERE SENSOR_ID='$sensorId'"
                 . "AND DATE_CREATED "
                 . "BETWEEN to_date('$startDate $startTime','yyyy-mm-dd hh24:mi:ss') AND to_date('$endDate $endTime','yyyy-mm-dd hh24:mi:ss')";
