@@ -250,7 +250,7 @@ class OceanDB{
         return $role;          
     }
     
-    //get all sensors
+    //get all sensors in the system
     public function get_sensors(){
         $query = "SELECT  * FROM SJPARTRI.SENSORS ORDER BY SENSOR_ID";
         $sensors = oci_parse ($this->con, $query);
@@ -296,21 +296,26 @@ class OceanDB{
         $sensorID = oci_parse ($this->con, $query);
         oci_execute ($sensorID);
         $id=0;
+        //get the largest sensorID in the system
         while (($row = oci_fetch_array($sensorID,OCI_BOTH)) != false) {
             $id = $row["MAX(SENSOR_ID)"];
          }
+        //increment the ID and return for creating a new sensor
         return $id+1; 
     }
     
+    //when creating a new person get the next personID - autoincrement
     public function get_next_personID()
     {
         $query = "SELECT MAX(PERSON_ID) FROM SJPARTRI.PERSONS";
         $personID = oci_parse ($this->con, $query);
         oci_execute ($personID);
         $id=0;
+        //get the largest personID in the system
         while (($row = oci_fetch_array($personID,OCI_BOTH)) != false) {
             $id = $row["MAX(PERSON_ID)"];
          }
+         //increment the ID and return for creating a new person
         return $id+1; 
     }
     
@@ -323,6 +328,7 @@ class OceanDB{
         return $success;
     }
     
+    //delete sensor from the system and all associated records
     public function delete_sensor($sensorID)
     {
         //must delete all associate data entries with sensor
@@ -352,7 +358,7 @@ class OceanDB{
         oci_execute($sensor);
     }
     
-    //delete user
+    //delete user from the system when username matches the passed in user
     public function delete_user($username)
     {
         //delete user
@@ -362,6 +368,7 @@ class OceanDB{
         return $success;
     }
     
+    //add new user into the system
     public function add_new_user($user, $passwd, $role, $perID)
     {
         $query = "INSERT INTO SJPARTRI.USERS VALUES ('$user', '$passwd', '$role', $perID, sysdate)";
@@ -370,6 +377,7 @@ class OceanDB{
         return $success;
     }
     
+    //add new person to the system
     public function add_new_person($peronID,$fname,$lname,$address,$email,$phone)
     {
         $query = "INSERT INTO SJPARTRI.PERSONS VALUES ($peronID,'$fname','$lname','$address','$email','$phone')";
@@ -378,7 +386,7 @@ class OceanDB{
         return $success;
     }
     
-    //get users - personal info and user roles
+    //get personal accounts for all persons in the systems
     public function get_persons(){
         $query = "SELECT * 
             FROM SJPARTRI.PERSONS P
@@ -388,6 +396,7 @@ class OceanDB{
         return $persons;
     }
     
+    //get the personal account information for the personID passed in
     public function get_person_by_ID($personID){
         $query = "SELECT * 
             FROM SJPARTRI.PERSONS P
@@ -395,36 +404,42 @@ class OceanDB{
         $persons = oci_parse ($this->con, $query);
         oci_execute ($persons);
         $personInfo = null;
+        //get the row with the information and return that instead of an array
         while (($row = oci_fetch_array($persons,OCI_BOTH)) != false) {
             $personInfo = $row;
          }
         return $personInfo;
     }
     
+    //get the the personID for the personal account corresponding to the user passed in
     public function get_personID($user)
     {
         $query = "SELECT PERSON_ID FROM SJPARTRI.USERS WHERE USER_NAME = '$user'";
         $personID = oci_parse ($this->con, $query);
         oci_execute ($personID);
+        //get the personID
         while (($row = oci_fetch_array($personID,OCI_BOTH)) != false) {
             $id = $row["PERSON_ID"];
          }
+         //return the ID not the entire array
         return $id; 
     }
     
+    //delete a person from the system - must delete all associated user
     public function delete_person($personID)
     {
-        //delete person
+        //delete users associated with personID
         $query = "DELETE FROM SJPARTRI.USERS WHERE PERSON_ID = $personID";
         $sensor = oci_parse ($this->con, $query);
         oci_execute($sensor);
         
+        //delete person
         $query = "DELETE FROM SJPARTRI.PERSONS WHERE PERSON_ID = $personID";
         $sensor = oci_parse ($this->con, $query);
-        oci_execute($sensor);
-        
+        oci_execute($sensor);        
     }
     
+    //retrieve the specific user their information from the system
     public function get_user_info_only($user){
         $query = "SELECT U.* 
             FROM SJPARTRI.USERS U 
@@ -432,12 +447,16 @@ class OceanDB{
         $users = oci_parse ($this->con, $query);
         oci_execute ($users);
         $userInfo = null;
+        //get the row of user information
         while (($row = oci_fetch_array($users,OCI_BOTH)) != false) {
             $userInfo = $row;
          }
+         //return the user information not array
         return $userInfo;
     }
 
+    
+    // get the personal information of the personal account associated with the specified user
     public function get_personal_info($username){
         $query = "SELECT P.* "
                 ."FROM SJPARTRI.PERSONS P "
@@ -446,14 +465,17 @@ class OceanDB{
         $person = oci_parse ($this->con, $query);
         oci_execute ($person);
         $personInfo = null;
+        //get the row of the personal account info
         while (($row = oci_fetch_array($person,OCI_BOTH)) != false) {
             $personInfo = $row;
          }
         return $personInfo;
     }
     
+    //get all the users assocaited with the person account that corresponds to the passed in username
     public function get_all_users_by_user($username){
-       $query = "SELECT U.* "
+        //first get the personID of $username then find all users with that personID
+        $query = "SELECT U.* "
                 ."FROM SJPARTRI.USERS U "
                 ."WHERE U.PERSON_ID = (SELECT P.PERSON_ID "
                                         ."FROM SJPARTRI.PERSONS P "
@@ -464,12 +486,15 @@ class OceanDB{
         return $users;
     }
     
+    //check that the password given for a user is correct
     public function password_match($username, $passwordTest){
+        //get the password of the user
         $query = "SELECT U.PASSWORD "
                 ."FROM SJPARTRI.USERS U "
                 ."WHERE U.USER_NAME =  '$username'" ;
         $user = oci_parse ($this->con, $query);
         oci_execute ($user);
+        //check if the password given by the user matches the password from the database
         while (($row = oci_fetch_array($user,OCI_BOTH)) != false) {
             $password = $row["PASSWORD"];
             if ($password == $passwordTest) { return TRUE; }
@@ -478,6 +503,7 @@ class OceanDB{
         return FALSE;
     }
     
+    //update the user information for the specific user
     public function update_user($username, $role, $newUser, $passwd,$personID){
         $query = "UPDATE SJPARTRI.USERS U 
                   SET U.ROLE='$role',
@@ -490,19 +516,23 @@ class OceanDB{
         return $success;
     }
     
+    //chekc if a username already exists in the system - used for creating new users, cannot have duplicates
     public function user_exist($usernameTest){
+        //try to retrieve a user by the given username
         $query = "SELECT U.USER_NAME "
                 ."FROM SJPARTRI.USERS U "
                 ."WHERE U.USER_NAME = '$usernameTest'" ;
         $user = oci_parse ($this->con, $query);
         oci_execute ($user);
         $match = false;
+        //if a user was retrieved then the username already exists in the system
         while (($row = oci_fetch_array($user,OCI_BOTH)) != false) {
             $match = true;
          }
         return $match;
     }
     
+    //update the personal information for the given person that matches ID
     public function update_person($id, $fName, $lName, $address, $email, $phone){
         $query = "UPDATE SJPARTRI.PERSONS P
                 SET P.FIRST_NAME = '$fName',
@@ -710,6 +740,7 @@ class OceanDB{
        return $stmt;
    }
    
+   //get all scalar sensors that a certian user is subscribed to
    public function get_subscribed_sensors($user){
         $query = "SELECT S.* 
                     FROM SJPARTRI.USERS U
@@ -722,6 +753,9 @@ class OceanDB{
         return $sensors;
     }
     
+    //create a data view used for the data analysis OLAP report
+    //get the values of all the scalar data records
+    //seperate the date_created into years, quarters, months, weeks, days to easily query and group later
     public function create_view_data($sensorID){
         $query = "CREATE VIEW vw_data AS SELECT D.YEAR as YEAR, D.MONTH as MONTH, D.QUARTER as QUARTER, D.WEEKOFYEAR as WEEK, D.DAY as DAY, 
                         D.DAYOFWEEK as dayofweek, D.DATE_CREATED as DATE_CREATED, D.VALUE as VALUE
@@ -739,15 +773,16 @@ class OceanDB{
         oci_execute ($view);  
     }
     
+    //drop the above data view from the system
     public function drop_view_data(){
         $query = "DROP VIEW VW_DATA";
         $view = oci_parse ($this->con, $query);
         oci_execute ($view);
     }
     
-    public function get_data_to_display_year(){
-       
-        //retrieve data for years
+    //retrieve data for each year for data analysis
+    public function get_data_to_display_year(){      
+        //group by year
         $query = "SELECT YEAR, CAST(AVG(VALUE)AS DECIMAL(16,3)) AS AVERAGE, MIN(VALUE) AS MINIMUM, MAX(VALUE) AS MAXIMUM
                     FROM VW_DATA
                     GROUP BY YEAR
@@ -757,60 +792,63 @@ class OceanDB{
         return $data;
     }
     
+    //retrieve data for each quarter of the specific year for data analysis
     public function get_data_to_display_quarter($year){
-
-    //retrieve data for quarters
-    $query = "SELECT YEAR, QUARTER, CAST(AVG(VALUE)AS DECIMAL(16,3)) AS AVERAGE, MIN(VALUE) AS MINIMUM, MAX(VALUE) AS MAXIMUM
-                FROM vw_data
-                WHERE YEAR = '$year'
-                GROUP BY YEAR, QUARTER
-                ORDER BY YEAR, QUARTER";
-    $data = oci_parse ($this->con, $query);
-    oci_execute ($data);
-    return $data;
+        //group by quarter and year
+        $query = "SELECT YEAR, QUARTER, CAST(AVG(VALUE)AS DECIMAL(16,3)) AS AVERAGE, MIN(VALUE) AS MINIMUM, MAX(VALUE) AS MAXIMUM
+                    FROM vw_data
+                    WHERE YEAR = '$year'
+                    GROUP BY YEAR, QUARTER
+                    ORDER BY YEAR, QUARTER";
+        $data = oci_parse ($this->con, $query);
+        oci_execute ($data);
+        return $data;
     }
     
+    //retrieve data for each month of the specific quarter in the specific year for data analysis
     public function get_data_to_display_months($quarter, $year){
-
-    //retrieve data for quarters
-    $query = "SELECT YEAR, MONTH, CAST(AVG(VALUE)AS DECIMAL(16,3)) AS AVERAGE, MIN(VALUE) AS MINIMUM, MAX(VALUE) AS MAXIMUM
-                FROM vw_data
-                WHERE QUARTER = '$quarter' AND YEAR = '$year'
-                GROUP BY YEAR, MONTH
-                ORDER BY YEAR, MONTH";
-    $data = oci_parse ($this->con, $query);
-    oci_execute ($data);
-    return $data;
+        //group by year and month
+        $query = "SELECT YEAR, MONTH, CAST(AVG(VALUE)AS DECIMAL(16,3)) AS AVERAGE, MIN(VALUE) AS MINIMUM, MAX(VALUE) AS MAXIMUM
+                    FROM vw_data
+                    WHERE QUARTER = '$quarter' AND YEAR = '$year'
+                    GROUP BY YEAR, MONTH
+                    ORDER BY YEAR, MONTH";
+        $data = oci_parse ($this->con, $query);
+        oci_execute ($data);
+        return $data;
     }
     
+    //retrieve data for each week in the spefic month of the specific year for data analysis
     public function get_data_to_display_weeks($month, $year){
-
-    //retrieve data for weeks
-    $query = "SELECT YEAR, MONTH, WEEK, (CASE WHEN (DAYOFWEEK-1)>DAY THEN TO_CHAR(1) ELSE TO_CHAR(DAY-(DAYOFWEEK-1)) END) AS FIRSTDAY, 
-                    extract(day from LAST_DAY(DATE_CREATED)) as LASTDAY, 
-                    CAST(AVG(VALUE)AS DECIMAL(16,3)) AS AVERAGE, MIN(VALUE) AS MINIMUM, MAX(VALUE) AS MAXIMUM
-                FROM VW_DATA
-                WHERE MONTH = '$month' AND YEAR = '$year'
-                GROUP BY YEAR, MONTH, WEEK, (CASE WHEN (DAYOFWEEK-1)>DAY THEN TO_CHAR(1) ELSE TO_CHAR(DAY-(DAYOFWEEK-1)) END),extract(day from LAST_DAY(DATE_CREATED))
-                ORDER BY YEAR, MONTH, WEEK, (CASE WHEN (DAYOFWEEK-1)>DAY THEN TO_CHAR(1) ELSE TO_CHAR(DAY-(DAYOFWEEK-1)) END),extract(day from LAST_DAY(DATE_CREATED))";
-    $data = oci_parse ($this->con, $query);
-    oci_execute ($data);
-    return $data;
+        //group by year, month, week
+        //also get the first and last day cause not all weeks will start on sunday and end on saturday so need to do checks on these dates
+        $query = "SELECT YEAR, MONTH, WEEK, (CASE WHEN (DAYOFWEEK-1)>DAY THEN TO_CHAR(1) ELSE TO_CHAR(DAY-(DAYOFWEEK-1)) END) AS FIRSTDAY, 
+                        extract(day from LAST_DAY(DATE_CREATED)) as LASTDAY, 
+                        CAST(AVG(VALUE)AS DECIMAL(16,3)) AS AVERAGE, MIN(VALUE) AS MINIMUM, MAX(VALUE) AS MAXIMUM
+                    FROM VW_DATA
+                    WHERE MONTH = '$month' AND YEAR = '$year'
+                    GROUP BY YEAR, MONTH, WEEK, (CASE WHEN (DAYOFWEEK-1)>DAY THEN TO_CHAR(1) ELSE TO_CHAR(DAY-(DAYOFWEEK-1)) END),extract(day from LAST_DAY(DATE_CREATED))
+                    ORDER BY YEAR, MONTH, WEEK, (CASE WHEN (DAYOFWEEK-1)>DAY THEN TO_CHAR(1) ELSE TO_CHAR(DAY-(DAYOFWEEK-1)) END),extract(day from LAST_DAY(DATE_CREATED))";
+        $data = oci_parse ($this->con, $query);
+        oci_execute ($data);
+        return $data;
     }
 
+    //retrieve data for each day in the specific week in the specific year for data analysis
     public function get_data_to_display_days($day, $month, $year){
-
-    //retrieve data for days
-    $query = "SELECT YEAR, MONTH, DAY, WEEK, CAST(AVG(VALUE)AS DECIMAL(16,3)) AS AVERAGE, MIN(VALUE) AS MINIMUM, MAX(VALUE) AS MAXIMUM
-                        FROM vw_data
-                        WHERE TO_CHAR(TO_DATE('$year-$month-$day','YYYY-MM-DD')+1, 'IW') = WEEK AND MONTH = $month
-                        GROUP BY YEAR, MONTH, DAY, WEEK
-                        ORDER BY YEAR, MONTH, DAY, WEEK";
-    $data = oci_parse ($this->con, $query);
-    oci_execute ($data);
-    return $data;
+        //first find the week of the year that the day, month and year belong to
+        //get all entries also within this week that fall in the same month
+        $query = "SELECT YEAR, MONTH, DAY, WEEK, CAST(AVG(VALUE)AS DECIMAL(16,3)) AS AVERAGE, MIN(VALUE) AS MINIMUM, MAX(VALUE) AS MAXIMUM
+                            FROM vw_data
+                            WHERE TO_CHAR(TO_DATE('$year-$month-$day','YYYY-MM-DD')+1, 'IW') = WEEK AND MONTH = $month
+                            GROUP BY YEAR, MONTH, DAY, WEEK
+                            ORDER BY YEAR, MONTH, DAY, WEEK";
+        $data = oci_parse ($this->con, $query);
+        oci_execute ($data);
+        return $data;
     }
     
+    //get the sensor information for the specified sensorID
     public function get_sensor_by_ID($sensor_id){
         $query = "SELECT * 
             FROM SJPARTRI.SENSORS S
