@@ -653,9 +653,10 @@ class OceanDB{
     }
     
     //Upload audio file if file was of type wav
-    public function upload_audio($_FILES, $description, $sensorId, $date, $time) {
+    public function upload_audio($_FILES, $description, $sensorId, $date, $time, $length) {
         $mysensorid = $sensorId;
         $mydescription = $description;
+        $mylength = $length;
         if ($date == null) {
             $mydate = date('Y-M-d H:i:s');
         }
@@ -673,15 +674,15 @@ class OceanDB{
         $myblobid = $myblobid + 1;
 
         //Get audio file
-        $filename = $_FILES['file']['tmp_name'];
-        $file = fopen($filename, "r");
+        //$filename = $_FILES['file']['tmp_name'];
+        //$file = fopen($filename, "r");
         
         //Calculate length of audio file
-        $size_in_bytes = filesize($filename);
-        fseek($file, 20);
-        $rawheader = fread($file, 16);
-        $header = unpack('vtype/vchannels/Vsamplerate/Vbytespersec/valignment/vbits', $rawheader);
-        $sec = ceil($size_in_bytes/$header['bytespersec']);
+        //$size_in_bytes = filesize($filename);
+        //fseek($file, 20);
+        //$rawheader = fread($file, 16);
+        //$header = unpack('vtype/vchannels/Vsamplerate/Vbytespersec/valignment/vbits', $rawheader);
+        //$sec = ceil($size_in_bytes/$header['bytespersec']);
   
 
         // Insert the BLOB from PHP's tempory upload area
@@ -691,7 +692,7 @@ class OceanDB{
         oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
         oci_bind_by_name($stmt, ':MYSENSORID', $mysensorid);
         oci_bind_by_name($stmt, ":MYDATE", $mydate);
-        oci_bind_by_name($stmt, ":MYLENGTH", $sec);
+        oci_bind_by_name($stmt, ":MYLENGTH", $mylength);
         oci_bind_by_name($stmt, ':MYDESCRIPTION', $mydescription);
         oci_bind_by_name($stmt, ':RECORDED_DATA', $lob, -1, OCI_B_BLOB);
         oci_execute($stmt, OCI_DEFAULT);

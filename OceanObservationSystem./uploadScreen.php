@@ -38,6 +38,9 @@
                     Choose File to Upload:<br>
                     <input id="file" type="file" value="Choose File" style="font-size:100%; width:200px; margin:10" name="file"><br>
                     <table>
+                        <!-- Length of audio file -->
+                        <tr><td>Length (For audio recording only):</td>
+                            <td><input name="length" type="number" step="0.01" id="length" value="<?php echo $_POST["length"]; ?>"></td></tr>
                         <!-- Description of image/audio file -->
                         <tr><td>Description (For image or audio recording only):</td>
                             <td><input name="description" type="text" maxlength="128" id="description" value="<?php echo $_POST["description"]; ?>"></td></tr>
@@ -93,7 +96,7 @@
                 //Wav audio file
                 elseif ($ext == 'wav') {
                     //Call to funciton for uploading audio, audio file is inserted in this funtion 
-                    $result = OceanDB::getInstance()->upload_audio($_FILES, $_POST["description"], $_POST["sensorId"], $_POST["date"], $_POST["time"]);
+                    $result = OceanDB::getInstance()->upload_audio($_FILES, $_POST["description"], $_POST["sensorId"], $_POST["date"], $_POST["time"], $_POST["length"]);
                     $audioResult = oci_fetch_assoc($result);
                     $audio = $audioResult['RECORDED_DATA']->load();
                     ?>
