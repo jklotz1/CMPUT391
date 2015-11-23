@@ -555,10 +555,15 @@ class OceanDB{
     }
     
     //Upload image file if file was of type jpg
-    public function upload_image($_FILES, $description, $sensorId) {
+    public function upload_image($_FILES, $description, $sensorId, $date, $time) {
         $mysensorid = $sensorId;
         $mydescription = $description;
-        $mydate = date('d/M/Y H:i:s');
+        if ($date == null) {
+            $mydate = date('Y-M-d H:i:s');
+        }
+        else {
+            $mydate = $date.$time;
+        };
         
         //Get new id for image, done by incrementing previous id by 1
         $query = "SELECT MAX(IMAGE_ID) AS MAXIMUM FROM IMAGES";
@@ -573,7 +578,7 @@ class OceanDB{
         // Insert the BLOB from PHP's tempory upload area
         $lob = oci_new_descriptor($this->con, OCI_D_LOB);
         $stmt = oci_parse($this->con, "INSERT INTO IMAGES (IMAGE_ID, SENSOR_ID, DATE_CREATED, DESCRIPTION, RECOREDED_DATA) "
-            ."VALUES(:MYBLOBID, :MYSENSORID, to_date(:MYDATE, 'dd/mm/yyyy hh24:mi:ss'), :MYDESCRIPTION, EMPTY_BLOB()) RETURNING RECOREDED_DATA INTO :RECOREDED_DATA");
+            ."VALUES(:MYBLOBID, :MYSENSORID, to_date(:MYDATE, 'yyyy-mm-dd hh24:mi:ss'), :MYDESCRIPTION, EMPTY_BLOB()) RETURNING RECOREDED_DATA INTO :RECOREDED_DATA");
         oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
         oci_bind_by_name($stmt, ':MYSENSORID', $mysensorid);
         oci_bind_by_name($stmt, ":MYDATE", $mydate);
@@ -648,10 +653,15 @@ class OceanDB{
     }
     
     //Upload audio file if file was of type wav
-    public function upload_audio($_FILES, $description, $sensorId) {
+    public function upload_audio($_FILES, $description, $sensorId, $date, $time) {
         $mysensorid = $sensorId;
         $mydescription = $description;
-        $mydate = date('d/M/Y H:i:s');
+        if ($date == null) {
+            $mydate = date('Y-M-d H:i:s');
+        }
+        else {
+            $mydate = $date.$time;
+        };
         
         //Get new id for audio file, done by incrementing previous id by 1
         $query = "SELECT MAX(RECORDING_ID) AS MAXIMUM FROM AUDIO_RECORDINGS";
@@ -677,7 +687,7 @@ class OceanDB{
         // Insert the BLOB from PHP's tempory upload area
         $lob = oci_new_descriptor($this->con, OCI_D_LOB);
         $stmt = oci_parse($this->con, "INSERT INTO AUDIO_RECORDINGS (RECORDING_ID, SENSOR_ID, DATE_CREATED, LENGTH, DESCRIPTION, RECORDED_DATA) "
-            ."VALUES(:MYBLOBID, :MYSENSORID, to_date(:MYDATE, 'dd/mm/yyyy hh24:mi:ss'), :MYLENGTH, :MYDESCRIPTION, EMPTY_BLOB()) RETURNING RECORDED_DATA INTO :RECORDED_DATA");
+            ."VALUES(:MYBLOBID, :MYSENSORID, to_date(:MYDATE, 'yyyy-mm-dd hh24:mi:ss'), :MYLENGTH, :MYDESCRIPTION, EMPTY_BLOB()) RETURNING RECORDED_DATA INTO :RECORDED_DATA");
         oci_bind_by_name($stmt, ':MYBLOBID', $myblobid);
         oci_bind_by_name($stmt, ':MYSENSORID', $mysensorid);
         oci_bind_by_name($stmt, ":MYDATE", $mydate);

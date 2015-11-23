@@ -25,13 +25,18 @@
         <!-- For uploading files -->
         <form action="<?php echo $_SERVER['PHP_SELF']; ?>" name="upload" method="post" enctype="multipart/form-data">
             <!--Button for choosing file to upload -->
-            <input class="uploadButton" type="file" value="Choose File" style="font-size:100%; width:200px; margin:10" name="file"> Choose File to Upload<br>
+            Choose File to Upload:<br>
+            <input id="file" type="file" value="Choose File" style="font-size:100%; width:200px; margin:10" name="file"><br>
             <table>
                 <!-- Description of image/audio file -->
-                <tr><td>Description (For image or audio recording only):
-                        <input name="description" type="text" maxlength="128" id="description" value="<?php echo $_POST["description"]; ?>"></td></tr>
+                <tr><td>Description (For image or audio recording only):</td>
+                        <td><input name="description" type="text" maxlength="128" id="description" value="<?php echo $_POST["description"]; ?>"></td></tr>
+                <tr><td>Date Created (For image or audio recording only):</td>
+                        <td><input name="date" type="date" id="date" value="<?php echo $_POST["date"]; ?>"></td>
+                        <td><input name="time" type="time" id="time" value="<?php echo $_POST["time"]; ?>"></td></tr>
                 <!-- Drop down menu of sensor ids for image/audio file -->
-                <tr><td>Sensor_Id (For image or audio recording only):&nbsp;
+                <tr><td>Sensor_Id (For image or audio recording only):</td>
+                    <td>
                 <?php
                 $sensor_ids = OceanDB::getInstance()->get_sensor_ids();
                 ?>
@@ -57,7 +62,7 @@
             //Jpg image file
             if ($ext == 'jpg') {
                 //Call to funciton for uploading image, image is inserted in this funtion 
-                $result = OceanDB::getInstance()->upload_image($_FILES, $_POST["description"], $_POST["sensorId"]);
+                $result = OceanDB::getInstance()->upload_image($_FILES, $_POST["description"], $_POST["sensorId"], $_POST["date"], $_POST["time"]);
                 //Fetch image data and load to display uploaded image
                 $imageResult = oci_fetch_assoc($result);
                 $image = $imageResult['RECOREDED_DATA']->load();
@@ -77,7 +82,7 @@
             //Wav audio file
             elseif ($ext == 'wav') {
                 //Call to funciton for uploading audio, audio file is inserted in this funtion 
-                $result = OceanDB::getInstance()->upload_audio($_FILES, $_POST["description"], $_POST["sensorId"]);
+                $result = OceanDB::getInstance()->upload_audio($_FILES, $_POST["description"], $_POST["sensorId"], $_POST["date"], $_POST["time"]);
                 $audioResult = oci_fetch_assoc($result);
                 $audio = $audioResult['RECORDED_DATA']->load();
                 ?>

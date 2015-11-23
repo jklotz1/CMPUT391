@@ -303,10 +303,10 @@ and open the template in the editor.
                                                  <?php
                                                 $image = OceanDB::getInstance()->get_image($thumbResult['IMAGE_ID']);
                                                 $imageResult = oci_fetch_assoc($image);
-                                                //$filename = $thumbResult['THUMBNAIL'];
+                                                $ifilename = $thumbResult['IMAGE_ID'];
                                                 $im = $imageResult['RECOREDED_DATA']->load();
                                                 ?>
-                                                <a href="data:application/octet-stream;base64,<?php echo base64_encode($im);?>" download><input class=downloadbutton type="button" value="Download"/><a/>;
+                                                <a href="data:application/octet-stream;base64,<?php echo base64_encode($im);?>" download="image<?php echo $ifilename;?>"><input class=downloadbutton type="button" value="Download"/><a/>
                                                 
                                                     <?php
             }}
@@ -345,10 +345,10 @@ and open the template in the editor.
                                                 <?php
                                                 $audio = OceanDB::getInstance()->get_audio($audioDate['RECORDING_ID']);
                                                 $audioResult = oci_fetch_assoc($audio);
-                                                //$filename = $audioDate["RECORDING_ID"];
+                                                $afilename = $audioDate["RECORDING_ID"];
                                                 $ad = $audioResult['RECORDED_DATA']->load();
                                                 ?>
-                                                <a href="data:application/octet-stream;base64,<?php echo base64_encode($ad);?>" download><input class=downloadbutton type="button" value="Download"/><a/>;
+                                                <a href="data:application/octet-stream;base64,<?php echo base64_encode($ad);?>" download="recording<?php echo $afilename;?>"><input class=downloadbutton type="button" value="Download"/><a/>
                 <?php }}
                 ?>
                                     </div>
@@ -384,7 +384,7 @@ and open the template in the editor.
                                                 $data[2] = $sensorResult["VALUE"];
                                                 $fulldata = $data[0].",".$data[1].",".$data[2];
                                                 ?>
-                                                <a href="data:application/octet-stream, <?php echo $fulldata ;?>" download><input class=downloadbutton type="button" value="Download"/><a/>;
+                                                <a href="data:application/octet-stream, <?php echo $fulldata ;?>" download="scalar<?php echo $data[2];?>"><input class=downloadbutton type="button" value="Download"/><a/>
                                   <?php  } ?>
                                             
                                                    </div>
