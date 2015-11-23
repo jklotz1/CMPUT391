@@ -23,6 +23,171 @@
 
 ##Modules 
 
+###Login Module
+#####Path: loginScreen.php -> homeScreen.php or personalAccount.php
+
+####Logging on
+1. Enter username and password
+2. Select "Log On"
+3. The next screen you are directed to is the Home Screen
+
+####Edit Personal Settings
+1. Enter username and password
+2. Select "Account"
+3. The next screen you are directed to is the Personal Account Screen
+4. Edit fields and select "Save Changes"
+
+####Edit Personal Settings
+1. Enter username and password
+2. Select "Account"
+3. The next screen you are directed to is the Personal Account Screen
+4. Select user from table and select "Save"
+
+
+###User and Sensor Management Module
+#####Path: loginScreen.php -> homeScreen.php -> managementScreen.php -> managementUserScreen.php or managementSensorScreen.php
+
+####Navigation to Management Screen
+1. Log in using a username and password
+2. The next screen you are directed to is the Home Screen, there is a task bar and in it are the following buttons:
+    - Search Module
+    - Management Module
+    - Upload Module
+    - Data Analysis Module
+    - Subscribe Module
+3. Click the Management Module button from the task bar
+4. You are now directed to the "User and Sensor Management" Screen. There are three buttons with descriptions:
+    - Home
+    - Sensors
+    - Users
+
+####To Add a Sensor:
+1. Click the "Sensors" button located on "User and Sensor Management" Screen.
+2. On this screen are four buttons and a table of sensors
+    - Back Button
+    - Home Button
+    - Create New Sensor
+    - Delete Sensor
+3. Click the "Create New Sensor" Button
+4. You are now directed to the Create New Sensor Screen, fill out all fields and select "Save"
+
+####To Delete a Sensor:
+1. Click the "Sensors" button located on "User and Sensor Management" Screen.
+2. On this screen are four buttons and a table of sensors
+    - Back Button
+    - Home Button
+    - Create New Sensor
+    - Delete Sensor
+3. Select a sensor in the table 
+4. Click the "Delete Sensor" button
+##### Note: when a sensor is deleted, all associated data records will be deleted as well
+
+####To Add a User:
+1. Click the "Users" button located on "User and Sensor Management" Screen.
+2. On this screen are eight buttons, a table of users and a table of personal accounts
+    - Back Button
+    - Home Button
+    - Create New User
+    - Edit User
+    - Delete User
+    - Create New Person
+    - Edit Person
+    - Delete Person
+3. Click the "Create New User" Button
+4. You are now directed to the Create New User Screen, fill out all fields and select "Save"
+##### Note: if the Person Profile doesn't exist in the drop down list select the button "Add Person Profile" to add a new person
+
+####To Edit a User:
+1. Click the "Users" button located on "User and Sensor Management" Screen.
+2. On this screen are eight buttons, a table of users and a table of personal accounts
+    - Back Button
+    - Home Button
+    - Create New User
+    - Edit User
+    - Delete User
+    - Create New Person
+    - Edit Person
+    - Delete Person
+3. Select user in the user table
+4. Click the "Edit User" Button
+5. You are now directed to the Edit User Screen, update fields and select "Save"
+
+####To Change Password of a User:
+1. Click the "Users" button located on "User and Sensor Management" Screen.
+2. On this screen are eight buttons, a table of users and a table of personal accounts
+    - Back Button
+    - Home Button
+    - Create New User
+    - Edit User
+    - Delete User
+    - Create New Person
+    - Edit Person
+    - Delete Person
+3. Select user in the user table
+4. Click the "Edit User" Button
+5. You are now directed to the Edit User Screen
+6. Enter the old password, the new password and confirm the new password
+7. Click "Save"
+
+####To Delete User:
+1. Click the "Users" button located on "User and Sensor Management" Screen.
+2. On this screen are eight buttons, a table of users and a table of personal accounts
+    - Back Button
+    - Home Button
+    - Create New User
+    - Edit User
+    - Delete User
+    - Create New Person
+    - Edit Person
+    - Delete Person
+3. Select user in the user table
+4. Click the "Delete User" Button
+
+####To Add a Person:
+1. Click the "Users" button located on "User and Sensor Management" Screen.
+2. On this screen are eight buttons, a table of users and a table of personal accounts
+    - Back Button
+    - Home Button
+    - Create New User
+    - Edit User
+    - Delete User
+    - Create New Person
+    - Edit Person
+    - Delete Person
+3. Click the "Create New Person" Button
+4. You are now directed to the Create New Person Screen, fill out all fields and select "Save"
+
+####To Edit a User:
+1. Click the "Users" button located on "User and Sensor Management" Screen.
+2. On this screen are eight buttons, a table of users and a table of personal accounts
+    - Back Button
+    - Home Button
+    - Create New User
+    - Edit User
+    - Delete User
+    - Create New Person
+    - Edit Person
+    - Delete Person
+3. Select user in the person table
+4. Click the "Edit Person" Button
+5. You are now directed to the Edit Person Screen, update fields and select "Save"
+
+####To Delete Person:
+1. Click the "Users" button located on "User and Sensor Management" Screen.
+2. On this screen are eight buttons, a table of users and a table of personal accounts
+    - Back Button
+    - Home Button
+    - Create New User
+    - Edit User
+    - Delete User
+    - Create New Person
+    - Edit Person
+    - Delete Person
+3. Select person in the person table
+4. Click the "Delete Person" button
+##### Note: when a person is deleted, all associated user records will be deleted as well
+
+
 ###Subscribe Module
 #####Path: loginScreen.php -> homeScreen.php -> mainSubScriptionScreen.php -> subscribeScreen.php or availableSensorSubscriptions.php
 
@@ -86,3 +251,23 @@
 ##### Note: If a search was unsucessful an error message will appear.
 7. You can download image files, audio files, and scalar data from the table directly by clicking the download button 
    associated with each entry.
+
+
+###Data Analysis Module
+#####Path: loginScreen.php -> homeScreen.php -> analysisScreen.php -> reportScreen.php
+
+####Navigation to Anaysis Screen
+1. Log in using a username and password
+2. The next screen you are directed to is the Home Screen, there is a task bar and in it are the following buttons:
+    - Search Module
+    - Management Module
+    - Upload Module
+    - Data Analysis Module
+    - Subscribe Module
+3. Click the Data Analysis Module button from the task bar
+4. You are now directed to the "Data Analysis" Screen. Here you will a "home" button to return to the home page and a drop menu to select a sensor.
+
+####To Run Report:
+1. Select a sensor from the drop down menu from the "Data Analysis" Screen
+2. Click "Show Data"
+##### Note: this report is initially filtered by year; the date field can be selected to reveal a smaller unit of time (ie. years, quarters, months, weeks, days)
